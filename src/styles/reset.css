@@ -1,0 +1,25 @@
+/* 모든 요소의 크기 계산 방식을 border-box로 통일 */
+*, *::before, *::after { box-sizing:border-box; }
+
+/* 브라우저에서 기본으로 적용하는 여백 제거 */
+html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, strong, ul, ol, li, header, nav, main, section, article, footer, figure, figcaption { margin:0; padding:0; border:0; }
+
+/* 페이지 기본 설정 */
+html { scroll-behavior:smooth; }
+body { min-width:320px; line-height:1.5; }
+
+/* 리스트 기본 점/번호 제거 */
+ul, ol { list-style:none; }
+
+/* 링크 기본 밑줄 제거 */
+a { color:inherit; text-decoration:none; }
+
+/* 이미지가 부모 영역을 넘지 않도록 설정 */
+img { display:block; max-width:100%; }
+
+/* 버튼과 입력창이 기본 폰트를 사용하도록 설정 */
+button, input, select, textarea { font:inherit; }
+button { cursor:pointer; }
+
+/* 화면에는 숨기고 스크린리더에서만 읽을 수 있는 텍스트 */
+.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }

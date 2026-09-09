@@ -1,0 +1,66 @@
+/* =========================
+   TODAY NEW 전체 영역
+========================= */
+.today-new { width:100%; padding:110px 70px 130px; }
+
+/* 섹션 제목 */
+.today-new-title { margin-bottom:45px; text-align:center; }
+.today-new-title h2 { color:#222; font-size:40px; font-weight:700; letter-spacing:-1px; }
+
+/* =========================
+   상품 슬라이더
+========================= */
+.today-new-slider { position:relative; width:100%; padding:0 40px; }
+.today-new-slider .swiper { width:100%; overflow:hidden; }
+
+/* 이전 / 다음 버튼 */
+.today-new-prev,
+.today-new-next {
+  position:absolute; top:42%; z-index:10;
+  width:35px; height:50px; padding:0;
+  border:0; background:transparent;
+  color:#222; font-size:45px; font-weight:200; line-height:1;
+  transform:translateY(-50%);
+  transition:opacity .2s ease;
+}
+
+.today-new-prev { left:-5px; }
+.today-new-next { right:-5px; }
+
+.today-new-prev:hover,
+.today-new-next:hover { opacity:.45; }
+
+/* Swiper에서 이동할 상품이 없으면 버튼 흐리게 표시 */
+.today-new-prev.swiper-button-disabled,
+.today-new-next.swiper-button-disabled { opacity:.2; cursor:default; }
+
+/* =========================
+   태블릿
+========================= */
+@media (max-width:1024px) {
+  .today-new { padding:90px 40px 110px; }
+  .today-new-title { margin-bottom:35px; }
+  .today-new-title h2 { font-size:36px; }
+}
+
+/* =========================
+   모바일
+========================= */
+@media (max-width:768px) {
+  .today-new { padding:70px 15px 90px; }
+  .today-new-title { margin-bottom:30px; }
+  .today-new-title h2 { font-size:30px; }
+  .today-new-slider { padding:0 20px; }
+
+  .today-new-prev,
+  .today-new-next { font-size:34px; }
+
+  .today-new-prev { left:-7px; }
+  .today-new-next { right:-7px; }
+}
+
+/* 작은 모바일 */
+@media (max-width:480px) {
+  .today-new { padding-left:10px; padding-right:10px; }
+  .today-new-slider { padding:0 15px; }
+}

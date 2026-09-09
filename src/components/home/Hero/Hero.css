@@ -1,0 +1,43 @@
+/* =========================
+   메인 Hero
+========================= */
+.hero { width:100%; overflow:hidden; background:#f5f5f5; }
+
+/* Swiper 전체 영역 */
+.hero-swiper { width:100%; }
+
+/* 슬라이드 이미지 영역 */
+.hero-slide { width:100%; overflow:hidden; }
+
+/* 기존 Obscura처럼 메인 이미지를 가로 전체에 출력 */
+.hero-slide img { display:block; width:100%; height:auto; object-fit:cover; }
+
+/* Swiper 페이지네이션 위치 */
+.hero-swiper .swiper-pagination { bottom:18px; }
+
+/* 기본 페이지네이션 점 */
+.hero-swiper .swiper-pagination-bullet { width:7px; height:7px; background:#fff; opacity:.6; }
+
+/* 현재 보고 있는 슬라이드 */
+.hero-swiper .swiper-pagination-bullet-active { background:#fd4802; opacity:1; }
+
+/* =========================
+   태블릿
+========================= */
+@media (max-width:1024px) {
+  .hero-swiper .swiper-pagination { bottom:14px; }
+}
+
+/* =========================
+   모바일
+========================= */
+@media (max-width:768px) {
+  .hero { margin-top:52px; }
+  .hero-slide img { width:100%; height:auto; }
+  .hero-swiper .swiper-pagination { bottom:10px; }
+}
+
+/* 작은 모바일 */
+@media (max-width:480px) {
+  .hero-swiper .swiper-pagination-bullet { width:6px; height:6px; }
+}

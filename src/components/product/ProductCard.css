@@ -1,0 +1,52 @@
+/* 상품 카드 전체 */
+.product-card { position:relative; width:100%; min-width:0; }
+
+/* 상품 이미지 영역 */
+.product-card-image { display:block; width:100%; overflow:hidden; background:#f5f5f5; }
+.product-card-image img { display:block; width:100%; aspect-ratio:3/4; object-fit:cover; transition:transform .35s ease; }
+
+/* PC에서 상품 이미지에 마우스를 올리면 살짝 확대 */
+.product-card:hover .product-card-image img { transform:scale(1.02); }
+
+/* 이미지 오른쪽 위 찜 버튼 */
+.product-card-like {
+  position:absolute; top:12px; right:12px; z-index:2;
+  width:34px; height:34px; padding:0;
+  display:flex; align-items:center; justify-content:center;
+  border:0; border-radius:50%;
+  background:rgba(255,255,255,.85);
+  color:#222; font-size:22px; line-height:1;
+}
+
+/* 찜 활성화 */
+.product-card-like.active { color:#fd4802; }
+
+/* 상품 정보 영역 */
+.product-card-info { padding:12px 4px 0; }
+
+/* 브랜드 */
+.product-card-brand { margin-bottom:7px; color:#888; font-size:11px; font-weight:600; }
+
+/* 상품 강조 문구 */
+.product-card-comment { margin-bottom:7px; color:#fd4802; font-size:11px; }
+
+/* 상품명 */
+.product-card-name { min-height:38px; color:#222; font-size:12px; font-weight:400; line-height:1.5; }
+.product-card-name a:hover { text-decoration:underline; text-underline-offset:3px; }
+
+/* 가격 */
+.product-card-price-wrap { display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px; margin-top:9px; }
+.product-card-original-price { color:#aaa; font-size:12px; }
+.product-card-price { color:#222; font-size:14px; font-weight:500; }
+.product-card-discount { color:#fd4802; font-size:13px; font-weight:600; }
+
+/* 모바일 */
+@media (max-width:768px) {
+  /* 모바일에서는 hover 확대 효과 제거 */
+  .product-card:hover .product-card-image img { transform:none; }
+  .product-card-like { top:8px; right:8px; width:30px; height:30px; font-size:20px; }
+  .product-card-info { padding-top:9px; }
+  .product-card-brand { margin-bottom:5px; font-size:10px; }
+  .product-card-name { font-size:11px; }
+  .product-card-price { font-size:13px; }
+}
