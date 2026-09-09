@@ -35,7 +35,6 @@
 
 /* =========================
    BRAND SLIDER
-   < 브랜드 브랜드 브랜드 >
 ========================= */
 .brand-slider-wrap {
   position: relative;
@@ -138,7 +137,6 @@
 
 /* =========================
    대표 이미지
-   원본 비율 그대로 사용
 ========================= */
 .top-brand-visual {
   width: 100%;
@@ -166,14 +164,12 @@
   padding-top: 5px;
 }
 
-/* PC / 태블릿용 상품 3개 */
 .top-brand-products-desktop {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
 }
 
-/* 모바일 Swiper는 기본적으로 숨김 */
 .top-brand-products-mobile {
   display: none;
 }
@@ -205,7 +201,8 @@
 }
 
 /* =========================
-   LIKE
+   찜 버튼
+   원형 배경 없이 하트만 표시
 ========================= */
 .top-brand-like {
   position: absolute;
@@ -253,9 +250,9 @@
   font-weight: 500;
 }
 
-/* =================================================
+/* =========================
    1400
-================================================= */
+========================= */
 @media (max-width:1400px) {
   .top-brands {
     padding-top: 90px;
@@ -272,13 +269,9 @@
   }
 }
 
-/* =================================================
+/* =========================
    TABLET
-   769px ~ 1024px
-
-   상품 3개 고정
-   Swiper 사용 X
-================================================= */
+========================= */
 @media (max-width:1024px) {
   .top-brands {
     padding-top: 80px;
@@ -297,21 +290,18 @@
     font-size: 36px;
   }
 
-  /* 브랜드 로고 영역 */
   .brand-slider-wrap {
     max-width: 760px;
     margin-bottom: 38px;
     padding: 0 36px;
   }
 
-  /* 대표 이미지 위에 상품 카드가 겹치는 구조 */
   .top-brand-showcase {
     display: block;
     position: relative;
     padding-bottom: 160px;
   }
 
-  /* 대표 이미지는 자르지 않고 원본 비율 유지 */
   .top-brand-visual {
     width: 100%;
   }
@@ -324,12 +314,6 @@
     object-fit: contain;
   }
 
-  /*
-    상품 카드 높이 위치
-    숫자를 줄일수록 더 위로 올라감
-
-    현재 사용자님이 맞춰둔 28% 유지
-  */
   .top-brand-content {
     position: absolute;
     left: 0;
@@ -339,7 +323,6 @@
     padding: 0 24px;
   }
 
-  /* ★ 태블릿에서는 상품 3개 고정 */
   .top-brand-products-desktop {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -347,7 +330,6 @@
     width: 100%;
   }
 
-  /* ★ 태블릿에서는 Swiper 사용 안 함 */
   .top-brand-products-mobile {
     display: none;
   }
@@ -360,14 +342,18 @@
   .top-brand-product-info {
     padding: 10px 4px 12px;
   }
+
+  /* 태블릿 하트 */
+  .top-brand-like {
+    top: 9px;
+    right: 9px;
+    font-size: 22px;
+  }
 }
 
-/* =================================================
+/* =========================
    MOBILE
-   768px 이하
-
-   상품 2개 표시 + Swiper
-================================================= */
+========================= */
 @media (max-width:768px) {
   .top-brands {
     padding: 65px 0 80px;
@@ -385,7 +371,6 @@
     font-size: 30px;
   }
 
-  /* < 브랜드 브랜드 브랜드 > 유지 */
   .brand-slider-wrap {
     width: 100%;
     margin-bottom: 28px;
@@ -408,7 +393,6 @@
     font-size: 28px;
   }
 
-  /* 대표 이미지 원본 비율 그대로 */
   .top-brand-visual img {
     display: block;
     width: 100%;
@@ -417,13 +401,6 @@
     object-fit: contain;
   }
 
-  /*
-    모바일 상품 카드 위치
-    현재 사용하던 22% 유지
-
-    더 위로 → 18%, 20%
-    더 아래로 → 25%, 28%
-  */
   .top-brand-content {
     top: 22%;
     padding: 0 15px;
@@ -433,22 +410,16 @@
     padding-bottom: 150px;
   }
 
-  /* ★ 모바일부터 고정 상품 3개 숨김 */
   .top-brand-products-desktop {
     display: none;
   }
 
-  /* ★ 모바일부터 Swiper 표시 */
   .top-brand-products-mobile {
     display: block;
     width: 100%;
     overflow: hidden;
   }
 
-  /*
-    정확히 2개만 보이게 하기 위해
-    세 번째 카드가 영역 밖에서 보이지 않도록 hidden
-  */
   .top-brand-products-mobile .swiper {
     width: 100%;
     overflow: hidden;
@@ -482,10 +453,11 @@
     font-size: 12px;
   }
 
+  /* 모바일 하트 */
   .top-brand-like {
     top: 8px;
     right: 8px;
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .top-brand-product:hover .top-brand-product-image img,
@@ -494,9 +466,9 @@
   }
 }
 
-/* =================================================
+/* =========================
    SMALL MOBILE
-================================================= */
+========================= */
 @media (max-width:480px) {
   .top-brands-inner {
     padding: 0 10px;
@@ -506,10 +478,6 @@
     padding: 0 25px;
   }
 
-  /*
-    480px 이하에서도 상품 위치가 갑자기 내려가지 않게
-    768px 설정과 동일하게 유지
-  */
   .top-brand-content {
     top: 22%;
     padding: 0 10px;
@@ -517,5 +485,12 @@
 
   .top-brand-showcase {
     padding-bottom: 135px;
+  }
+
+  /* 작은 모바일 하트 */
+  .top-brand-like {
+    top: 7px;
+    right: 7px;
+    font-size: 18px;
   }
 }

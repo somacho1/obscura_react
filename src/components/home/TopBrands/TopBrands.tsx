@@ -19,31 +19,31 @@ import product02 from '../../../assets/images/obscura/MdPick032c_2.jpg';
 import product03 from '../../../assets/images/obscura/MdPick-032c_3.jpg';
 
 interface Brand {
-  id:number;
-  name:string;
-  logo:string;
+  id: number;
+  name: string;
+  logo: string;
 }
 
 interface BrandProduct {
-  id:number;
-  name:string;
-  price:number;
-  image:string;
+  id: number;
+  name: string;
+  price: number;
+  image: string;
 }
 
-const brands:Brand[] = [
-  { id:1, name:'YOUTH', logo:youthLogo },
-  { id:2, name:'HOPE', logo:hopeLogo },
-  { id:3, name:'032c', logo:logo032c },
-  { id:4, name:'EYTYS', logo:eytysLogo },
-  { id:5, name:'SAN SAN GEAR', logo:sansanLogo },
-  { id:6, name:'OPEN YY', logo:openyyLogo },
+const brands: Brand[] = [
+  { id: 1, name: 'YOUTH', logo: youthLogo },
+  { id: 2, name: 'HOPE', logo: hopeLogo },
+  { id: 3, name: '032c', logo: logo032c },
+  { id: 4, name: 'EYTYS', logo: eytysLogo },
+  { id: 5, name: 'SAN SAN GEAR', logo: sansanLogo },
+  { id: 6, name: 'OPEN YY', logo: openyyLogo },
 ];
 
-const products:BrandProduct[] = [
-  { id:1, name:'[032c] “Clay” Utility Bomber Jacket', price:1830000, image:product01 },
-  { id:2, name:'[032c] “Clay” Utility Trousers', price:980000, image:product02 },
-  { id:3, name:'[032c] Leather Keychain', price:190000, image:product03 },
+const products: BrandProduct[] = [
+  { id: 1, name: '[032c] “Clay” Utility Bomber Jacket', price: 1830000, image: product01 },
+  { id: 2, name: '[032c] “Clay” Utility Trousers', price: 980000, image: product02 },
+  { id: 3, name: '[032c] Leather Keychain', price: 190000, image: product03 },
 ];
 
 export default function TopBrands() {
@@ -51,7 +51,7 @@ export default function TopBrands() {
   const [likedProducts, setLikedProducts] = useState<number[]>([]);
 
   // 상품 찜 ON / OFF
-  const toggleLike = (id:number) => {
+  const toggleLike = (id: number) => {
     setLikedProducts((prev) =>
       prev.includes(id)
         ? prev.filter((productId) => productId !== id)
@@ -59,7 +59,8 @@ export default function TopBrands() {
     );
   };
 
-  const formatPrice = (price:number) => price.toLocaleString('ko-KR');
+  // 가격에 천 단위 콤마 적용
+  const formatPrice = (price: number) => price.toLocaleString('ko-KR');
 
   return (
     <section className="top-brands">
@@ -70,34 +71,19 @@ export default function TopBrands() {
           <h2>Top Brands</h2>
         </div>
 
-        {/* =========================
-            브랜드 로고 슬라이더
-            < 브랜드 브랜드 브랜드 >
-        ========================= */}
+        {/* 브랜드 로고 슬라이더 */}
         <div className="brand-slider-wrap">
           <button type="button" className="brand-prev" aria-label="이전 브랜드">‹</button>
 
           <Swiper
             modules={[Navigation]}
-            navigation={{
-              prevEl:'.brand-prev',
-              nextEl:'.brand-next',
-            }}
+            navigation={{ prevEl: '.brand-prev', nextEl: '.brand-next' }}
             spaceBetween={20}
             slidesPerView={3}
             breakpoints={{
-              480:{
-                slidesPerView:3,
-                spaceBetween:18,
-              },
-              769:{
-                slidesPerView:4,
-                spaceBetween:24,
-              },
-              1025:{
-                slidesPerView:5,
-                spaceBetween:30,
-              },
+              480: { slidesPerView: 3, spaceBetween: 18 },
+              769: { slidesPerView: 4, spaceBetween: 24 },
+              1025: { slidesPerView: 5, spaceBetween: 30 },
             }}
           >
             {brands.map((brand) => (
@@ -117,9 +103,7 @@ export default function TopBrands() {
           <button type="button" className="brand-next" aria-label="다음 브랜드">›</button>
         </div>
 
-        {/* =========================
-            브랜드 쇼케이스
-        ========================= */}
+        {/* 브랜드 쇼케이스 */}
         <div className="top-brand-showcase">
 
           {/* 대표 이미지 */}
@@ -130,10 +114,7 @@ export default function TopBrands() {
           {/* 상품 영역 */}
           <div className="top-brand-content">
 
-            {/* =========================
-                PC + TABLET
-                상품 3개 고정
-            ========================= */}
+            {/* PC + TABLET : 상품 3개 고정 */}
             <div className="top-brand-products-desktop">
               {products.map((product) => {
                 const liked = likedProducts.includes(product.id);
@@ -143,6 +124,7 @@ export default function TopBrands() {
                     <div className="top-brand-product-image">
                       <img src={product.image} alt={product.name} />
 
+                      {/* 찜 버튼 */}
                       <button
                         type="button"
                         className={`top-brand-like ${liked ? 'active' : ''}`}
@@ -163,15 +145,9 @@ export default function TopBrands() {
               })}
             </div>
 
-            {/* =========================
-                MOBILE
-                768px 이하부터 정확히 2개씩 Swiper
-            ========================= */}
+            {/* MOBILE : 768px 이하부터 2개씩 Swiper */}
             <div className="top-brand-products-mobile">
-              <Swiper
-                spaceBetween={12}
-                slidesPerView={2}
-              >
+              <Swiper spaceBetween={12} slidesPerView={2}>
                 {products.map((product) => {
                   const liked = likedProducts.includes(product.id);
 
@@ -181,6 +157,7 @@ export default function TopBrands() {
                         <div className="top-brand-product-image">
                           <img src={product.image} alt={product.name} />
 
+                          {/* 찜 버튼 */}
                           <button
                             type="button"
                             className={`top-brand-like ${liked ? 'active' : ''}`}

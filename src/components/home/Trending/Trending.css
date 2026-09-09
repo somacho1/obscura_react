@@ -1,72 +1,237 @@
 /* =========================
    TRENDING 전체 영역
 ========================= */
-.trending { width:100%; max-width:1800px; margin:0 auto; padding:40px 70px 130px; }
-.trending-inner { display:grid; grid-template-columns:30% 40% 30%; align-items:stretch; }
+.trending {
+  width: 100%;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 40px 70px 130px;
+}
+
+.trending-inner {
+  display: grid;
+  grid-template-columns: 30% 40% 30%;
+  align-items: stretch;
+}
 
 /* 왼쪽 제목 / 랭킹 */
-.trending-left { padding-right:20px; }
-.trending-title h2 { margin-bottom:6px; color:#222; font-size:36px; font-weight:700; }
-.trending-title p { padding:0; color:#888; font-size:14px; }
+.trending-left {
+  padding-right: 20px;
+}
 
-.trending-ranking { height:284px; margin-top:40px; overflow:hidden; }
-.trending-ranking li { height:71px; border:1px solid rgba(221,221,221,.6); background:#fff; transition:background .2s ease; }
-.trending-ranking li + li { border-top:0; }
-.trending-ranking li:hover { background:#111; }
+.trending-title h2 {
+  margin-bottom: 6px;
+  color: #222;
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.trending-title p {
+  padding: 0;
+  color: #888;
+  font-size: 14px;
+}
+
+.trending-ranking {
+  height: 284px;
+  margin-top: 40px;
+  overflow: hidden;
+}
+
+.trending-ranking li {
+  height: 71px;
+  border: 1px solid rgba(221, 221, 221, .6);
+  background: #fff;
+  transition: background .2s ease;
+}
+
+.trending-ranking li+li {
+  border-top: 0;
+}
+
+.trending-ranking li:hover {
+  background: #111;
+}
 
 .trending-ranking a {
-  width:100%; height:100%;
-  display:flex; align-items:center;
-  padding:0 20px;
-  color:#888; font-size:16px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  color: #888;
+  font-size: 16px;
 }
 
 .trending-ranking li:hover a,
-.trending-ranking li:hover span { color:#fff; }
+.trending-ranking li:hover span {
+  color: #fff;
+}
 
-.trending-ranking span { width:45px; color:#222; font-size:20px; }
+.trending-ranking span {
+  width: 45px;
+  color: #222;
+  font-size: 20px;
+}
 
 /* 가운데 상품 6개 */
-.trending-grid { display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(2,1fr); }
-.trending-item { position:relative; overflow:hidden; }
-.trending-item img { width:100%; height:100%; object-fit:cover; transition:transform .35s ease; }
-.trending-item:hover img { transform:scale(1.02); }
+.trending-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.trending-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.trending-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .35s ease;
+}
+
+.trending-item:hover img {
+  transform: scale(1.02);
+}
 
 /* 오른쪽 대표 이미지 */
-.trending-main { position:relative; overflow:hidden; }
-.trending-main img { width:100%; height:100%; object-fit:cover; transition:transform .35s ease; }
-.trending-main:hover img { transform:scale(1.02); }
+.trending-main {
+  position: relative;
+  overflow: hidden;
+}
 
-/* 찜 버튼 */
+.trending-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .35s ease;
+}
+
+.trending-main:hover img {
+  transform: scale(1.02);
+}
+
+/* =========================
+   찜 버튼
+   ProductCard / TopBrands와 동일하게
+   원형 배경 없이 하트만 표시
+========================= */
 .trending-like {
-  position:absolute; top:12px; right:12px; z-index:2;
-  width:32px; height:32px; padding:0;
-  display:flex; align-items:center; justify-content:center;
-  border:0; border-radius:50%;
-  background:rgba(255,255,255,.85);
-  color:#222; font-size:20px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 5;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #111;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform .2s ease, color .2s ease;
 }
 
-/* 태블릿 */
+/* 마우스를 올리면 살짝 확대 */
+.trending-like:hover {
+  transform: scale(1.08);
+}
+
+/* 찜 활성화 */
+.trending-like.active {
+  color: #fd4802;
+}
+
+/* =========================
+   태블릿
+========================= */
 @media (max-width:1024px) {
-  .trending { padding:30px 40px 110px; }
-  .trending-inner { grid-template-columns:1fr 1fr; gap:20px; }
-  .trending-left { padding-right:0; }
-  .trending-grid { grid-column:1 / -1; order:3; }
+  .trending {
+    padding: 30px 40px 110px;
+  }
+
+  .trending-inner {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .trending-left {
+    padding-right: 0;
+  }
+
+  .trending-grid {
+    grid-column: 1 / -1;
+    order: 3;
+  }
+
+  /* 태블릿 하트 */
+  .trending-like {
+    top: 9px;
+    right: 9px;
+    font-size: 22px;
+  }
 }
 
-/* 모바일 */
+/* =========================
+   모바일
+========================= */
 @media (max-width:768px) {
-  .trending { padding:20px 15px 90px; }
-  .trending-inner { grid-template-columns:1fr; }
-  .trending-title { text-align:center; }
-  .trending-title h2 { font-size:30px; }
-  .trending-ranking { margin-top:25px; }
-  .trending-grid { grid-template-columns:repeat(2,1fr); }
-  .trending-main { min-height:420px; }
-  .trending-item:hover img, .trending-main:hover img { transform:none; }
+  .trending {
+    padding: 20px 15px 90px;
+  }
+
+  .trending-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .trending-title {
+    text-align: center;
+  }
+
+  .trending-title h2 {
+    font-size: 30px;
+  }
+
+  .trending-ranking {
+    margin-top: 25px;
+  }
+
+  .trending-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .trending-main {
+    min-height: 420px;
+  }
+
+  /* 모바일 하트 */
+  .trending-like {
+    top: 8px;
+    right: 8px;
+    font-size: 20px;
+  }
+
+  .trending-item:hover img,
+  .trending-main:hover img {
+    transform: none;
+  }
 }
 
+/* =========================
+   작은 모바일
+========================= */
 @media (max-width:480px) {
-  .trending { padding-left:10px; padding-right:10px; }
+  .trending {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  /* 작은 모바일 하트 */
+  .trending-like {
+    top: 7px;
+    right: 7px;
+    font-size: 18px;
+  }
 }
