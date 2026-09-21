@@ -1,0 +1,376 @@
+.brand-admin {
+    width: 100%;
+}
+
+.brand-heading {
+    min-height: 150px;
+    margin-bottom: 44px;
+    padding: 32px 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f1f1f1;
+    box-sizing: border-box;
+}
+
+.brand-heading>div {
+    position: relative;
+    padding-left: 18px;
+}
+
+.brand-heading>div::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    bottom: 2px;
+    left: 0;
+    width: 3px;
+    background: #ed1c24;
+}
+
+.brand-heading>div>span {
+    display: block;
+    margin-bottom: 8px;
+    color: #656566;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+}
+
+.brand-heading h1 {
+    margin: 0;
+    color: #111;
+    font-size: 34px;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+}
+
+.brand-heading p {
+    margin: 9px 0 0;
+    color: #656566;
+    font-size: 10px;
+}
+
+.brand-add {
+    height: 40px;
+    padding: 0 20px;
+    border: 1px solid #656566;
+    background: #656566;
+    color: #fff;
+    font-family: inherit;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.brand-add:hover {
+    border-color: #ed1c24;
+    background: #ed1c24;
+}
+
+.brand-overview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background: #e3e4e5;
+}
+
+.brand-overview>div {
+    position: relative;
+    min-height: 135px;
+    padding: 27px 30px;
+    border-right: 1px solid #b1b2b2;
+    box-sizing: border-box;
+}
+
+.brand-overview>div:last-child {
+    border-right: 0;
+}
+
+.brand-overview span {
+    display: block;
+    color: #656566;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+}
+
+.brand-overview strong {
+    display: block;
+    margin-top: 17px;
+    color: #111;
+    font-size: 34px;
+    font-weight: 500;
+    line-height: 1;
+}
+
+.brand-overview p {
+    margin: 9px 0 0;
+    color: #656566;
+    font-size: 9px;
+}
+
+.brand-overview-sale>span,
+.brand-overview-sale strong {
+    color: #ed1c24;
+}
+
+.brand-overview-sale::after {
+    content: '';
+    position: absolute;
+    right: 30px;
+    bottom: 28px;
+    width: 28px;
+    height: 2px;
+    background: #ed1c24;
+}
+
+.brand-list-heading {
+    margin-top: 50px;
+    padding-bottom: 13px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    border-bottom: 1px solid #b1b2b2;
+}
+
+.brand-list-heading h2 {
+    margin: 0;
+    color: #111;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+}
+
+.brand-list-heading span {
+    color: #656566;
+    font-size: 8px;
+    letter-spacing: 0.1em;
+}
+
+.brand-filter {
+    padding: 18px 0;
+    display: grid;
+    grid-template-columns: minmax(240px, 360px) 150px;
+    gap: 12px;
+}
+
+.brand-filter label {
+    display: block;
+    margin-bottom: 7px;
+    color: #656566;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+}
+
+.brand-filter input,
+.brand-filter select {
+    width: 100%;
+    height: 40px;
+    padding: 0 11px;
+    border: 1px solid #d7d8d9;
+    border-radius: 0;
+    background: #fff;
+    color: #111;
+    font-family: inherit;
+    font-size: 10px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.brand-filter input::placeholder {
+    color: #b1b2b2;
+}
+
+.brand-filter input:focus,
+.brand-filter select:focus {
+    border-color: #656566;
+}
+
+.brand-table {
+    background: #fff;
+    border-top: 1px solid #b1b2b2;
+}
+
+.brand-table-head,
+.brand-row {
+    display: grid;
+    grid-template-columns: minmax(230px, 2fr) 1fr 1fr 1fr minmax(180px, 1fr);
+    align-items: center;
+    padding: 0 24px;
+}
+
+.brand-table-head {
+    min-height: 43px;
+    background: #f1f1f1;
+    border-bottom: 1px solid #d7d8d9;
+    color: #656566;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+}
+
+.brand-row {
+    min-height: 88px;
+    border-bottom: 1px solid #d7d8d9;
+    transition: background 0.15s ease;
+}
+
+.brand-row:hover {
+    background: #f7f7f7;
+}
+
+.brand-name {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.brand-name strong {
+    display: block;
+    color: #111;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+}
+
+.brand-name span {
+    display: block;
+    margin-top: 6px;
+    color: #656566;
+    font-size: 8px;
+    letter-spacing: 0.1em;
+}
+
+.brand-name:hover strong {
+    color: #ed1c24;
+}
+
+.brand-value strong {
+    display: block;
+    color: #111;
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.brand-value span {
+    display: block;
+    margin-top: 5px;
+    color: #656566;
+    font-size: 7px;
+    letter-spacing: 0.08em;
+}
+
+.brand-value.sale strong,
+.brand-value.sale span {
+    color: #ed1c24;
+}
+
+.brand-status {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.brand-status i {
+    width: 6px;
+    height: 6px;
+    display: block;
+    border-radius: 50%;
+}
+
+.brand-status i.active {
+    background: #ed1c24;
+}
+
+.brand-status i.inactive {
+    background: #b1b2b2;
+}
+
+.brand-status span {
+    color: #111;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+}
+
+.brand-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.brand-actions button {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #111;
+    font-family: inherit;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+}
+
+.brand-actions button:hover {
+    color: #ed1c24;
+}
+
+.brand-empty {
+    padding: 70px 20px;
+    color: #656566;
+    font-size: 10px;
+    text-align: center;
+}
+
+@media (max-width: 900px) {
+    .brand-table {
+        overflow-x: auto;
+    }
+
+    .brand-table-head,
+    .brand-row {
+        min-width: 800px;
+    }
+}
+
+@media (max-width: 768px) {
+    .brand-heading {
+        min-height: 150px;
+        margin-bottom: 34px;
+        padding: 26px 24px;
+    }
+
+    .brand-add {
+        flex-shrink: 0;
+    }
+
+    .brand-overview {
+        grid-template-columns: 1fr;
+    }
+
+    .brand-overview>div {
+        min-height: 110px;
+        border-right: 0;
+        border-bottom: 1px solid #b1b2b2;
+    }
+
+    .brand-filter {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 520px) {
+    .brand-heading {
+        display: block;
+    }
+
+    .brand-add {
+        margin-top: 22px;
+    }
+}

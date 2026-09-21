@@ -1,4 +1,4 @@
-import type { Product } from '../types/product';
+import type { Product } from '../ts/product';
 
 // 기존 Obscura TODAY NEW 상품 이미지
 import beltImage from '../assets/images/obscura/new belt.jpg';

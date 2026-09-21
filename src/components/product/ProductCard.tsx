@@ -1,30 +1,89 @@
-import { useState } from 'react';
-import type { Product } from '../../types/product';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+
+import { useAuth } from '../../context/AuthContext';
+import { addWishlist, checkWishlist, deleteWishlist } from '../../api/wishlistApi';
+import type { Product } from '../../ts/product';
+
 import './ProductCard.css';
 
-// 부모 컴포넌트가 ProductCard에 전달해야 하는 값
 interface ProductCardProps {
   product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  // 현재 상품의 찜 상태 - 추후 회원 찜 API와 연결
+  const navigate = useNavigate();
+  const { member } = useAuth();
+
+  // 현재 상품의 실제 찜 상태
   const [liked, setLiked] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+
+  // 로그인 회원의 현재 상품 찜 여부 조회
+  useEffect(() => {
+    const loadWishlistStatus = async () => {
+      if (!member) {
+        setLiked(false);
+        return;
+      }
+
+      try {
+        const wishlisted = await checkWishlist(member.no, product.id);
+        setLiked(wishlisted);
+      } catch (error) {
+        console.error('찜 여부 조회 실패:', error);
+      }
+    };
+
+    loadWishlistStatus();
+  }, [member, product.id]);
+
+  // 찜 등록 / 삭제
+  const handleWishlist = async () => {
+    if (!member) {
+      const confirmed = window.confirm('로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?');
+      if (confirmed) navigate('/login');
+      return;
+    }
+
+    try {
+      setWishlistLoading(true);
+
+      if (liked) {
+        await deleteWishlist(member.no, product.id);
+        setLiked(false);
+      } else {
+        await addWishlist({ mno: member.no, pno: product.id });
+        setLiked(true);
+      }
+    } catch (error) {
+      console.error('찜 처리 실패:', error);
+      if (error instanceof Error) alert(error.message);
+      else alert('찜 처리에 실패했습니다.');
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
 
   // 숫자 가격을 170000 → 170,000 형태로 변환
   const formatPrice = (price: number) => price.toLocaleString('ko-KR');
 
   return (
     <article className="product-card">
-      {/* 상품 이미지 - 추후 상품 상세 페이지 링크로 변경 */}
-      <a href="#" className="product-card-image">
+      {/* 상품 이미지 */}
+      <Link to={`/products/${product.id}`} className="product-card-image">
         <img src={product.image} alt={product.name} />
-      </a>
+      </Link>
 
-      {/* 찜 버튼 - 현재는 화면에서 상태만 변경 */}
-      <button type="button" className={`product-card-like ${liked ? 'active' : ''}`}
-        aria-label={liked ? '찜 삭제' : '찜 추가'} aria-pressed={liked}
-        onClick={() => setLiked((prev) => !prev)}>
+      {/* 실제 DB 찜 버튼 */}
+      <button
+        type="button"
+        className={`product-card-like ${liked ? 'active' : ''}`}
+        aria-label={liked ? '찜 삭제' : '찜 추가'}
+        aria-pressed={liked}
+        disabled={wishlistLoading}
+        onClick={handleWishlist}
+      >
         <span aria-hidden="true">{liked ? '♥' : '♡'}</span>
       </button>
 
@@ -32,28 +91,16 @@ export default function ProductCard({ product }: ProductCardProps) {
       <div className="product-card-info">
         <p className="product-card-brand">{product.brand}</p>
 
-        {/* comment 값이 있는 상품만 출력 */}
         {product.comment && <p className="product-card-comment">{product.comment}</p>}
 
         <h3 className="product-card-name">
-          <a href="#">{product.name}</a>
+          <Link to={`/products/${product.id}`}>{product.name}</Link>
         </h3>
 
-        {/* 가격 영역 */}
         <div className="product-card-price-wrap">
-          {/* 할인 전 가격이 있으면 취소선 가격 표시 */}
-          {product.originalPrice && (
-            <del className="product-card-original-price">
-              ￦{formatPrice(product.originalPrice)}
-            </del>
-          )}
-
+          {product.originalPrice && <del className="product-card-original-price">￦{formatPrice(product.originalPrice)}</del>}
           <strong className="product-card-price">￦{formatPrice(product.price)}</strong>
-
-          {/* 할인 상품에만 할인율 표시 */}
-          {product.discountRate && (
-            <span className="product-card-discount">{product.discountRate}%</span>
-          )}
+          {product.discountRate && <span className="product-card-discount">{product.discountRate}%</span>}
         </div>
       </div>
     </article>

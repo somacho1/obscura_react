@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+
 import './Header.css';
+
+import { getCartItems } from '../../../api/cartApi';
 
 // 기존 Obscura 헤더 이미지
 import logo from '../../../assets/images/obscura/logo.svg';
@@ -8,12 +12,17 @@ import likeIcon from '../../../assets/images/obscura/ico_qk_like_black.svg';
 import myPageIcon from '../../../assets/images/obscura/ico_my_black.svg';
 import loginIcon from '../../../assets/images/obscura/ico_login_black.svg';
 import bagIcon from '../../../assets/images/obscura/ico_bag_black.svg';
+import { useAuth } from '../../../context/AuthContext';
 
 export default function Header() {
   // 모바일 메뉴 / 검색창 상태
+  const { member, logoutMember } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [keyword, setKeyword] = useState('');
+
+  // 장바구니 상품 종류 개수
+  const [cartCount, setCartCount] = useState(0);
 
   const searchRef = useRef<HTMLDivElement>(null);
 
@@ -56,8 +65,29 @@ export default function Header() {
     return () => document.removeEventListener('keydown', handleEscape);
   }, []);
 
+  // 장바구니 상품 개수 조회
+  useEffect(() => {
+    const loadCartCount = async () => {
+      // 로그인하지 않은 경우 장바구니 개수 0
+      if (!member) {
+        setCartCount(0);
+        return;
+      }
+
+      try {
+        const cartItems = await getCartItems(member.no);
+        setCartCount(cartItems.length);
+      } catch (error) {
+        console.error('장바구니 개수 조회 실패:', error);
+        setCartCount(0);
+      }
+    };
+
+    loadCartCount();
+  }, [member]);
+
   // 검색 제출
-  // 실제 상품 검색 API는 Node.js 백엔드 구현 후 연결
+  // 실제 상품 검색 API 구현 후 연결
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -106,9 +136,9 @@ export default function Header() {
             중앙 로고
             모든 화면 크기에서 중앙 유지
         ========================= */}
-        <a href="/" className="header-logo" aria-label="OBSCURA 홈">
+        <Link to="/" className="header-logo" aria-label="OBSCURA 홈">
           <img src={logo} alt="OBSCURA" />
-        </a>
+        </Link>
 
         {/* =========================
             오른쪽 메뉴
@@ -139,16 +169,31 @@ export default function Header() {
             <img src={myPageIcon} alt="" />
           </a>
 
-          {/* PC : 로그인 */}
-          <a href="#" className="header-icon-link pc-util" aria-label="로그인">
-            <img src={loginIcon} alt="" />
-          </a>
+          {/* PC : 로그인 / 로그아웃 */}
+          {member ? (
+            <button
+              type="button"
+              className="header-icon-link pc-util"
+              aria-label="로그아웃"
+              onClick={logoutMember}
+            >
+              <img src={loginIcon} alt="" />
+            </button>
+          ) : (
+            <Link to="/login" className="header-icon-link pc-util" aria-label="로그인">
+              <img src={loginIcon} alt="" />
+            </Link>
+          )}
 
           {/* PC + 태블릿 : 장바구니 */}
-          <a href="#" className="header-icon-link cart-button tablet-cart" aria-label="장바구니">
+          <Link
+            to="/cart"
+            className="header-icon-link cart-button tablet-cart"
+            aria-label={`장바구니 ${cartCount}개`}
+          >
             <img src={bagIcon} alt="" />
-            <span className="cart-count">0</span>
-          </a>
+            <span className="cart-count">{cartCount}</span>
+          </Link>
 
           {/* 태블릿 / 모바일 햄버거 */}
           <button
@@ -254,11 +299,15 @@ export default function Header() {
               </a>
             </li>
 
+            {/* 모바일 : 장바구니 */}
             <li className="mobile-member-menu mobile-cart-menu">
-              <a href="#">
+              <Link
+                to="/cart"
+                onClick={() => setMobileMenuOpen(false)}
+              >
                 CART
-                <strong>0</strong>
-              </a>
+                <strong>{cartCount}</strong>
+              </Link>
             </li>
           </ul>
         </div>
