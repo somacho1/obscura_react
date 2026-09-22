@@ -1,38 +1,45 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getBrands } from '../../../api/brandApi';
+import type { BrandResponse } from '../../../ts/brand';
 import './AdminBrandListPage.css';
-
-interface BrandItem {
-    no: number;
-    name: string;
-    country: string;
-    productCount: number;
-    saleProductCount: number;
-    status: 'ACTIVE' | 'INACTIVE';
-}
-
-const sampleBrands: BrandItem[] = [
-    { no: 1, name: '032c', country: 'GERMANY', productCount: 12, saleProductCount: 5, status: 'ACTIVE' },
-    { no: 2, name: 'OPEN YY', country: 'KOREA', productCount: 8, saleProductCount: 3, status: 'ACTIVE' },
-    { no: 3, name: 'YOUTH', country: 'KOREA', productCount: 15, saleProductCount: 0, status: 'ACTIVE' },
-    { no: 4, name: 'MONTBELL', country: 'JAPAN', productCount: 6, saleProductCount: 2, status: 'ACTIVE' },
-];
 
 function AdminBrandListPage() {
     const navigate = useNavigate();
+    const [brands, setBrands] = useState<BrandResponse[]>([]);
     const [keyword, setKeyword] = useState('');
     const [status, setStatus] = useState('ALL');
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+        const loadBrands = async () => {
+            try {
+                setLoading(true);
+                setError('');
+                const data = await getBrands();
+                setBrands(data);
+            } catch (error) {
+                console.error('브랜드 목록 조회 실패:', error);
+                setError('브랜드 정보를 불러오지 못했습니다.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadBrands();
+    }, []);
 
     const filteredBrands = useMemo(() => {
-        return sampleBrands.filter((brand) => {
-            const keywordMatched = brand.name.toLowerCase().includes(keyword.toLowerCase());
-            const statusMatched = status === 'ALL' || brand.status === status;
+        return brands.filter((brand) => {
+            const keywordMatched = brand.name.toLowerCase().includes(keyword.trim().toLowerCase());
+            const statusMatched = status === 'ALL' || (status === 'ACTIVE' && brand.statusNo === 1) || (status === 'INACTIVE' && brand.statusNo === 0);
             return keywordMatched && statusMatched;
         });
-    }, [keyword, status]);
+    }, [brands, keyword, status]);
 
-    const totalProducts = sampleBrands.reduce((sum, brand) => sum + brand.productCount, 0);
-    const totalSaleProducts = sampleBrands.reduce((sum, brand) => sum + brand.saleProductCount, 0);
+    const totalProducts = brands.reduce((sum, brand) => sum + brand.productCount, 0);
+    const totalSaleProducts = brands.reduce((sum, brand) => sum + brand.saleProductCount, 0);
 
     return (
         <section className="brand-admin">
@@ -42,14 +49,13 @@ function AdminBrandListPage() {
                     <h1>BRANDS</h1>
                     <p>브랜드 관리</p>
                 </div>
-
                 <button type="button" className="brand-add" onClick={() => navigate('/admin/brands/create')}>+ ADD BRAND</button>
             </div>
 
             <div className="brand-overview">
                 <div>
                     <span>BRANDS</span>
-                    <strong>{String(sampleBrands.length).padStart(2, '0')}</strong>
+                    <strong>{String(brands.length).padStart(2, '0')}</strong>
                     <p>등록 브랜드</p>
                 </div>
 
@@ -96,11 +102,14 @@ function AdminBrandListPage() {
                     <span>MANAGEMENT</span>
                 </div>
 
-                {filteredBrands.map((brand) => (
+                {loading && <div className="brand-empty">브랜드 정보를 불러오는 중입니다.</div>}
+                {!loading && error && <div className="brand-empty">{error}</div>}
+
+                {!loading && !error && filteredBrands.map((brand) => (
                     <div className="brand-row" key={brand.no}>
                         <button type="button" className="brand-name" onClick={() => navigate(`/admin/brands/${brand.no}`)}>
                             <strong>{brand.name}</strong>
-                            <span>{brand.country}</span>
+                            <span>{brand.statusNo === 1 ? 'ACTIVE BRAND' : 'INACTIVE BRAND'}</span>
                         </button>
 
                         <div className="brand-value">
@@ -114,8 +123,8 @@ function AdminBrandListPage() {
                         </div>
 
                         <div className="brand-status">
-                            <i className={brand.status === 'ACTIVE' ? 'active' : 'inactive'}></i>
-                            <span>{brand.status}</span>
+                            <i className={brand.statusNo === 1 ? 'active' : 'inactive'}></i>
+                            <span>{brand.statusNo === 1 ? 'ACTIVE' : 'INACTIVE'}</span>
                         </div>
 
                         <div className="brand-actions">
@@ -125,7 +134,7 @@ function AdminBrandListPage() {
                     </div>
                 ))}
 
-                {filteredBrands.length === 0 && <div className="brand-empty">검색 결과가 없습니다.</div>}
+                {!loading && !error && filteredBrands.length === 0 && <div className="brand-empty">검색 결과가 없습니다.</div>}
             </div>
         </section>
     );
