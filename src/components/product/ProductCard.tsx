@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { addWishlist, checkWishlist, deleteWishlist } from '../../api/wishlistApi';
 import type { Product } from '../../ts/product';
+import { getImageUrl } from '../../ts/imageUrl';
 
 import './ProductCard.css';
 
@@ -72,7 +73,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     <article className="product-card">
       {/* 상품 이미지 */}
       <Link to={`/products/${product.id}`} className="product-card-image">
-        <img src={product.image} alt={product.name} />
+        <img src={getImageUrl(product.image)} alt={product.name} />
       </Link>
 
       {/* 실제 DB 찜 버튼 */}

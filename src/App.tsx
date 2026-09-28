@@ -3,6 +3,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import AdminLayout from './admin/AdminLayout';
 import AdminDashboardPage from './admin/pages/Dashboard/AdminDashboardPage';
 import AdminBrandListPage from './admin/pages/Brand/AdminBrandListPage';
+import AdminBrandDetailPage from './admin/pages/Brand/AdminBrandDetailPage';
+import AdminProductCreatePage from './admin/pages/Product/AdminProductCreatePage';
 
 import Home from './pages/HomePage/HomePage';
 import ProductDetailPage from './pages/ProductDetailPage/ProductDetailPage';
@@ -22,6 +24,8 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboardPage />} />
           <Route path="brands" element={<AdminBrandListPage />} />
+          <Route path="brands/:no" element={<AdminBrandDetailPage />} />
+          <Route path="products/create" element={<AdminProductCreatePage />} />
         </Route>
 
         {/* 상품 상세 페이지 */}

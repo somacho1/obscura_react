@@ -52,6 +52,7 @@ export interface ProductResponse {
     categoryName: string;
     name: string;
     detail: string | null;
+    sizeDetail: string | null;
     price: number;
     discountRate: number;
     salePrice: number;
@@ -77,6 +78,7 @@ export interface ProductDetailResponse {
     categoryName: string;
     name: string;
     detail: string | null;
+    sizeDetail: string | null;
     price: number;
     discountRate: number;
     salePrice: number;
@@ -87,5 +89,23 @@ export interface ProductDetailResponse {
 
     options: ProductDetailOption[];
 
+    statusNo: number;
+}
+
+// 관리자 선택 상품 일괄 할인 요청
+export interface ProductBulkDiscountRequest {
+    productNos: number[];
+    discountRate: number;
+}
+
+// 관리자 상품 등록 요청
+export interface ProductCreateRequest {
+    bno: number;
+    cno: number;
+    name: string;
+    detail: string;
+    sizeDetail: string | null;
+    price: number;
+    discountRate: number;
     statusNo: number;
 }

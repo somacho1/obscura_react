@@ -1,7 +1,4 @@
-import type {
-    ProductDetailResponse,
-    ProductResponse,
-} from '../ts/product';
+import type { ProductBulkDiscountRequest, ProductCreateRequest, ProductDetailResponse, ProductResponse } from '../ts/product';
 
 const PRODUCT_API_URL = 'http://localhost:9101/api/products';
 
@@ -19,6 +16,16 @@ export async function getActiveProducts(): Promise<ProductResponse[]> {
 
     return data;
 }
+
+
+// 브랜드별 상품 목록 조회
+// 관리자 브랜드 상세 페이지에서 해당 브랜드에 등록된 상품들을 조회할 때 사용
+export async function getProductsByBrand(brandNo: number): Promise<ProductResponse[]> {
+    const response = await fetch(`${PRODUCT_API_URL}/brand/${brandNo}`);
+    if (!response.ok) throw new Error(`브랜드 상품 조회 실패: ${response.status}`);
+    return response.json();
+}
+
 
 /**
  * 상품 상세페이지 조회
@@ -46,4 +53,34 @@ export async function getProductDetail(
         await response.json();
 
     return data;
+}
+
+// 관리자 선택 상품 할인율 일괄 적용
+export async function updateBulkDiscount(data: ProductBulkDiscountRequest): Promise<void> {
+    const response = await fetch(`${PRODUCT_API_URL}/bulk-discount`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message || `할인율 적용 실패: ${response.status}`);
+    }
+}
+
+// 관리자 상품 등록
+export async function createProduct(data: ProductCreateRequest): Promise<ProductResponse> {
+    const response = await fetch(PRODUCT_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message || `상품 등록 실패: ${response.status}`);
+    }
+
+    return response.json();
 }
