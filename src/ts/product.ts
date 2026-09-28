@@ -1,36 +1,4 @@
-// 기존 화면에서 사용하는 상품 데이터 구조
-export interface Product {
-  id: number;
-  brand: string;
-  name: string;
-  price: number;
-  image: string;
-  category: 'MEN' | 'WOMEN' | 'SHOES' | 'ACC';
-
-  // 일부 상품에만 존재하는 선택값
-  comment?: string;
-  discountRate?: number;
-  originalPrice?: number;
-}
-
-// Spring Boot PRODUCT API에서 받아오는 상품 데이터 구조
-export interface ProductResponse {
-  no: number;
-  bno: number;
-  brandName: string;
-  cno: number;
-  categoryName: string;
-  name: string;
-  detail: string | null;
-  price: number;
-  discountRate: number;
-  salePrice: number;
-  mainImageUrl: string | null;
-  statusNo: number;
-  cdate: string;
-}
-
-// 기존 상품카드에서 사용하는 타입
+// 기존 화면의 상품 카드에서 사용하는 데이터
 export interface Product {
     id: number;
     brand: string;
@@ -43,9 +11,10 @@ export interface Product {
     originalPrice?: number;
 }
 
-// 백엔드 상품 목록 API 응답 타입
+// Spring Boot 상품 목록·기본 조회 API 응답
 export interface ProductResponse {
     no: number;
+    code: string; 
     bno: number;
     brandName: string;
     cno: number;
@@ -61,7 +30,7 @@ export interface ProductResponse {
     cdate: string;
 }
 
-// 상품 상세페이지 옵션
+// 상품 상세페이지의 색상·사이즈 옵션
 export interface ProductDetailOption {
     optionNo: number;
     color: string | null;
@@ -72,6 +41,7 @@ export interface ProductDetailOption {
 // 상품 상세페이지 API 응답
 export interface ProductDetailResponse {
     no: number;
+    code: string; // CODE가 없는 기존 상품은 화면에서 숨깁니다.
     bno: number;
     brandName: string;
     cno: number;
@@ -82,17 +52,14 @@ export interface ProductDetailResponse {
     price: number;
     discountRate: number;
     salePrice: number;
-
     mainImageUrl: string | null;
     subImages: string[];
     detailImages: string[];
-
     options: ProductDetailOption[];
-
     statusNo: number;
 }
 
-// 관리자 선택 상품 일괄 할인 요청
+// 관리자 선택 상품의 할인율 일괄 변경 요청
 export interface ProductBulkDiscountRequest {
     productNos: number[];
     discountRate: number;
@@ -102,6 +69,7 @@ export interface ProductBulkDiscountRequest {
 export interface ProductCreateRequest {
     bno: number;
     cno: number;
+    code: string; // 신규 상품 등록 시 필수
     name: string;
     detail: string;
     sizeDetail: string | null;

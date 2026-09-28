@@ -1,118 +1,58 @@
 import './Footer.css';
 
-// 기존 OBSCURA 로고
-import logo from '../../../assets/images/obscura/logo.svg';
+// 공식 SNS 주소
+const INSTAGRAM_URL = 'https://www.instagram.com/obscura_store.kr/';
+const KAKAO_CHANNEL_URL = 'https://pf.kakao.com/_xdKxbxhC';
 
 export default function Footer() {
-
-  // 페이지 최상단으로 부드럽게 이동
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
-  };
+  // TOP 버튼을 누르면 페이지 맨 위로 이동합니다.
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   return (
-    <footer className="site-footer">
+    <>
+      <footer className="site-footer">
+        <div className="footer-inner">
+          <button type="button" className="footer-top" onClick={scrollToTop} aria-label="페이지 맨 위로 이동">TOP ↑</button>
 
-      <div className="footer-inner">
-
-        {/* =========================
-            상단
-            로고 / 위로가기
-        ========================= */}
-        <div className="footer-head">
-
-          <a href="/" className="footer-logo" aria-label="OBSCURA 홈">
-            <img src={logo} alt="OBSCURA" />
-          </a>
-
-          {/* 텍스트 없이 화살표만 사용하는 TOP 버튼 */}
-          <button
-            type="button"
-            className="footer-top-button"
-            onClick={scrollToTop}
-            aria-label="페이지 상단으로 이동"
-          >
-            TOP
-          </button>
-
-        </div>
-
-        {/* =========================
-            주요 정보
-        ========================= */}
-        <div className="footer-content">
-
-          {/* 고객센터 */}
-          <div className="footer-customer">
-            <p className="footer-label">CUSTOMER SERVICE</p>
-
-            <a href="tel:025120910" className="footer-phone">
-              02-512-0910
-            </a>
-
-            <p className="footer-hours">
-              MON - FRI 13:00 - 17:00
-              <br />
-              SAT / SUN / HOLIDAY OFF
-            </p>
-
-            <a
-              href="mailto:cs@obscura-store.com"
-              className="footer-email"
-            >
-              cs@obscura-store.com
-            </a>
-          </div>
-
-          {/* 이용안내 */}
-          <nav className="footer-nav" aria-label="Footer 메뉴">
-            <p className="footer-label">INFORMATION</p>
-
-            <ul>
-              <li><a href="#">TERMS OF USE</a></li>
-              <li><a href="#">PRIVACY POLICY</a></li>
-              <li><a href="#">SERVICE</a></li>
-              <li><a href="#">MEMBERSHIP</a></li>
-            </ul>
+          {/* 원본 사이트의 간결한 메뉴 구성 */}
+          <nav className="footer-menu" aria-label="푸터 메뉴">
+            <a href="#">TERMS OF USE</a>
+            <a href="#">PRIVACY POLICY</a>
+            <a href="#">SERVICE</a>
+            <a href="#">MEMBERSHIP</a>
           </nav>
 
-          {/* SNS */}
-          <div className="footer-follow">
-            <p className="footer-label">FOLLOW</p>
-
-            <div className="footer-follow-links">
-              <a href="#">INSTAGRAM</a>
-              <a href="#">FACEBOOK</a>
-              <a href="#">Q&amp;A</a>
-            </div>
+          {/* 사업자 정보 */}
+          <div className="footer-business">
+            <p>(주)이공오</p>
+            <p><span>B. 532-87-01598</span><span>C. KIM JOON HYUN</span></p>
+            <p>A. 36, Seongsui-ro 24-gil, Seongdong-gu, Seoul</p>
+            <p><span>L. 2020-서울성동-03012</span><span>T. 02-512-0910</span><span>E. cs@obscura-store.com</span></p>
           </div>
 
-        </div>
-
-        {/* =========================
-            회사 정보
-        ========================= */}
-        <div className="footer-company">
-
-          <div className="footer-company-info">
-            <span>(주)이공오</span>
-            <span>B. 532-87-01598</span>
-            <span>C. KIM JUN HYUN</span>
-            <span>A. 36, Seongsui-ro 24-gil, Seongdong-gu, Seoul</span>
-            <span>L. 2020-서울성동-03012</span>
+          {/* SNS 아이콘을 누르면 공식 계정이 새 탭으로 열립니다. */}
+          <div className="footer-social" aria-label="공식 SNS">
+            <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="OBSCURA 인스타그램">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="2.5" y="2.5" width="19" height="19" rx="5" />
+                <circle cx="12" cy="12" r="4.2" />
+                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+              </svg>
+            </a>
+            <a href={KAKAO_CHANNEL_URL} target="_blank" rel="noopener noreferrer" aria-label="OBSCURA 카카오채널">
+              <svg viewBox="0 0 28 28" aria-hidden="true">
+                <path fill="currentColor" d="M14 2C7.4 2 2 6.2 2 11.5c0 3.3 2.1 6.2 5.3 7.9L6 25l6.3-4.1c.6.1 1.1.1 1.7.1 6.6 0 12-4.2 12-9.5S20.6 2 14 2Z" />
+                <text x="14" y="15.5" fill="#fff" fontSize="8.5" fontWeight="700" textAnchor="middle" fontFamily="Arial, sans-serif">Ch</text>
+              </svg>
+            </a>
           </div>
 
-          <span className="footer-copy">
-            © OBSCURA. ALL RIGHTS RESERVED.
-          </span>
-
+          <p className="footer-copyright">© 2023 obscura</p>
         </div>
+      </footer>
 
-      </div>
-
-    </footer>
+      {/* 추후 AI 챗봇을 구현하면 이 버튼의 동작을 변경하면 됩니다. */}
+      <a className="footer-qa" href="mailto:cs@obscura-store.com?subject=OBSCURA%20Q%26A" aria-label="Q&A 이메일 문의">Q &amp; A</a>
+    </>
   );
 }

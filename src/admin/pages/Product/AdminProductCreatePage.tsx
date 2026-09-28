@@ -35,6 +35,7 @@ function AdminProductCreatePage() {
 
     const [brandNo, setBrandNo] = useState(brandParam ? Number(brandParam) : 0);
     const [categoryNo, setCategoryNo] = useState(0);
+    const [code, setCode] = useState('');
     const [name, setName] = useState('');
     const [detail, setDetail] = useState('');
 
@@ -336,6 +337,11 @@ function AdminProductCreatePage() {
             return;
         }
 
+        if (!code.trim()) {
+            alert('상품 코드를 입력해주세요.');
+            return;
+        }
+
         if (!name.trim()) {
             alert('상품명을 입력해주세요.');
             return;
@@ -366,6 +372,7 @@ function AdminProductCreatePage() {
             const createdProduct = await createProduct({
                 bno: brandNo,
                 cno: categoryNo,
+                code: code.trim().toUpperCase(),
                 name: name.trim(),
                 detail: detail.trim(),
                 sizeDetail: sizeGuide.type === 'NONE' ? null : JSON.stringify(sizeGuide),
@@ -464,6 +471,11 @@ function AdminProductCreatePage() {
                                     <option key={category.no} value={category.no}>{category.name}</option>
                                 ))}
                             </select>
+                        </label>
+
+                        <label className="admin-product-create__field admin-product-create__field--full">
+                            <span>CODE *</span>
+                            <input type="text" value={code} onChange={(e) => setCode(e.target.value)} maxLength={50} placeholder="예: OCBDFWMWJK003OL" autoComplete="off" />
                         </label>
 
                         <label className="admin-product-create__field admin-product-create__field--full">

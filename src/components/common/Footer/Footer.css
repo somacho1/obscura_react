@@ -1,396 +1,210 @@
-/* =========================
-   FOOTER
-========================= */
+/* 화면 전체 너비를 사용하고 헤더와 같은 좌우 여백을 적용합니다. */
 .site-footer {
   width: 100%;
-  background: #f7f7f7;
+  border-top: 1px solid #888;
+  background: #fff;
   color: #111;
-  border-top: 1px solid #e7e7e7;
 }
 
 .footer-inner {
+  position: relative;
   width: 100%;
-  max-width: 1800px;
-  margin: 0 auto;
-  padding: 34px 70px 22px;
+  margin: 0;
+  padding: 42px 20px 38px;
+  box-sizing: border-box;
 }
 
-/* =========================
-   HEAD
-========================= */
-.footer-head {
+/* 메뉴 */
+.footer-menu {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 32px;
+  flex-wrap: wrap;
+  column-gap: 22px;
+  row-gap: 12px;
+  margin-bottom: 27px;
+  padding-right: 70px;
 }
 
-/* 로고 */
-.footer-logo {
+.footer-menu a {
+  color: #111;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-decoration: none;
+}
+
+.footer-menu a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* 사업자 정보 */
+.footer-business {
+  color: #444;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.footer-business p {
+  margin: 0;
+}
+
+.footer-business span {
   display: inline-block;
+  margin-right: 16px;
 }
 
-.footer-logo img {
-  display: block;
-  width: 112px;
-  height: auto;
+/* SNS */
+.footer-social {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 23px;
 }
 
-/* =========================
-   TOP BUTTON
-========================= */
-.footer-top-button {
+.footer-social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: #333;
+}
+
+.footer-social a:hover {
+  color: #ed1c24;
+}
+
+.footer-social svg {
   display: block;
-  padding: 0;
+  width: 22px;
+  height: 22px;
+}
+
+.footer-copyright {
+  margin: 23px 0 0;
+  color: #666;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* 푸터 오른쪽 위의 TOP 버튼 */
+.footer-top {
+  position: absolute;
+  top: 34px;
+  right: 20px;
+  padding: 6px 0 6px 10px;
   border: 0;
   background: transparent;
-  color: #111;
+  color: #444;
   font-size: 11px;
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: .08em;
+  font-weight: 600;
   cursor: pointer;
-  transition: opacity .2s ease;
 }
 
-.footer-top-button:hover {
-  opacity: .45;
+.footer-top:hover {
+  color: #ed1c24;
 }
 
-@media (max-width:768px) {
-  .footer-top-button {
+/* 화면 오른쪽에 고정되는 Q&A 버튼 */
+.footer-qa {
+  position: fixed;
+  right: 20px;
+  bottom: 80px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 106px;
+  min-height: 32px;
+  border-radius: 18px;
+  background: #303030;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 2px 8px #0002;
+}
+
+.footer-qa:hover {
+  background: #111;
+}
+
+.footer-top:focus-visible,
+.footer-qa:focus-visible,
+.footer-social a:focus-visible,
+.footer-menu a:focus-visible {
+  outline: 2px solid #ed1c24;
+  outline-offset: 3px;
+}
+
+/* 태블릿: 헤더와 동일한 좌우 16px */
+@media (max-width: 1024px) {
+  .footer-inner {
+    padding: 36px 16px 34px;
+  }
+
+  .footer-menu {
+    column-gap: 18px;
+  }
+
+  .footer-top {
+    right: 16px;
+  }
+}
+
+/* 모바일: 헤더와 동일한 좌우 12px */
+@media (max-width: 768px) {
+  .footer-inner {
+    padding: 32px 12px 34px;
+  }
+
+  .footer-menu {
+    column-gap: 16px;
+    row-gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .footer-menu a {
+    font-size: 11px;
+  }
+
+  .footer-business {
+    font-size: 11px;
+    line-height: 1.85;
+  }
+
+  .footer-business span {
+    margin-right: 12px;
+  }
+
+  .footer-social {
+    margin-top: 20px;
+  }
+
+  .footer-copyright {
+    margin-top: 20px;
     font-size: 10px;
   }
-}
 
-/* =========================
-   MAIN CONTENT
-========================= */
-.footer-content {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr;
-  gap: 70px;
-  padding-bottom: 30px;
-}
-
-/* 공통 제목 */
-.footer-label {
-  margin: 0 0 13px;
-  color: #222;
-  font-size: 10px;
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: .08em;
-}
-
-/* =========================
-   CUSTOMER SERVICE
-========================= */
-.footer-customer {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.footer-phone {
-  margin-bottom: 8px;
-  color: #111;
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: -.02em;
-}
-
-.footer-hours {
-  margin: 0 0 7px;
-  color: #888;
-  font-size: 10px;
-  line-height: 1.6;
-}
-
-.footer-email {
-  color: #666;
-  font-size: 10px;
-  transition: opacity .2s ease;
-}
-
-.footer-email:hover {
-  opacity: .45;
-}
-
-/* =========================
-   INFORMATION
-========================= */
-.footer-nav ul {
-  display: grid;
-  grid-template-columns: repeat(2, max-content);
-  gap: 8px 24px;
-  margin: 0;
-  padding: 0;
-}
-
-.footer-nav li {
-  list-style: none;
-}
-
-.footer-nav a {
-  color: #555;
-  font-size: 10px;
-  line-height: 1.5;
-  transition: opacity .2s ease;
-}
-
-.footer-nav a:hover {
-  opacity: .45;
-}
-
-/* =========================
-   FOLLOW
-========================= */
-.footer-follow-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 18px;
-}
-
-.footer-follow-links a {
-  color: #222;
-  font-size: 10px;
-  font-weight: 500;
-  line-height: 1.5;
-  transition: opacity .2s ease;
-}
-
-.footer-follow-links a:hover {
-  opacity: .45;
-}
-
-/* =========================
-   COMPANY
-========================= */
-.footer-company {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 30px;
-  padding-top: 16px;
-  border-top: 1px solid #dedede;
-}
-
-.footer-company-info {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 3px 14px;
-  max-width: 1000px;
-}
-
-.footer-company-info span,
-.footer-copy {
-  color: #929292;
-  font-size: 9px;
-  line-height: 1.5;
-}
-
-.footer-copy {
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-
-/* =================================================
-   1400px
-================================================= */
-@media (max-width:1400px) {
-  .footer-inner {
-    padding-left: 50px;
-    padding-right: 50px;
+  .footer-top {
+    top: 25px;
+    right: 12px;
   }
 
-  .footer-content {
-    gap: 45px;
+  .footer-qa {
+    right: 12px;
+    bottom: 72px;
+    width: 84px;
+    min-height: 32px;
+    font-size: 11px;
   }
 }
 
-/* =================================================
-   TABLET
-================================================= */
-@media (max-width:1024px) {
-  .footer-inner {
-    padding: 32px 30px 20px;
-  }
-
-  .footer-head {
-    margin-bottom: 28px;
-  }
-
-  .footer-logo img {
-    width: 105px;
-  }
-
-  .footer-content {
-    grid-template-columns: 1.3fr 1fr 1fr;
-    gap: 30px;
-    padding-bottom: 26px;
-  }
-
-  .footer-nav ul {
-    grid-template-columns: 1fr;
-    gap: 7px;
-  }
-
-  .footer-company {
-    align-items: flex-start;
-  }
-}
-
-/* =================================================
-   MOBILE
-================================================= */
-@media (max-width:768px) {
-  .site-footer {
-    background: #fafafa;
-  }
-
-  .footer-inner {
-    padding: 25px 15px 18px;
-  }
-
-  /* 로고와 ↑를 한 줄에 배치 */
-  .footer-head {
-    align-items: center;
-    margin-bottom: 28px;
-  }
-
-  .footer-logo img {
-    width: 96px;
-  }
-
-  .footer-top-button {
-    width: 30px;
-    height: 30px;
-    font-size: 21px;
-  }
-
-  /*
-    PC의 3열 Footer를 모바일에서 억지로 유지하지 않고
-    자연스럽게 세로로 정리
-  */
-  .footer-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    padding-bottom: 22px;
-  }
-
-  /* 고객센터 */
-  .footer-customer {
-    padding-bottom: 22px;
-  }
-
-  .footer-label {
-    margin-bottom: 11px;
-    font-size: 9px;
-  }
-
-  .footer-phone {
-    font-size: 17px;
-  }
-
-  .footer-hours,
-  .footer-email {
-    font-size: 9px;
-  }
-
-  /* 메뉴 */
-  .footer-nav {
-    padding: 18px 0;
-    border-top: 1px solid #e5e5e5;
-  }
-
-  .footer-nav ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px 18px;
-  }
-
-  .footer-nav a {
-    font-size: 9px;
-  }
-
-  /* SNS */
-  .footer-follow {
-    padding-top: 18px;
-    border-top: 1px solid #e5e5e5;
-  }
-
-  .footer-follow-links {
-    gap: 8px 18px;
-  }
-
-  .footer-follow-links a {
-    font-size: 9px;
-  }
-
-  /* 회사 정보 */
-  .footer-company {
-    display: block;
-    padding-top: 15px;
-  }
-
-  .footer-company-info {
-    gap: 2px 10px;
-    margin-bottom: 10px;
-  }
-
-  .footer-company-info span,
-  .footer-copy {
-    font-size: 8px;
-  }
-}
-
-/* =================================================
-   SMALL MOBILE
-================================================= */
-@media (max-width:480px) {
-  .footer-inner {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  .footer-head {
-    margin-bottom: 25px;
-  }
-
-  .footer-logo img {
-    width: 92px;
-  }
-
-  .footer-content {
-    padding-bottom: 20px;
-  }
-
-  .footer-customer {
-    padding-bottom: 20px;
-  }
-
-  .footer-nav {
-    padding: 16px 0;
-  }
-
-  .footer-follow {
-    padding-top: 16px;
-  }
-
-  .footer-nav ul {
-    gap: 6px 13px;
-  }
-
-  .footer-follow-links {
-    gap: 7px 14px;
-  }
-
-  .footer-company-info {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1px;
+/* 작은 휴대폰에서는 메뉴를 두 줄로 정리합니다. */
+@media (max-width: 380px) {
+  .footer-menu {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    column-gap: 18px;
   }
 }

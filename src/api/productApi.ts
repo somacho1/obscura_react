@@ -84,3 +84,36 @@ export async function createProduct(data: ProductCreateRequest): Promise<Product
 
     return response.json();
 }
+
+// 관리자 상품 단건 조회
+export async function getProduct(productNo: number): Promise<ProductResponse> {
+    const response = await fetch(`${PRODUCT_API_URL}/${productNo}`);
+    if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message || `상품 조회 실패: ${response.status}`);
+    }
+    return response.json();
+}
+
+// 관리자 상품 수정
+export async function updateProduct(productNo: number, data: ProductCreateRequest): Promise<ProductResponse> {
+    const response = await fetch(`${PRODUCT_API_URL}/${productNo}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message || `상품 수정 실패: ${response.status}`);
+    }
+    return response.json();
+}
+
+// 관리자 상품 비활성화
+export async function disableProduct(productNo: number): Promise<void> {
+    const response = await fetch(`${PRODUCT_API_URL}/${productNo}`, { method: 'DELETE' });
+    if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message || `상품 비활성화 실패: ${response.status}`);
+    }
+}
