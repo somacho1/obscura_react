@@ -9,10 +9,14 @@ import AdminProductCreatePage from './admin/pages/Product/AdminProductCreatePage
 import AdminProductEditPage from './admin/pages/Product/AdminProductEditPage';
 
 import Home from './pages/HomePage/HomePage';
+import ProductListPage from './pages/ProductListPage/ProductListPage';
 import ProductDetailPage from './pages/ProductDetailPage/ProductDetailPage';
 import CartPage from './pages/CartPage/CartPage';
 import LoginPage from './pages/LoginPage/LoginPage';
 import JoinPage from './pages/JoinPage/JoinPage';
+import OrderPage from './pages/OrderPage/OrderPage';
+
+
 
 function App() {
   return (
@@ -21,10 +25,12 @@ function App() {
         {/* 사용자 페이지: SiteLayout이 공통 Header와 Footer를 표시합니다. */}
         <Route element={<SiteLayout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/products" element={<ProductListPage />} />
           <Route path="/products/:productNo" element={<ProductDetailPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/join" element={<JoinPage />} />
+          <Route path="/order" element={<OrderPage />} />
         </Route>
 
         {/* 관리자 페이지: 기존 AdminLayout을 별도로 사용합니다. */}

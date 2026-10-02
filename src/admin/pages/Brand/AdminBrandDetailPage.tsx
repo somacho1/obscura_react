@@ -11,7 +11,7 @@ function AdminBrandDetailPage() {
     const navigate = useNavigate();
     const { no } = useParams();
 
-    // 브랜드 정보
+    // 브랜드 정보npm 
     const [brand, setBrand] = useState<BrandResponse | null>(null);
 
     // 해당 브랜드 상품 목록

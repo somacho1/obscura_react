@@ -14,7 +14,7 @@ export interface Product {
 // Spring Boot 상품 목록·기본 조회 API 응답
 export interface ProductResponse {
     no: number;
-    code: string; 
+    code: string;
     bno: number;
     brandName: string;
     cno: number;
@@ -76,4 +76,28 @@ export interface ProductCreateRequest {
     price: number;
     discountRate: number;
     statusNo: number;
+}
+
+// 상품 목록 정렬값: 백엔드에서 허용하는 값과 맞춥니다.
+export type ProductSortType = 'LATEST' | 'PRICE_LOW' | 'PRICE_HIGH';
+
+// Spring Boot 상품 페이징 API 응답
+export interface ProductPageResponse {
+    content: ProductResponse[]; // 현재 페이지의 상품
+    totalElements: number;      // 조건에 맞는 전체 상품 수
+    totalPages: number;         // 전체 페이지 수
+    number: number;             // 서버 페이지 번호: 0부터 시작
+    size: number;               // 페이지당 상품 수
+    first: boolean;             // 첫 페이지 여부
+    last: boolean;              // 마지막 페이지 여부
+}
+
+// 상품 목록 조회 조건: 검색·카테고리·정렬·페이징
+export interface ProductPageRequest {
+    cno?: number;              // 생략하면 전체 카테고리
+    saleOnly?: boolean;        // 할인 상품만 조회
+    page?: number;             // 요청 페이지: 1부터 시작
+    size?: number;             // 기본 24개
+    sort?: ProductSortType;
+    keyword?: string;          // 상품명·브랜드명·CODE 검색어
 }

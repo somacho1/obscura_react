@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useLayoutEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Navigation } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -70,6 +70,15 @@ export default function ProductDetailPage() {
     const [liked, setLiked] = useState(false);
     const [wishlistLoading, setWishlistLoading] = useState(false);
     const [activeTab, setActiveTab] = useState<DetailTab>('INFO');
+
+    // 상품 상세 진입 시 화면이 표시되기 전에 맨 위로 이동합니다.
+    useLayoutEffect(() => {
+        const root = document.documentElement;
+        const previousBehavior = root.style.scrollBehavior;
+        root.style.scrollBehavior = 'auto';
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+        root.style.scrollBehavior = previousBehavior;
+    }, [productNo]);
 
     // 상품이 바뀌면 이전 상품에서 선택한 색상·옵션을 초기화합니다.
     useEffect(() => {
@@ -169,10 +178,13 @@ export default function ProductDetailPage() {
                     alert(`${item.color ? `${item.color} / ` : ''}${item.sizeValue || 'ONE SIZE'} 추가 실패: ${message}`);
                     break;
                 }
+                
             }
 
             if (addedOptionNos.length > 0) {
                 setSelectedItems((items) => items.filter((item) => !addedOptionNos.includes(item.optionNo)));
+                // 저장 성공 후 Header 개수를 갱신합니다.
+                window.dispatchEvent(new Event('cart-updated'));
                 alert(`${addedOptionNos.length}개 옵션을 장바구니에 담았습니다.${addedOptionNos.length < selectedItems.length ? '\n담지 못한 옵션은 선택 목록에 남겨두었습니다.' : ''}`);
             }
         } finally {

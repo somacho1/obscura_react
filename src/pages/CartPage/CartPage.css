@@ -316,3 +316,75 @@
         padding: 22px;
     }
 }
+
+/* 전체 선택과 선택 개수 */
+.cart-selection-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0 0 18px;
+    border-bottom: 1px solid #ddd;
+    color: #777;
+    font-size: 12px;
+}
+
+.cart-selection-bar label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #111;
+    cursor: pointer;
+}
+
+.cart-selection-bar input,
+.cart-item-select input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: #111;
+    cursor: pointer;
+}
+
+.cart-selection-bar input:disabled,
+.cart-item-select input:disabled {
+    cursor: not-allowed;
+}
+
+/* 상품 선택 체크박스: 기존 이미지·정보 배치를 유지합니다. */
+.cart-item {
+    position: relative;
+    padding-left: 28px;
+}
+
+.cart-item-select {
+    position: absolute;
+    top: 24px;
+    left: 0;
+    display: inline-flex;
+    align-items: center;
+}
+
+.cart-selection-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.cart-checkout:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .cart-selection-bar {
+        font-size: 11px;
+    }
+
+    .cart-item {
+        padding-left: 24px;
+    }
+}

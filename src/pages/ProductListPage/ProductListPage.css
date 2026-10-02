@@ -1,0 +1,295 @@
+/* 공통 SiteLayout 안에서 사용합니다. Header 높이 보정은 공통 레이아웃이 담당합니다. */
+.product-list-page {
+    width: 100%;
+    min-height: 60vh;
+    padding: 52px 40px 90px;
+    box-sizing: border-box;
+    background: #fff;
+    color: #111;
+}
+
+/* 제목과 카테고리 메뉴 */
+.product-list-heading {
+    padding-bottom: 36px;
+    text-align: center;
+}
+
+.product-list-heading__label {
+    margin: 0 0 12px;
+    color: #999;
+    font-size: 10px;
+    letter-spacing: .12em;
+}
+
+.product-list-heading h1 {
+    margin: 0;
+    font-size: 27px;
+    font-weight: 600;
+    letter-spacing: .03em;
+}
+
+.product-list-categories {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px 26px;
+    margin-top: 28px;
+}
+
+.product-list-categories a {
+    padding: 5px 0;
+    border-bottom: 1px solid transparent;
+    color: #888;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.product-list-categories a:hover,
+.product-list-categories a.active {
+    border-bottom-color: #111;
+    color: #111;
+}
+
+.product-list-categories a.active {
+    font-weight: 700;
+}
+
+/* 상품 수와 정렬 선택 */
+.product-list-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 18px 0;
+    border-top: 1px solid #111;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.product-list-toolbar p {
+    margin: 0;
+    color: #666;
+    font-size: 11px;
+}
+
+.product-list-sort select {
+    max-width: 150px;
+    padding: 5px 24px 5px 8px;
+    border: 0;
+    border-radius: 0;
+    background-color: #fff;
+    color: #333;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.product-list-sort select:disabled {
+    color: #999;
+    cursor: default;
+}
+
+.product-list-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* 데스크톱 4열: 기존 ProductCard의 이미지·찜·가격 디자인을 재사용합니다. */
+.product-list-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 42px 22px;
+}
+
+.product-list-grid>* {
+    min-width: 0;
+}
+
+.product-list-grid .product-card {
+    width: 100%;
+    min-width: 0;
+}
+
+/* 조회 상태와 재시도 버튼 */
+.product-list-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    min-height: 300px;
+    padding: 32px 16px;
+    box-sizing: border-box;
+    color: #777;
+    font-size: 13px;
+    text-align: center;
+}
+
+.product-list-state p {
+    margin: 0;
+    line-height: 1.7;
+}
+
+.product-list-state button {
+    padding: 10px 20px;
+    border: 1px solid #111;
+    border-radius: 0;
+    background: #fff;
+    color: #111;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.product-list-state button:hover {
+    background: #111;
+    color: #fff;
+}
+
+.product-list-page a:focus-visible,
+.product-list-page button:focus-visible,
+.product-list-page select:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 4px;
+}
+
+/* 태블릿 3열 */
+@media (max-width: 1024px) {
+    .product-list-page {
+        padding: 42px 24px 72px;
+    }
+
+    .product-list-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 34px 16px;
+    }
+}
+
+/* 모바일 2열 */
+@media (max-width: 768px) {
+    .product-list-page {
+        padding: 32px 16px 60px;
+    }
+
+    .product-list-heading {
+        padding-bottom: 28px;
+    }
+
+    .product-list-heading h1 {
+        font-size: 23px;
+    }
+
+    .product-list-heading__label {
+        font-size: 9px;
+    }
+
+    .product-list-categories {
+        gap: 10px 18px;
+        margin-top: 22px;
+    }
+
+    .product-list-categories a {
+        font-size: 11px;
+    }
+
+    .product-list-toolbar {
+        margin-bottom: 18px;
+        padding: 13px 0;
+    }
+
+    .product-list-sort select {
+        font-size: 11px;
+    }
+
+    .product-list-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 28px 12px;
+    }
+
+    .product-list-state {
+        min-height: 240px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 380px) {
+    .product-list-page {
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+
+    .product-list-categories {
+        gap: 10px 13px;
+    }
+
+    .product-list-grid {
+        column-gap: 8px;
+    }
+}
+
+/* 페이지 번호: 현재 페이지는 검정 배경으로 표시합니다. */
+.product-list-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 56px;
+}
+
+.product-list-pagination button {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid #e5e5e5;
+    border-radius: 0;
+    background: #fff;
+    color: #666;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.product-list-pagination button:hover:not(:disabled) {
+    border-color: #111;
+    color: #111;
+}
+
+.product-list-pagination button.active {
+    border-color: #111;
+    background: #111;
+    color: #fff;
+}
+
+.product-list-pagination button:disabled {
+    color: #bbb;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .product-list-pagination {
+        gap: 4px;
+        margin-top: 40px;
+    }
+
+    .product-list-pagination button {
+        min-width: 32px;
+        height: 34px;
+        padding: 0 8px;
+        font-size: 11px;
+    }
+}
+
+/* 검색 결과 제목 아래 검색어 표시 */
+.product-list-search-keyword {
+    margin: 16px 0 0;
+    color: #666;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}

@@ -193,9 +193,8 @@ export default function LoginPage() {
                         FIND PASSWORD
                     </a>
 
-                    <a href="#">
-                        JOIN
-                    </a>
+                    {/* 회원가입 페이지로 이동합니다. */}
+                    <Link to="/join">JOIN</Link>
                 </div>
             </section>
         </main>

@@ -1,0 +1,436 @@
+/* 공통 Header·Footer 안에 들어가는 주문서 */
+.order-page {
+    min-height: 60vh;
+    background: #fff;
+    color: #111;
+}
+
+.order-container {
+    width: min(1320px, calc(100% - 80px));
+    margin: 0 auto;
+    padding: 60px 0 100px;
+}
+
+.order-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #111;
+}
+
+.order-heading h1 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 500;
+    letter-spacing: .03em;
+}
+
+.order-heading>span {
+    color: #999;
+    font-size: 10px;
+}
+
+/* 왼쪽 상품·배송지, 오른쪽 예상 금액 */
+.order-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 48px;
+    padding-top: 30px;
+}
+
+.order-sections {
+    min-width: 0;
+}
+
+.order-section+.order-section {
+    margin-top: 42px;
+}
+
+.order-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #ddd;
+}
+
+.order-section-heading h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.order-section-heading h2 span {
+    margin-left: 8px;
+    color: #999;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.order-section-heading>a {
+    color: #888;
+    font-size: 11px;
+    text-decoration: underline;
+}
+
+/* 주문 상품 */
+.order-product {
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 20px;
+    padding: 22px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.order-product-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: #f6f6f6;
+    color: #999;
+    text-decoration: none;
+}
+
+.order-product-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.order-product-image span {
+    font-size: 9px;
+}
+
+.order-product-info {
+    min-width: 0;
+}
+
+.order-product-brand {
+    margin: 0 0 8px;
+    color: #777;
+    font-size: 11px;
+}
+
+.order-product-name {
+    color: #111;
+    font-size: 13px;
+    line-height: 1.6;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+}
+
+.order-product-option,
+.order-product-qty {
+    margin: 10px 0 0;
+    color: #888;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.order-product-qty {
+    margin-top: 6px;
+}
+
+.order-product-price {
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* 배송지 입력 */
+.order-delivery-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 24px;
+}
+
+.order-field {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    min-width: 0;
+}
+
+.order-field label {
+    font-size: 12px;
+}
+
+.order-field label span {
+    margin-left: 3px;
+    color: #999;
+}
+
+.order-field input,
+.order-field select {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 0;
+    background: #fff;
+    color: #111;
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.order-field input:focus,
+.order-field select:focus {
+    outline: 1px solid #111;
+    outline-offset: -1px;
+}
+
+.order-field input::placeholder {
+    color: #aaa;
+}
+
+.order-field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.order-field--zipcode {
+    max-width: 180px;
+}
+
+.order-field-note {
+    margin: -8px 0 0;
+    color: #999;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.order-form-error {
+    margin: 0;
+    color: #b4232b;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+/* 예상 결제금액 */
+.order-summary {
+    position: sticky;
+    top: 86px;
+    align-self: start;
+    padding: 26px;
+    border: 1px solid #ddd;
+}
+
+.order-summary h2 {
+    margin: 0 0 28px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.order-summary-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+    font-size: 12px;
+}
+
+.order-summary-note {
+    margin: 0;
+    color: #999;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.order-summary-total {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 1px solid #111;
+}
+
+.order-summary-total span {
+    font-size: 12px;
+}
+
+.order-summary-total strong {
+    font-size: 21px;
+    font-weight: 600;
+}
+
+.order-submit {
+    width: 100%;
+    min-height: 48px;
+    margin-top: 26px;
+    border: 1px solid #111;
+    border-radius: 0;
+    background: #111;
+    color: #fff;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.order-submit:hover {
+    background: #333;
+}
+
+.order-summary-note--bottom {
+    margin-top: 12px;
+    text-align: center;
+}
+
+/* 조회 상태 */
+.order-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    min-height: 50vh;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 13px;
+}
+
+.order-state p {
+    margin: 0;
+    color: #777;
+    line-height: 1.8;
+}
+
+.order-state-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.order-state a,
+.order-state button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 16px;
+    box-sizing: border-box;
+    border: 1px solid #111;
+    border-radius: 0;
+    background: #fff;
+    color: #111;
+    font-family: inherit;
+    font-size: 12px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+    .order-container {
+        width: calc(100% - 48px);
+        padding-top: 42px;
+    }
+
+    .order-layout {
+        grid-template-columns: minmax(0, 1fr) 290px;
+        gap: 26px;
+    }
+
+    .order-summary {
+        padding: 22px;
+    }
+
+    .order-product {
+        grid-template-columns: 76px minmax(0, 1fr);
+        gap: 16px;
+    }
+
+    .order-product-price {
+        grid-column: 2;
+    }
+}
+
+@media (max-width: 768px) {
+    .order-container {
+        width: calc(100% - 32px);
+        padding: 32px 0 60px;
+    }
+
+    .order-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+        padding-bottom: 22px;
+    }
+
+    .order-heading h1 {
+        font-size: 25px;
+    }
+
+    .order-layout {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        padding-top: 24px;
+    }
+
+    .order-summary {
+        position: static;
+    }
+
+    .order-field-row {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .order-field input,
+    .order-field select {
+        font-size: 16px;
+    }
+
+    .order-section+.order-section {
+        margin-top: 32px;
+    }
+}
+
+/* 우편번호 옆 주소 검색 버튼 */
+.order-address-search {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+}
+
+.order-address-search input {
+    flex: 0 1 160px;
+    min-width: 0;
+}
+
+.order-address-search button {
+    flex-shrink: 0;
+    min-height: 44px;
+    padding: 0 18px;
+    border: 1px solid #111;
+    border-radius: 0;
+    background: #fff;
+    color: #111;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.order-address-search button:hover {
+    background: #111;
+    color: #fff;
+}
+
+.order-field input:read-only {
+    background: #f8f8f8;
+    cursor: default;
+}

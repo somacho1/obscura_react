@@ -1,4 +1,4 @@
-/* 메인·상품 페이지 공통 헤더: 높이만 문서 흐름에 남기고 내부를 상단에 고정합니다. */
+/* 공통 Header: 높이를 문서에 남기고 내부 영역을 상단에 고정합니다. */
 .site-header {
   position: relative;
   z-index: 1000;
@@ -31,11 +31,12 @@
 }
 
 .header-right-area {
+  position: relative;
   justify-content: flex-end;
   gap: 4px;
-  position: relative;
 }
 
+/* 데스크톱 상품 메뉴 */
 .header-desktop-nav {
   display: flex;
   align-items: center;
@@ -66,6 +67,7 @@
   color: #ed1c24;
 }
 
+/* 중앙 로고 */
 .header-logo {
   position: absolute;
   left: 50%;
@@ -80,6 +82,7 @@
   height: auto;
 }
 
+/* 검색·찜·마이페이지·장바구니 아이콘 */
 .header-icon-button,
 .header-icon-link {
   position: relative;
@@ -120,24 +123,30 @@
   cursor: pointer;
 }
 
+/* 장바구니 아이콘 오른쪽 위의 상품 개수 배지 */
 .header-cart-count {
   position: absolute;
-  top: 2px;
-  right: 1px;
+  top: 1px;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 15px;
-  height: 15px;
-  padding: 0 3px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
   box-sizing: border-box;
-  border-radius: 12px;
-  background: #ed1c24;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: #111;
   color: #fff;
   font-size: 9px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
   line-height: 1;
+  pointer-events: none;
 }
 
+/* 모바일 메뉴 버튼 */
 .header-menu-button {
   display: none;
   width: 40px;
@@ -169,12 +178,21 @@
   transform: translateY(-6px) rotate(-45deg);
 }
 
+.mobile-menu {
+  display: none;
+}
+
+/* 검색 패널: 결과가 화면 높이를 넘으면 패널 내부에서 스크롤합니다. */
 .search-panel {
   position: absolute;
   top: 48px;
   right: 0;
   z-index: 1100;
-  width: min(340px, calc(100vw - 24px));
+  width: min(400px, calc(100vw - 24px));
+  max-height: calc(100vh - 80px);
+  max-height: calc(100dvh - 80px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 18px;
   box-sizing: border-box;
   border: 1px solid #dedede;
@@ -192,24 +210,129 @@
   min-width: 0;
   padding: 10px 4px;
   border: 0;
+  border-radius: 0;
   outline: 0;
+  background: #fff;
   color: #111;
+  font-family: inherit;
   font-size: 13px;
 }
 
+.search-form:focus-within {
+  border-bottom-width: 2px;
+}
+
 .search-form button {
+  flex-shrink: 0;
   padding: 0 10px;
   border: 0;
   background: transparent;
   color: #111;
+  font-family: inherit;
   font-size: 12px;
   cursor: pointer;
 }
 
-.mobile-menu {
-  display: none;
+/* 검색 상태 안내 */
+.search-suggestions {
+  margin-top: 14px;
 }
 
+.search-suggestion-message {
+  margin: 0;
+  padding: 16px 0;
+  color: #888;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.search-suggestion-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.search-suggestion-list li+li {
+  border-top: 1px solid #eee;
+}
+
+/* 검색 제안 상품: 대표 이미지·브랜드·상품명·판매가격 */
+.search-suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 4px;
+  color: #111;
+  text-decoration: none;
+}
+
+.search-suggestion-item:hover {
+  background: #f7f7f7;
+}
+
+.search-suggestion-image {
+  display: flex;
+  flex: 0 0 56px;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 70px;
+  background: #f5f5f5;
+}
+
+.search-suggestion-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.search-suggestion-image span {
+  color: #aaa;
+  font-size: 8px;
+}
+
+.search-suggestion-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.search-suggestion-brand {
+  color: #777;
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+
+.search-suggestion-name {
+  overflow: hidden;
+  color: #222;
+  font-size: 12px;
+  line-height: 1.5;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-suggestion-price {
+  margin-top: 3px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* 키보드 접근 시 현재 선택한 링크·버튼을 표시합니다. */
+.site-header a:focus-visible,
+.site-header button:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+
+.search-suggestion-item:focus-visible {
+  outline-offset: -2px;
+}
+
+/* 화면에는 숨기고 스크린리더에는 제공하는 설명 */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -217,11 +340,12 @@
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
 }
 
+/* 태블릿: 모바일 메뉴를 제공하고 SHOP만 Header에 남깁니다. */
 @media (max-width: 1024px) {
   .header-inner {
     padding: 0 16px;
@@ -239,6 +363,11 @@
     display: block;
   }
 
+  .header-secondary {
+    display: none;
+  }
+
+  /* 닫힌 메뉴는 클릭·키보드 접근 대상에서 제외합니다. */
   .mobile-menu {
     position: fixed;
     top: 56px;
@@ -247,7 +376,9 @@
     z-index: 999;
     display: block;
     max-height: calc(100vh - 56px);
+    max-height: calc(100dvh - 56px);
     overflow-y: auto;
+    overscroll-behavior: contain;
     padding: 14px 20px 24px;
     box-sizing: border-box;
     border-bottom: 1px solid #ddd;
@@ -292,10 +423,7 @@
     font-size: 16px;
   }
 
-  .header-secondary {
-    display: none;
-  }
-
+  /* 모바일 메뉴 하단 회원 기능 */
   .mobile-menu-bottom {
     display: flex;
     flex-wrap: wrap;
@@ -316,6 +444,7 @@
   }
 }
 
+/* 모바일: Header 높이 50px, 검색 패널은 화면 너비에 맞춥니다. */
 @media (max-width: 768px) {
 
   .site-header,
@@ -356,6 +485,7 @@
   .mobile-menu {
     top: 50px;
     max-height: calc(100vh - 50px);
+    max-height: calc(100dvh - 50px);
   }
 
   .search-panel {
@@ -364,5 +494,15 @@
     right: 10px;
     left: 10px;
     width: auto;
+    max-height: calc(100vh - 70px);
+    max-height: calc(100dvh - 70px);
+  }
+
+  .search-form input {
+    font-size: 16px;
+  }
+
+  .search-suggestion-item {
+    gap: 12px;
   }
 }
