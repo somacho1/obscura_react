@@ -434,3 +434,30 @@
     background: #f8f8f8;
     cursor: default;
 }
+
+/* 주문 생성 버튼 아래에 표시하는 취소 버튼 */
+.order-cancel {
+    display: block;
+    width: 100%;
+    min-height: 42px;
+    margin-top: 8px;
+    padding: 10px 16px;
+    border: 1px solid #ddd;
+    border-radius: 0;
+    background: #fff;
+    color: #666;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.order-cancel:hover:not(:disabled) {
+    border-color: #111;
+    color: #111;
+}
+
+.order-cancel:disabled,
+.order-submit:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}

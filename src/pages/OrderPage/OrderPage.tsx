@@ -3,7 +3,7 @@ import type { SyntheticEvent } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { getCartItems } from '../../api/cartApi';
 import { getMemberAddresses } from '../../api/memberAddressApi';
-import { createOrder } from '../../api/orderApi';
+import { cancelPendingOrder, createOrder } from '../../api/orderApi';
 import { useAuth } from '../../context/AuthContext';
 import type { CartItemDetailResponse } from '../../ts/cart';
 import type { MemberAddressResponse } from '../../ts/memberAddress';
@@ -53,6 +53,7 @@ export default function OrderPage() {
     const [formError, setFormError] = useState('');
     const [retryCount, setRetryCount] = useState(0);
     const [orderLoading, setOrderLoading] = useState(false);
+    const [cancelLoading, setCancelLoading] = useState(false); // 취소 요청 중 중복 클릭 방지
     const [createdOrder, setCreatedOrder] = useState<OrderResponse | null>(null);
 
     // 상태가 화면에 반영되기 전 연속으로 발생하는 제출도 막습니다.
@@ -244,6 +245,26 @@ export default function OrderPage() {
         }
     };
 
+    // 결제 대기 주문을 취소하고 서버에서 반환한 취소 상태를 표시합니다.
+    const handleCancelOrder = async () => {
+        if (!member || !createdOrder || createdOrder.statusNo !== 1 || submittingRef.current) return;
+        if (!window.confirm('주문을 취소하시겠습니까?')) return;
+
+        submittingRef.current = true;
+        setCancelLoading(true);
+        setFormError('');
+
+        try {
+            const cancelledOrder = await cancelPendingOrder(createdOrder.no, member.no);
+            setCreatedOrder(cancelledOrder);
+        } catch (err) {
+            setFormError(err instanceof Error ? err.message : '주문 취소에 실패했습니다.');
+        } finally {
+            setCancelLoading(false);
+            submittingRef.current = false;
+        }
+    };
+
     if (!member) {
         return (
             <main className="order-page">
@@ -369,17 +390,27 @@ export default function OrderPage() {
                             <span>{createdOrder ? '결제 예정금액' : '예상 결제금액'}</span>
                             <strong>{(createdOrder?.totalPrice ?? paymentTotal).toLocaleString('ko-KR')}원</strong>
                         </div>
+                        {/* 생성된 주문은 다시 제출하지 않습니다. */}
                         <button type="submit" className="order-submit" disabled={formLocked}>
-                            {orderLoading ? '주문 생성 중...' : createdOrder ? '주문 생성 완료' : '주문 생성'}
+                            {orderLoading ? '주문 생성 중...' : createdOrder?.statusNo === 0 ? '주문 취소 완료' : createdOrder ? '주문 생성 완료' : '주문 생성'}
                         </button>
 
-                        {/* 현재 단계에서는 결제 완료가 아닌 결제 대기 주문입니다. */}
+                        {/* 결제 대기 상태일 때만 취소 버튼을 표시합니다. */}
+                        {createdOrder?.statusNo === 1 && (
+                            <button type="button" className="order-cancel" disabled={cancelLoading} onClick={handleCancelOrder}>
+                                {cancelLoading ? '주문 취소 중...' : '주문 취소'}
+                            </button>
+                        )}
+
                         {createdOrder && (
                             <p className="order-summary-note order-summary-note--bottom" role="status">
                                 주문번호: {createdOrder.no}<br />
-                                주문이 생성되었습니다. 결제 대기 상태입니다.
+                                {createdOrder.statusNo === 0 ? '주문이 취소되었습니다.' : '주문이 생성되었습니다. 결제 대기 상태입니다.'}
                             </p>
                         )}
+
+                        {/* 취소 후 다시 구매할 상품은 장바구니에 새로 담습니다. */}
+                        {createdOrder?.statusNo === 0 && <Link to="/products">상품 보러 가기</Link>}
                     </aside>
                 </form>
             </div>
