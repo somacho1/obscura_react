@@ -60,3 +60,31 @@ export async function applyBankPayment(request: BankPaymentRequest): Promise<Pay
 
     return response.json();
 }
+
+// 주문번호로 저장된 결제정보를 조회합니다.
+// 무통장입금 신청 후 화면을 다시 열어도 입금자명·금액·상태를 복원할 때 사용합니다.
+export async function getPaymentByOrder(orderNo: number): Promise<PaymentResponse | null> {
+    const response = await fetch(`${PAYMENT_API_URL}/order/${orderNo}`);
+
+    // 204는 결제 미신청 상태입니다. JSON 본문이 없으므로 바로 반환합니다.
+    if (response.status === 204) return null;
+
+    // 조회 실패를 미신청 상태로 취급하지 않고 서버의 오류 안내를 전달합니다.
+    if (!response.ok) {
+        const text = await response.text();
+        let message = `결제정보 조회에 실패했습니다. (${response.status})`;
+
+        if (text.trim()) {
+            try {
+                const error: unknown = JSON.parse(text);
+                if (typeof error === 'string') message = error;
+                else if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') message = error.message;
+            } catch {
+                message = text;
+            }
+        }
+        throw new Error(message);
+    }
+
+    return response.json();
+}

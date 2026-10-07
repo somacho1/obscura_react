@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import type { OrderResponse } from '../../ts/order';
 import './OrderDetailPage.css';
 import { openTossPayment } from '../../ts/tossPayment';
-import { applyBankPayment } from '../../api/paymentApi';
+import { applyBankPayment, getPaymentByOrder } from '../../api/paymentApi';
 import type { PaymentResponse } from '../../ts/payment';
 
 // 주문 상태값에 맞는 안내 문구를 표시합니다.
@@ -42,6 +42,11 @@ export default function OrderDetailPage() {
         setError('');
         setCancelError('');
 
+        // 다른 주문의 결제수단·입금정보가 남지 않도록 초기화합니다.
+        setBankPayment(null);
+        setPaymentMethod('TOSS');
+        setDepositor('');
+
         if (memberNo === undefined) {
             setLoading(false);
             return;
@@ -60,11 +65,27 @@ export default function OrderDetailPage() {
                 const result = await getOrderDetail(no);
                 if (cancelled) return;
 
-                // 화면에서는 로그인 회원 본인의 주문만 표시합니다.
-                // 서버의 주문 조회 권한 검증도 인증 기능 구현 시 함께 적용해야 합니다.
+                // 본인 주문인지 확인한 다음 해당 주문의 결제정보를 조회합니다.
+                // 서버의 조회 권한 검증은 인증 기능 구현 시 함께 적용해야 합니다.
                 if (result.mno !== currentMemberNo) {
                     throw new Error('본인의 주문만 조회할 수 있습니다.');
                 }
+
+                const payment = await getPaymentByOrder(no);
+                if (cancelled) return;
+
+                // 다른 주문의 응답이 표시되지 않도록 주문번호를 확인합니다.
+                if (payment && payment.ordno !== no) {
+                    throw new Error('주문의 결제정보가 일치하지 않습니다.');
+                }
+
+                // 무통장입금 대기 상태이면 신청 정보를 복원하고 재신청 버튼을 숨깁니다.
+                if (payment?.method === 'BANK' && payment.statusNo === 0) {
+                    setBankPayment(payment);
+                    setPaymentMethod('BANK');
+                    setDepositor(payment.depositor ?? '');
+                }
+
                 setOrder(result);
             } catch (err) {
                 if (!cancelled) setError(err instanceof Error ? err.message : '주문 정보를 불러오지 못했습니다.');

@@ -1,6 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { SyntheticEvent } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { applyBankPayment } from '../../api/paymentApi';
+import { openTossPayment } from '../../ts/tossPayment';
 import { getCartItems } from '../../api/cartApi';
 import { getMemberAddresses } from '../../api/memberAddressApi';
 import { cancelPendingOrder, createOrder } from '../../api/orderApi';
@@ -11,6 +13,7 @@ import type { PostcodeAddress } from '../../ts/postcode';
 import type { OrderResponse } from '../../ts/order';
 import { getImageUrl } from '../../ts/imageUrl';
 import './OrderPage.css';
+
 
 // 화면에서는 예상 금액을 표시하고, 최종 금액은 서버에서 확정합니다.
 const SHIPPING_FEE = 3500;
@@ -38,6 +41,7 @@ function toDeliveryForm(address: MemberAddressResponse): DeliveryForm {
 }
 
 export default function OrderPage() {
+    const navigate = useNavigate();
     const { member } = useAuth();
     const [searchParams] = useSearchParams();
     const cartItemNosParam = searchParams.get('cartItemNos') ?? '';
@@ -55,6 +59,12 @@ export default function OrderPage() {
     const [orderLoading, setOrderLoading] = useState(false);
     const [cancelLoading, setCancelLoading] = useState(false); // 취소 요청 중 중복 클릭 방지
     const [createdOrder, setCreatedOrder] = useState<OrderResponse | null>(null);
+
+    // 기본 결제수단은 카드 / 간편결제입니다.
+    const [paymentMethod, setPaymentMethod] = useState<'TOSS' | 'BANK'>('TOSS');
+
+    // 무통장입금 선택 시 입력한 입금자명을 저장합니다.
+    const [depositor, setDepositor] = useState('');
 
     // 상태가 화면에 반영되기 전 연속으로 발생하는 제출도 막습니다.
     const submittingRef = useRef(false);
@@ -200,7 +210,7 @@ export default function OrderPage() {
     const shippingFee = items.length === 0 || productTotal >= FREE_SHIPPING_MIN ? 0 : SHIPPING_FEE;
     const paymentTotal = productTotal + shippingFee;
 
-    // 배송지를 검증한 뒤 선택한 상품으로 결제 대기 주문을 생성합니다.
+    // 배송지 검증 → 주문 생성 → 선택한 결제수단 연결 순서로 진행합니다.
     const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (submittingRef.current || createdOrder) return;
@@ -212,33 +222,73 @@ export default function OrderPage() {
         const zipcode = delivery.zipcode.trim();
         const address1 = delivery.address1.trim();
         const address2 = delivery.address2.trim();
+        const depositorName = depositor.trim();
 
         if (!receiver) { setFormError('받는 사람을 입력해주세요.'); return; }
         if (!/^0\d{8,10}$/.test(phone.replace(/-/g, ''))) { setFormError('올바른 연락처를 입력해주세요.'); return; }
         if (!/^\d{5}$/.test(zipcode)) { setFormError('주소 검색으로 우편번호를 입력해주세요.'); return; }
         if (!address1) { setFormError('기본주소를 입력해주세요.'); return; }
 
+        // 무통장입금은 주문 생성 전에 입금자명도 검증합니다.
+        if (paymentMethod === 'BANK') {
+            if (!depositorName) { setFormError('입금자명을 입력해주세요.'); return; }
+            if (new TextEncoder().encode(depositorName).length > 50) {
+                setFormError('입금자명이 너무 깁니다. 한글 기준 약 16자 이내로 입력해주세요.');
+                return;
+            }
+        }
+
+        // 주문 생성부터 결제 연결까지 중복 제출을 막습니다.
         submittingRef.current = true;
         setOrderLoading(true);
         setFormError('');
+
+        // 주문 생성 후 결제만 실패한 경우에도 생성된 주문을 유지합니다.
+        let savedOrder: OrderResponse | null = null;
 
         try {
             const order = await createOrder({
                 mno: member.no,
                 cartItemNos: items.map(item => item.cartItemNo),
                 delivery: {
-                    // 저장된 배송지는 백엔드에서 소유 회원을 확인하고 주소를 가져옵니다.
+                    // 저장된 배송지의 소유 회원과 주소는 서버에서 확인합니다.
                     ...(addressNo ? { madno: Number(addressNo) } : {}),
                     receiver, phone, zipcode, address1, address2,
                 },
             });
 
+            savedOrder = order;
             setCreatedOrder(order);
 
-            // 주문한 항목이 장바구니에서 제거되었으므로 Header 개수를 갱신합니다.
+            // 주문한 장바구니 항목이 제거됐으므로 Header 개수를 갱신합니다.
             window.dispatchEvent(new Event('cart-updated'));
+
+            if (paymentMethod === 'BANK') {
+                // 무통장입금 신청은 입금 대기로 저장하며 결제 완료로 처리하지 않습니다.
+                await applyBankPayment({
+                    mno: member.no,
+                    ordno: order.no,
+                    depositor: depositorName,
+                });
+
+                // 주문 상세에서 저장된 입금자명·금액·입금 대기 안내를 표시합니다.
+                navigate(`/orders/${order.no}`, { replace: true });
+            } else {
+                // 서버에서 확정한 주문 금액으로 Toss 결제창을 엽니다.
+                await openTossPayment(order, member.no);
+
+                // 페이지 이동 없이 결제창 호출이 종료되면 주문 상세로 안내합니다.
+                navigate(`/orders/${order.no}`, { replace: true });
+            }
         } catch (err) {
-            setFormError(err instanceof Error ? err.message : '주문 생성에 실패했습니다.');
+            const message = err instanceof Error ? err.message : '처리 중 오류가 발생했습니다.';
+
+            if (savedOrder) {
+                // 결제 중단만으로 주문을 자동 취소하거나 같은 주문을 다시 생성하지 않습니다.
+                setFormError(`주문번호 ${savedOrder.no}이 생성되었습니다. ${message} 생성된 주문의 상세 화면에서 결제를 이어가주세요.`);
+            } else {
+                setFormError(message);
+            }
         } finally {
             setOrderLoading(false);
             submittingRef.current = false;
@@ -372,6 +422,30 @@ export default function OrderPage() {
                                 {formError && <p className="order-form-error" role="alert">{formError}</p>}
                             </div>
                         </section>
+
+                        {/* 주문 생성 전에 결제수단을 선택합니다. 생성 후에는 변경을 막습니다. */}
+                        <section className="order-section">
+                            <div className="order-section-heading"><h2>결제수단</h2></div>
+                            <div className="order-payment-methods">
+                                <button type="button" className={paymentMethod === 'TOSS' ? 'active' : ''} aria-pressed={paymentMethod === 'TOSS'} disabled={formLocked} onClick={() => { setPaymentMethod('TOSS'); setFormError(''); }}>
+                                    카드 / 간편결제
+                                </button>
+                                <button type="button" className={paymentMethod === 'BANK' ? 'active' : ''} aria-pressed={paymentMethod === 'BANK'} disabled={formLocked} onClick={() => { setPaymentMethod('BANK'); setFormError(''); }}>
+                                    무통장입금
+                                </button>
+                            </div>
+
+                            {/* 무통장입금을 선택한 경우에만 입금자명을 입력합니다. */}
+                            {paymentMethod === 'BANK' && (
+                                <div className="order-bank-form">
+                                    <div className="order-field">
+                                        <label htmlFor="order-depositor">입금자명 <span>*</span></label>
+                                        <input id="order-depositor" value={depositor} maxLength={50} placeholder="입금자명을 입력해주세요." required disabled={formLocked} onChange={event => setDepositor(event.target.value)} />
+                                    </div>
+                                    <p className="order-field-note">신청 후 입금 대기 상태로 저장됩니다. 개인 프로젝트 테스트용으로 실제 송금하지 마세요.</p>
+                                </div>
+                            )}
+                        </section>
                     </div>
 
                     {/* 주문 생성 후에는 서버에서 확정한 금액을 표시합니다. */}
@@ -415,7 +489,35 @@ export default function OrderPage() {
 
                         {/* 취소 후 다시 구매할 상품은 장바구니에 새로 담습니다. */}
                         {createdOrder?.statusNo === 0 && <Link to="/products">상품 보러 가기</Link>}
-                    </aside>
+                    </aside>                        {/* 선택한 결제수단에 맞춰 주문 생성과 결제를 이어갑니다. */}
+                    <button type="submit" className="order-submit" disabled={formLocked || cancelLoading}>
+                        {orderLoading ? '주문 및 결제 연결 중...' : createdOrder?.statusNo === 0 ? '주문 취소 완료' : createdOrder ? '주문 생성 완료' : paymentMethod === 'BANK' ? '무통장입금 신청' : '결제하기'}
+                    </button>
+
+                    {/* 결제 연결이 중단되면 이미 생성된 주문에서 다시 진행합니다. */}
+                    {createdOrder?.statusNo === 1 && (
+                        <>
+                            {!orderLoading && (
+                                <Link className="order-payment-link" to={`/orders/${createdOrder.no}`}>
+                                    주문 확인 / 결제 계속하기
+                                </Link>
+                            )}
+                            <button type="button" className="order-cancel" disabled={orderLoading || cancelLoading} onClick={handleCancelOrder}>
+                                {cancelLoading ? '주문 취소 중...' : '주문 취소'}
+                            </button>
+                        </>
+                    )}
+
+                    {/* 주문 생성 후 결제가 중단돼도 주문번호를 확인할 수 있습니다. */}
+                    {createdOrder && (
+                        <p className="order-summary-note order-summary-note--bottom" role="status">
+                            주문번호: {createdOrder.no}<br />
+                            {createdOrder.statusNo === 0 ? '주문이 취소되었습니다.' : orderLoading ? '선택한 결제수단으로 연결 중입니다.' : '생성된 주문에서 결제를 이어갈 수 있습니다.'}
+                        </p>
+                    )}
+
+                    {/* 취소 후 다시 구매할 상품은 장바구니에 새로 담습니다. */}
+                    {createdOrder?.statusNo === 0 && <Link to="/products">상품 보러 가기</Link>}
                 </form>
             </div>
         </main>

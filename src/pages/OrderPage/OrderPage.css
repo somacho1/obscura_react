@@ -461,3 +461,19 @@
     opacity: .5;
     cursor: not-allowed;
 }
+
+.order-cancel:disabled,
+.order-submit:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+/* 입금자명 입력란과 안내 문구 사이의 간격입니다. */
+.order-bank-form .order-field-note {
+    margin: 12px 0 0;
+}
+
+/* 결제수단 제목 아래에 버튼이 붙지 않도록 간격을 줍니다. */
+.order-payment-methods {
+    margin-top: 24px;
+}
