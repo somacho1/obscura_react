@@ -35,3 +35,10 @@ export interface MemberResponse {
     statusNo: number;
     cdate: string;
 }
+
+// 회원정보 수정 시 변경 가능한 항목만 전달합니다.
+export interface MemberUpdateRequest {
+    name: string;
+    email: string;
+    phone: string;
+}

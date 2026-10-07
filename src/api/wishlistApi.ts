@@ -85,3 +85,14 @@ export async function deleteWishlist(
         );
     }
 }
+
+// 로그인 회원의 찜 목록을 최신 등록순으로 조회합니다.
+export async function getWishlistsByMember(memberNo: number): Promise<WishlistResponse[]> {
+    const response = await fetch(`${WISHLIST_API_URL}/member/${memberNo}`);
+
+    if (!response.ok) {
+        throw new Error(`찜 목록 조회에 실패했습니다. (${response.status})`);
+    }
+
+    return response.json();
+}

@@ -152,6 +152,57 @@ export default function OrderPage() {
         return () => { cancelled = true; };
     }, [memberNo, memberName, cartItemNosParam, retryCount]);
 
+    // 배송지 관리 탭에서 돌아오면 저장 배송지를 다시 조회합니다.
+    useEffect(() => {
+        if (memberNo === undefined || loading || formLocked) return;
+
+        let active = true;
+        let refreshing = false;
+
+        async function refreshAddresses() {
+            if (refreshing || submittingRef.current) return;
+            refreshing = true;
+
+            try {
+                const savedAddresses = await getMemberAddresses(memberNo!);
+                if (!active || submittingRef.current) return;
+
+                setAddresses(savedAddresses);
+
+                if (addressNo) {
+                    const selected = savedAddresses.find(
+                        (address) => String(address.no) === addressNo,
+                    );
+
+                    if (selected) {
+                        // 선택했던 배송지가 수정됐다면 입력값도 갱신합니다.
+                        setDelivery(toDeliveryForm(selected));
+                    } else {
+                        // 삭제된 배송지는 직접 입력으로 전환하고 기존 입력값은 유지합니다.
+                        setAddressNo('');
+                    }
+                }
+            } catch (err) {
+                if (active && !submittingRef.current) {
+                    setFormError(
+                        err instanceof Error
+                            ? err.message
+                            : '배송지 목록을 갱신하지 못했습니다.',
+                    );
+                }
+            } finally {
+                refreshing = false;
+            }
+        }
+
+        window.addEventListener('focus', refreshAddresses);
+
+        return () => {
+            active = false;
+            window.removeEventListener('focus', refreshAddresses);
+        };
+    }, [memberNo, loading, formLocked, addressNo]);
+
     // 저장된 배송지를 선택하거나 직접 입력으로 전환합니다.
     const handleAddressChange = (value: string) => {
         if (formLocked) return;
@@ -377,7 +428,18 @@ export default function OrderPage() {
 
                         {/* 주문 생성 이후에는 주문 당시 배송지 입력값을 유지합니다. */}
                         <section className="order-section">
-                            <div className="order-section-heading"><h2>배송지 정보</h2></div>
+                            <div className="order-section-heading">
+                                <h2>배송지 정보</h2>
+                                {/* 주문 중 입력값을 유지하도록 배송지 관리는 새 탭으로 엽니다. */}
+                                <Link
+                                    className="order-address-manage"
+                                    to="/mypage/addresses"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    배송지 관리 ↗
+                                </Link>
+                            </div>
                             <div className="order-delivery-form">
                                 <div className="order-field">
                                     <label htmlFor="order-address-select">배송지 선택</label>

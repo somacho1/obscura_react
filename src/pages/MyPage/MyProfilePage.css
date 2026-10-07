@@ -1,0 +1,314 @@
+/* 마이페이지 공통 글꼴과 색상 */
+.my-profile {
+    box-sizing: border-box;
+    width: min(100%, 1100px);
+    margin: 0 auto;
+    padding: 108px 32px 64px;
+    color: #242424;
+    font-family: "Noto Sans KR", sans-serif;
+}
+
+.my-profile *,
+.my-profile *::before,
+.my-profile *::after {
+    box-sizing: border-box;
+}
+
+.my-profile a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.my-profile button,
+.my-profile input {
+    font: inherit;
+}
+
+/* 페이지 제목 */
+.my-profile__heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    padding-bottom: 23px;
+    border-bottom: 1px solid #242424;
+}
+
+.my-profile__eyebrow {
+    display: block;
+    margin-bottom: 10px;
+    color: #73736e;
+    font-size: 9px;
+    letter-spacing: .16em;
+}
+
+.my-profile__heading h1 {
+    margin: 0;
+    font-size: clamp(30px, 4vw, 42px);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -.055em;
+}
+
+.my-profile__heading p {
+    margin: 9px 0 0;
+    color: #767671;
+    font-size: 11px;
+}
+
+.my-profile__heading>a {
+    padding: 8px 0;
+    color: #666660;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+/* 항목명과 입력칸을 가로로 정렬 */
+.my-profile__form {
+    width: min(100%, 760px);
+    margin: 26px auto 0;
+}
+
+.my-profile__form fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.my-profile__form label {
+    display: grid;
+    grid-template-columns: 130px minmax(0, 1fr);
+    align-items: center;
+    column-gap: 24px;
+    margin: 0;
+    padding: 20px 0;
+    border-bottom: 1px solid #e8e8e4;
+    color: #555550;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.my-profile__form input {
+    display: block;
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+    min-width: 0;
+    height: 44px;
+    margin: 0;
+    padding: 11px 14px;
+    border: 1px solid #deded9;
+    border-radius: 0;
+    background: #fff;
+    color: #242424;
+    font-size: 13px;
+    font-weight: 400;
+    transition: border-color .18s ease;
+}
+
+.my-profile__form input:hover:not([readonly]):not(:disabled) {
+    border-color: #aaa;
+}
+
+.my-profile__form input:focus {
+    border-color: #555;
+}
+
+.my-profile__form input[readonly] {
+    border-color: #e8e8e4;
+    background: #f3f3f1;
+    color: #858580;
+}
+
+.my-profile__form input::placeholder {
+    color: #aaa;
+}
+
+/* 아이디 안내는 입력칸 아래에 맞춥니다. */
+.my-profile__hint {
+    grid-column: 2;
+    margin-top: 8px;
+    color: #92928b;
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+/* 저장 버튼 */
+.my-profile__actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 22px;
+}
+
+.my-profile__button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 140px;
+    min-height: 42px;
+    padding: 11px 22px;
+    border: 1px solid #deded9;
+    background: #fff;
+    color: #242424;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color .18s ease;
+}
+
+.my-profile__button:hover:not(:disabled) {
+    background: #f0f0ee;
+}
+
+.my-profile__button--dark {
+    border-color: #242424;
+    background: #242424;
+    color: #fff;
+}
+
+.my-profile__button--dark:hover:not(:disabled) {
+    background: #444;
+}
+
+.my-profile button:disabled {
+    opacity: .5;
+    cursor: default;
+}
+
+/* 오류 및 저장 완료 안내 */
+.my-profile__message {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    width: min(100%, 760px);
+    margin: 20px auto 0;
+    padding: 14px 16px;
+    background: #f0f0ee;
+    font-size: 11px;
+}
+
+.my-profile__message p {
+    margin: 0;
+    line-height: 1.6;
+}
+
+.my-profile__message button {
+    flex-shrink: 0;
+    padding: 4px 0;
+    border: 0;
+    background: transparent;
+    color: #242424;
+    font-size: 11px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.my-profile__success {
+    margin: 16px 0 0;
+    color: #666660;
+    font-size: 11px;
+    text-align: right;
+}
+
+.my-profile__state {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    min-height: 250px;
+    color: #858580;
+    font-size: 12px;
+}
+
+.my-profile__state p {
+    margin: 0;
+}
+
+.my-profile a:focus-visible,
+.my-profile button:focus-visible,
+.my-profile input:focus-visible {
+    outline: 2px solid #242424;
+    outline-offset: 3px;
+}
+
+
+/* 저장 버튼: 너비는 간결하게, 높이는 여유 있게 */
+.my-profile__actions .my-profile__button {
+    width: auto;
+    min-width: 120px;
+    min-height: 40px;
+    padding: 10px 18px;
+    font-size: 11px;
+}
+
+
+/* 모바일에서는 항목명을 입력칸 위로 배치 */
+@media (max-width: 768px) {
+    .my-profile {
+        padding: 90px 20px 40px;
+    }
+
+    .my-profile__heading h1 {
+        font-size: 28px;
+    }
+
+    .my-profile__heading>a {
+        font-size: 10px;
+    }
+
+    .my-profile__form {
+        margin-top: 14px;
+    }
+
+    .my-profile__form label {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 9px;
+        padding: 17px 0;
+        font-size: 11px;
+    }
+
+    .my-profile__form input {
+        grid-column: 1;
+        grid-row: auto;
+        height: 43px;
+        font-size: 12px;
+    }
+
+    .my-profile__hint {
+        grid-column: 1;
+        margin-top: 0;
+    }
+
+    .my-profile__actions {
+        margin-top: 20px;
+    }
+
+    .my-profile__button {
+        width: 100%;
+    }
+
+    .my-profile__state .my-profile__button {
+        width: auto;
+    }
+
+    .my-profile__message {
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 380px) {
+    .my-profile__heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .my-profile * {
+        transition: none !important;
+    }
+}

@@ -1,0 +1,184 @@
+/* 주문 상세 배송정보 */
+.order-delivery {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid #deded9;
+    color: #242424;
+    font-family: "Noto Sans KR", sans-serif;
+}
+
+.order-delivery *,
+.order-delivery *::before,
+.order-delivery *::after {
+    box-sizing: border-box;
+}
+
+.order-delivery__heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.order-delivery__heading h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.order-delivery__heading button {
+    padding: 7px 12px;
+    border: 1px solid #deded9;
+    background: #fff;
+    color: #666660;
+    font-family: inherit;
+    font-size: 10px;
+    cursor: pointer;
+    transition: background-color .18s ease;
+}
+
+.order-delivery__heading button:hover:not(:disabled) {
+    background: #f0f0ee;
+}
+
+.order-delivery__heading button:disabled {
+    opacity: .5;
+    cursor: default;
+}
+
+.order-delivery__heading button:focus-visible {
+    outline: 2px solid #242424;
+    outline-offset: 3px;
+}
+
+.order-delivery__notice {
+    margin: 0;
+    padding: 20px 0;
+    color: #858580;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.order-delivery__list {
+    display: grid;
+    gap: 12px;
+}
+
+.order-delivery__card {
+    min-width: 0;
+    padding: 20px 24px;
+    border: 1px solid #deded9;
+}
+
+.order-delivery__card-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e8e8e4;
+}
+
+.order-delivery__card-heading h3 {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.order-delivery__status {
+    padding: 4px 9px;
+    background: #f0f0ee;
+    color: #666660;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.order-delivery__status--1 {
+    background: #e5e5e1;
+    color: #242424;
+}
+
+.order-delivery__status--2 {
+    background: #242424;
+    color: #fff;
+}
+
+/* 항목명과 값 정렬 */
+.order-delivery__details {
+    display: grid;
+    gap: 12px;
+    margin: 17px 0 0;
+}
+
+.order-delivery__details>div {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 16px;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.order-delivery__details dt {
+    color: #858580;
+}
+
+.order-delivery__details dd {
+    min-width: 0;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+/* 송장번호 옆 배송조회 버튼 */
+.order-delivery__tracking {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+}
+
+.order-delivery__tracking-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    border: 1px solid #deded9;
+    background: #fff;
+    color: #555;
+    font-size: 10px;
+    line-height: 1.5;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color .18s ease;
+}
+
+.order-delivery__tracking-link:hover {
+    background: #f0f0ee;
+}
+
+.order-delivery__tracking-link:focus-visible {
+    outline: 2px solid #242424;
+    outline-offset: 3px;
+}
+
+@media (max-width: 768px) {
+    .order-delivery {
+        margin-top: 24px;
+        padding-top: 20px;
+    }
+
+    .order-delivery__card {
+        padding: 18px 16px;
+    }
+
+    .order-delivery__details>div {
+        grid-template-columns: 85px minmax(0, 1fr);
+        gap: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .order-delivery * {
+        transition: none !important;
+    }
+}

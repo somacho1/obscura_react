@@ -519,6 +519,26 @@
     cursor: pointer;
 }
 
+/* 배송지 정보 제목 옆 관리 링크 */
+.order-section-heading .order-address-manage {
+    margin-left: auto;
+    padding: 6px 0;
+    color: #777;
+    font-size: 11px;
+    font-weight: 400;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.order-section-heading .order-address-manage:hover {
+    color: #242424;
+}
+
+.order-section-heading .order-address-manage:focus-visible {
+    outline: 2px solid #242424;
+    outline-offset: 3px;
+}
+
 /* 태블릿: 요약 영역과 상품 이미지 크기를 줄입니다. */
 @media (max-width: 1024px) {
     .order-container {

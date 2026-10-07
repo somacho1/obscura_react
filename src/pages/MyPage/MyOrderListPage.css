@@ -1,0 +1,193 @@
+/* 주문 목록 기본 영역 */
+.my-order-list {
+    width: min(1100px, 100%);
+    min-height: 60vh;
+    margin: 0 auto;
+    padding: 160px 40px 100px;
+    box-sizing: border-box;
+    color: #111;
+}
+
+.my-order-list__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #111;
+}
+
+.my-order-list__heading p {
+    margin: 0 0 10px;
+    color: #999;
+    font-size: 10px;
+    letter-spacing: .12em;
+}
+
+.my-order-list__heading h1 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 600;
+}
+
+.my-order-list__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    min-height: 38px;
+    padding: 9px 16px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 0;
+    background: #fff;
+    color: #333;
+    font-family: inherit;
+    font-size: 11px;
+    line-height: 1.6;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.my-order-list__button:hover {
+    border-color: #111;
+    background: #111;
+    color: #fff;
+}
+
+.my-order-list__button:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 3px;
+}
+
+/* 주문별 카드 */
+.my-order-list__items {
+    margin-top: 32px;
+}
+
+.my-order-list__item {
+    border: 1px solid #e5e5e5;
+}
+
+.my-order-list__item+.my-order-list__item {
+    margin-top: 20px;
+}
+
+.my-order-list__item-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+    border-bottom: 1px solid #eee;
+    background: #fafafa;
+}
+
+.my-order-list__item-heading>div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    color: #888;
+    font-size: 11px;
+}
+
+.my-order-list__item-heading>strong {
+    flex-shrink: 0;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.my-order-list__item-body {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    padding: 26px 20px;
+}
+
+.my-order-list__product {
+    flex: 1;
+    min-width: 0;
+}
+
+.my-order-list__product h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.my-order-list__product p {
+    margin: 8px 0 0;
+    color: #888;
+    font-size: 11px;
+}
+
+.my-order-list__amount {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.my-order-list__amount span {
+    color: #888;
+    font-size: 10px;
+}
+
+.my-order-list__amount strong {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* 로딩·오류·빈 목록 */
+.my-order-list__state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    min-height: 300px;
+    padding: 30px 0;
+    color: #888;
+    font-size: 12px;
+    line-height: 1.8;
+    text-align: center;
+}
+
+.my-order-list__state p {
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .my-order-list {
+        padding: 130px 20px 70px;
+    }
+
+    .my-order-list__heading h1 {
+        font-size: 22px;
+    }
+
+    .my-order-list__item-heading {
+        align-items: flex-start;
+        padding: 14px;
+    }
+
+    .my-order-list__item-heading>div {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .my-order-list__item-body {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px 14px;
+    }
+
+    .my-order-list__amount {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}

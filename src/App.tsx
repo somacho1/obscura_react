@@ -20,6 +20,11 @@ import OrderPage from './pages/OrderPage/OrderPage';
 import OrderDetailPage from './pages/OrderDetailPage/OrderDetailPage';
 import PaymentSuccessPage from './pages/PaymentPage/PaymentSuccessPage';
 import PaymentFailPage from './pages/PaymentPage/PaymentFailPage';
+import MyPage from './pages/MyPage/MyPage';
+import MyOrderListPage from './pages/MyPage/MyOrderListPage';
+import MyWishlistPage from './pages/MyPage/MyWishlistPage';
+import MyProfilePage from './pages/MyPage/MyProfilePage';
+import MyAddressPage from './pages/MyPage/MyAddressPage';
 
 
 
@@ -39,6 +44,11 @@ function App() {
           <Route path="/orders/:orderNo" element={<OrderDetailPage />} />
           <Route path="/payments/success" element={<PaymentSuccessPage />} />
           <Route path="/payments/fail" element={<PaymentFailPage />} />
+          <Route path="/mypage" element={<MyPage />} />
+          <Route path="/mypage/orders" element={<MyOrderListPage />} />
+          <Route path="/mypage/wishlist" element={<MyWishlistPage />} />
+          <Route path="/mypage/profile" element={<MyProfilePage />} />
+          <Route path="/mypage/addresses" element={<MyAddressPage />} />
         </Route>
 
         {/* 관리자 페이지: 기존 AdminLayout을 별도로 사용합니다. */}

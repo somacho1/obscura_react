@@ -7,6 +7,7 @@ import './OrderDetailPage.css';
 import { openTossPayment } from '../../ts/tossPayment';
 import { applyBankPayment, getPaymentByOrder } from '../../api/paymentApi';
 import type { PaymentResponse } from '../../ts/payment';
+import OrderDeliveryInfo from './OrderDeliveryInfo';
 
 // 주문 상태값에 맞는 안내 문구를 표시합니다.
 const ORDER_STATUS: Record<number, string> = {
@@ -233,6 +234,9 @@ export default function OrderDetailPage() {
                     <div className="order-detail-price-row"><span>배송비</span><span>{order.shippingFee === 0 ? '무료' : `${order.shippingFee.toLocaleString('ko-KR')}원`}</span></div>
                     <div className="order-detail-total"><span>총 주문 금액</span><strong>{order.totalPrice.toLocaleString('ko-KR')}원</strong></div>
                 </section>
+               
+                {/* 등록된 배송정보를 모두 표시해 부분배송도 확인할 수 있습니다. */}
+                <OrderDeliveryInfo key={order.no} orderNo={order.no} />
 
                 {cancelError && <p className="order-detail-error" role="alert">{cancelError}</p>}
                 {order.statusNo === 0 && <p className="order-detail-notice" role="status">취소된 주문입니다.</p>}

@@ -93,3 +93,18 @@ export async function getAdminOrderPage(page = 1, size = 20): Promise<AdminOrder
     return response.json();
 }
 
+// 회원번호로 주문 내역을 조회합니다.
+export async function getOrdersByMember(memberNo: number): Promise<OrderResponse[]> {
+    if (!Number.isSafeInteger(memberNo) || memberNo <= 0) {
+        throw new Error('잘못된 회원번호입니다.');
+    }
+
+    const response = await fetch(`${ORDER_API_URL}/member/${memberNo}`);
+
+    if (!response.ok) {
+        throw new Error(await getErrorMessage(response, '주문 내역을 불러오지 못했습니다.'));
+    }
+
+    return response.json();
+}
+

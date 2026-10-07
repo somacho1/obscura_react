@@ -1,0 +1,400 @@
+/* 마이페이지와 동일한 글꼴·색상 */
+.my-address {
+    box-sizing: border-box;
+    width: min(100%, 1100px);
+    margin: 0 auto;
+    padding: 108px 32px 64px;
+    color: #242424;
+    font-family: "Noto Sans KR", sans-serif;
+}
+
+.my-address *,
+.my-address *::before,
+.my-address *::after {
+    box-sizing: border-box;
+}
+
+.my-address a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.my-address button,
+.my-address input {
+    font: inherit;
+}
+
+.my-address button {
+    cursor: pointer;
+}
+
+.my-address button:disabled {
+    opacity: .45;
+    cursor: default;
+}
+
+/* 페이지 제목 */
+.my-address__heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    padding-bottom: 23px;
+    border-bottom: 1px solid #242424;
+}
+
+.my-address__eyebrow {
+    display: block;
+    margin-bottom: 10px;
+    color: #73736e;
+    font-size: 9px;
+    letter-spacing: .16em;
+}
+
+.my-address__heading h1 {
+    margin: 0;
+    font-size: clamp(32px, 4vw, 42px);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -.055em;
+}
+
+.my-address__heading p {
+    margin: 9px 0 0;
+    color: #767671;
+    font-size: 11px;
+}
+
+.my-address__heading>a {
+    padding: 8px 0;
+    color: #666660;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+/* 배송지 개수와 추가 버튼 */
+.my-address__toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 0;
+    color: #777770;
+    font-size: 11px;
+}
+
+.my-address__toolbar strong {
+    margin-left: 5px;
+    color: #242424;
+    font-weight: 500;
+}
+
+.my-address__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 9px 16px;
+    border: 1px solid #deded9;
+    background: #fff;
+    color: #242424;
+    font-size: 11px;
+    line-height: 1.5;
+    transition: background-color .18s ease;
+}
+
+.my-address__button:hover:not(:disabled) {
+    background: #f0f0ee;
+}
+
+.my-address__button--dark {
+    border-color: #242424;
+    background: #242424;
+    color: #fff;
+}
+
+.my-address__button--dark:hover:not(:disabled) {
+    background: #444;
+}
+
+/* 저장 배송지 카드 */
+.my-address__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.my-address__card {
+    min-width: 0;
+    padding: 22px 24px;
+    border: 1px solid #deded9;
+}
+
+.my-address__card-heading {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.my-address__card-heading h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+}
+
+.my-address__card-heading>span {
+    padding: 3px 7px;
+    background: #f0f0ee;
+    color: #666660;
+    font-size: 9px;
+}
+
+.my-address__receiver {
+    margin: 17px 0 8px;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.my-address__receiver span {
+    display: inline-block;
+    margin-left: 12px;
+    color: #858580;
+}
+
+.my-address__location {
+    margin: 0;
+    color: #777770;
+    font-size: 11px;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+}
+
+.my-address__card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.my-address__card-actions button {
+    padding: 7px 10px;
+    border: 1px solid #deded9;
+    background: #fff;
+    color: #666660;
+    font-size: 10px;
+    transition: background-color .18s ease;
+}
+
+.my-address__card-actions button:hover:not(:disabled) {
+    background: #f0f0ee;
+}
+
+/* 추가·수정 입력폼 */
+.my-address__form {
+    margin-bottom: 20px;
+    padding: 24px;
+    border: 1px solid #deded9;
+    background: #fafaf9;
+    scroll-margin-top: 100px;
+}
+
+.my-address__form h2 {
+    margin: 0 0 20px;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.my-address__form fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.my-address__fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.my-address__fields label {
+    display: block;
+    color: #666660;
+    font-size: 11px;
+}
+
+.my-address__fields input {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: 42px;
+    margin-top: 7px;
+    padding: 10px 12px;
+    border: 1px solid #deded9;
+    border-radius: 0;
+    background: #fff;
+    color: #242424;
+    font-size: 12px;
+}
+
+.my-address__fields input::placeholder {
+    color: #aaa;
+}
+
+.my-address__fields input[readonly] {
+    background: #f3f3f1;
+}
+
+.my-address__wide {
+    grid-column: 1 / -1;
+}
+
+.my-address__search {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    margin-top: 7px;
+}
+
+.my-address__search input {
+    flex: 0 1 130px;
+    margin-top: 0;
+}
+
+.my-address__search button {
+    padding: 0 16px;
+    border: 1px solid #deded9;
+    background: #fff;
+    color: #242424;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.my-address__search button:hover:not(:disabled) {
+    background: #f0f0ee;
+}
+
+.my-address__check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 18px;
+    color: #666660;
+    font-size: 11px;
+}
+
+.my-address__check input {
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    accent-color: #242424;
+}
+
+.my-address__form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 22px;
+}
+
+.my-address__form-actions button {
+    min-width: 80px;
+}
+
+/* 안내 메시지 */
+.my-address__message {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    background: #f0f0ee;
+    font-size: 11px;
+}
+
+.my-address__message p {
+    margin: 0;
+    line-height: 1.6;
+}
+
+.my-address__message button {
+    flex-shrink: 0;
+    padding: 4px 0;
+    border: 0;
+    background: transparent;
+    font-size: 11px;
+    text-decoration: underline;
+}
+
+.my-address__success {
+    margin: 0 0 16px;
+    color: #666660;
+    font-size: 11px;
+}
+
+.my-address__state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 250px;
+    color: #858580;
+    font-size: 12px;
+    text-align: center;
+}
+
+.my-address__state p {
+    margin: 0;
+}
+
+.my-address a:focus-visible,
+.my-address button:focus-visible,
+.my-address input:focus-visible {
+    outline: 2px solid #242424;
+    outline-offset: 3px;
+}
+
+/* 모바일에서는 배송지 카드와 입력칸을 한 열로 배치 */
+@media (max-width: 768px) {
+    .my-address {
+        padding: 90px 20px 40px;
+    }
+
+    .my-address__heading h1 {
+        font-size: 32px;
+    }
+
+    .my-address__heading>a {
+        font-size: 10px;
+    }
+
+    .my-address__list {
+        grid-template-columns: 1fr;
+    }
+
+    .my-address__card {
+        padding: 20px;
+    }
+
+    .my-address__form {
+        padding: 20px 16px;
+    }
+
+    .my-address__fields {
+        grid-template-columns: 1fr;
+    }
+
+    .my-address__message {
+        align-items: flex-start;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .my-address * {
+        transition: none !important;
+    }
+}

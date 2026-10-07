@@ -145,11 +145,19 @@ export default function Header() {
     scrollToTop();
   };
 
-  // 찜 목록·마이페이지는 해당 페이지 구현 후 실제 주소로 연결합니다.
+  // 헤더의 찜·마이페이지 아이콘에서 공통으로 사용합니다.
   const openMemberPage = (page: '찜 목록' | '마이페이지') => {
     closePanels();
-    if (!member) { navigate('/login'); scrollToTop(); return; }
-    alert(`${page} 페이지를 준비 중입니다.`);
+
+    // 비로그인 상태에서는 로그인 페이지로 이동합니다.
+    if (!member) {
+      navigate('/login');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      return;
+    }
+
+    navigate(page === '찜 목록' ? '/mypage/wishlist' : '/mypage');
+    window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
   return (
