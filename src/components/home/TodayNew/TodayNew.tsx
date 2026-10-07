@@ -5,139 +5,145 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import './TodayNew.css';
 
-// 공통 상품 카드 컴포넌트
 import ProductCard from '../../product/ProductCard';
+import { getProductPage } from '../../../api/productApi';
+import type { Product } from '../../../ts/product';
 
-// Spring Boot 상품 API
-import { getActiveProducts } from '../../../api/productApi';
-
-// 상품 타입
-import type { Product, ProductResponse } from '../../../ts/product';
+// 메인 신상품 영역에 표시할 최대 상품 수
+const TODAY_NEW_SIZE = 12;
 
 export default function TodayNew() {
-    // ProductCard에 전달할 실제 상품 데이터
     const [products, setProducts] = useState<Product[]>([]);
-
-    // 상품 로딩 여부
     const [loading, setLoading] = useState(true);
-
-    // 상품 조회 오류 메시지
     const [error, setError] = useState('');
+    const [retryCount, setRetryCount] = useState(0);
 
     useEffect(() => {
-        // Spring Boot에서 판매중인 상품 조회
+        // 화면을 벗어난 뒤 이전 요청의 결과가 반영되지 않도록 합니다.
+        let active = true;
+
         const loadProducts = async () => {
+            setLoading(true);
+            setError('');
+
             try {
-                setLoading(true);
-                setError('');
+                // 서버에서 판매 중인 상품을 등록일·상품번호 내림차순으로 조회합니다.
+                const data = await getProductPage({
+                    page: 1,
+                    size: TODAY_NEW_SIZE,
+                    sort: 'LATEST',
+                });
 
-                // GET http://localhost:9101/api/products/active
-                const data: ProductResponse[] = await getActiveProducts();
-
-                /*
-                 * 백엔드 ProductResponse를
-                 * 기존 ProductCard에서 사용하는 Product 형태로 변환
-                 */
-                const convertedProducts: Product[] = data.map((product) => ({
+                // API 응답을 기존 공통 상품 카드 형식으로 변환합니다.
+                const convertedProducts: Product[] = data.content.map(product => ({
                     id: product.no,
                     brand: product.brandName,
                     name: product.name,
-
-                    // 할인 적용된 최종 판매가격
                     price: product.salePrice,
-
-                    // PRODUCTIMAGE의 MAIN 이미지
                     image: product.mainImageUrl ?? '',
-
-                    // CATEGORY의 카테고리명
                     category: product.categoryName as Product['category'],
-
-                    // 할인율이 있을 때만 표시
-                    discountRate:
-                        product.discountRate > 0
-                            ? product.discountRate
-                            : undefined,
-
-                    // 할인 상품일 경우 기존 정가 표시
-                    originalPrice:
-                        product.discountRate > 0
-                            ? product.price
-                            : undefined,
+                    discountRate: product.discountRate > 0
+                        ? product.discountRate
+                        : undefined,
+                    originalPrice: product.discountRate > 0
+                        ? product.price
+                        : undefined,
                 }));
 
-                setProducts(convertedProducts);
-            } catch (error) {
-                console.error('TODAY NEW 상품 조회 실패:', error);
-                setError('상품을 불러오지 못했습니다.');
+                if (active) setProducts(convertedProducts);
+            } catch (err) {
+                if (active) {
+                    setError(
+                        err instanceof Error
+                            ? err.message
+                            : '신상품을 불러오지 못했습니다.',
+                    );
+                }
             } finally {
-                setLoading(false);
+                if (active) setLoading(false);
             }
         };
 
-        loadProducts();
-    }, []);
+        void loadProducts();
+
+        return () => {
+            active = false;
+        };
+    }, [retryCount]);
 
     return (
         <section className="today-new">
-            {/* TODAY NEW 제목 */}
             <div className="today-new-title">
                 <h2>TODAY NEW</h2>
             </div>
 
-            {/* 상품 Swiper 영역 */}
             <div className="today-new-slider">
-
-                {/* API 요청 중 */}
                 {loading && (
-                    <p>상품을 불러오는 중입니다.</p>
+                    <p role="status">상품을 불러오는 중입니다.</p>
                 )}
 
-                {/* API 요청 실패 */}
                 {!loading && error && (
-                    <p>{error}</p>
+                    <div role="alert">
+                        <p>{error}</p>
+                        <button
+                            type="button"
+                            onClick={() => setRetryCount(prev => prev + 1)}
+                        >
+                            다시 조회
+                        </button>
+                    </div>
                 )}
 
-                {/* API 요청 성공 */}
-                {!loading && !error && (
-                    <Swiper
-                        modules={[Navigation]}
-                        navigation={{
-                            prevEl: '.today-new-prev',
-                            nextEl: '.today-new-next',
-                        }}
-                        spaceBetween={20}
-                        slidesPerView={2}
-                        breakpoints={{
-                            769: { slidesPerView: 3 },
-                            1025: { slidesPerView: 5 },
-                            1401: { slidesPerView: 6 },
-                        }}
-                    >
-                        {/* DB 상품 데이터 개수만큼 ProductCard 자동 생성 */}
-                        {products.map((product) => (
-                            <SwiperSlide key={product.id}>
-                                <ProductCard product={product} />
-                            </SwiperSlide>
-                        ))}
-                    </Swiper>
+                {!loading && !error && products.length === 0 && (
+                    <p>등록된 신상품이 없습니다.</p>
                 )}
 
-                {/* 이전 / 다음 상품 버튼 */}
-                <button
-                    type="button"
-                    className="today-new-prev"
-                    aria-label="이전 상품"
-                >
-                    ‹
-                </button>
+                {!loading && !error && products.length > 0 && (
+                    <>
+                        <Swiper
+                            modules={[Navigation]}
+                            navigation={{
+                                prevEl: '.today-new-prev',
+                                nextEl: '.today-new-next',
+                            }}
+                            watchOverflow
+                            spaceBetween={20}
+                            slidesPerView={2}
+                            breakpoints={{
+                                769: { slidesPerView: 3 },
+                                1025: { slidesPerView: 4 },
+                                1401: { slidesPerView: 5 },
+                            }}
+                        >
+                            {products.map(product => (
+                                <SwiperSlide key={product.id}>
+                                    <ProductCard product={product} />
+                                </SwiperSlide>
+                            ))}
+                        </Swiper>
 
-                <button
-                    type="button"
-                    className="today-new-next"
-                    aria-label="다음 상품"
-                >
-                    ›
-                </button>
+                        {/* 상품 수가 부족하면 Swiper가 이동 버튼을 잠급니다. */}
+                        <button
+                            type="button"
+                            className="today-new-prev"
+                            aria-label="이전 상품"
+                        >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M14.5 4.5L7 12L14.5 19.5" stroke="currentColor" strokeWidth="1.2" />
+                            </svg>
+                        </button>
+
+                        <button
+                            type="button"
+                            className="today-new-next"
+                            aria-label="다음 상품"
+                        >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M9.5 4.5L17 12L9.5 19.5" stroke="currentColor" strokeWidth="1.2" />
+                            </svg>
+                        </button>
+                    </>
+                )}
             </div>
         </section>
     );

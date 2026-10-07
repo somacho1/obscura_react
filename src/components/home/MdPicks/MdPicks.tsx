@@ -1,49 +1,93 @@
+import { useEffect, useState } from 'react';
 import './MdPicks.css';
+
 import ProductCard from '../../product/ProductCard';
+import { getMdPicks } from '../../../api/productApi';
 import type { Product } from '../../../ts/product';
 
-// 원본 Obscura MD's Picks 상품 이미지
-import eytysImage from '../../../assets/images/obscura/s eytys.jpg';
-import birkenstockImage from '../../../assets/images/obscura/s bksk.jpg';
-import salomonImage from '../../../assets/images/obscura/s salomon.jpg';
-import klgImage from '../../../assets/images/obscura/s klg.jpg';
-import hikingImage from '../../../assets/images/obscura/s hiking.jpg';
-
-// MD's Picks 상단 태그
-const mdTags = ['SHOES', 'Hoodies', 'Outerwear', 'Hats', 'Bags'];
-
-// 원본 HTML에 있던 MD's Picks 상품 데이터
-const mdPickProducts: Product[] = [
-    { id: 201, brand: 'EYTYS', name: 'Fugu - Suede Black', price: 197600, originalPrice: 494000, discountRate: 60, image: eytysImage, category: 'SHOES' },
-    { id: 202, brand: 'BIRKENSTOCK', name: 'Kyoto VL/NU - Antique White', price: 91600, originalPrice: 229000, discountRate: 60, image: birkenstockImage, category: 'SHOES' },
-    { id: 203, brand: 'SALOMON', name: 'ODYSSEY ELMT ADVENCED CREAR - Vanilla ice', price: 210000, originalPrice: 350000, discountRate: 40, image: salomonImage, category: 'SHOES' },
-    { id: 204, brand: 'KIDS LOVE GAITE', name: 'Dave - Black Wax Leather', price: 684000, originalPrice: 1140000, discountRate: 40, image: klgImage, category: 'SHOES' },
-    { id: 205, brand: 'HIKING PATROL', name: 'HP X Diemme Movide - Deep Plum Patent', price: 300000, originalPrice: 600000, discountRate: 50, image: hikingImage, category: 'SHOES' },
-];
-
 export default function MdPicks() {
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [retryCount, setRetryCount] = useState(0);
+
+    useEffect(() => {
+        let active = true;
+
+        const loadProducts = async () => {
+            setLoading(true);
+            setError('');
+
+            try {
+                // 판매 중인 추천 상품을 관리자 지정 순서로 최대 5개 조회합니다.
+                const data = await getMdPicks(5);
+                if (!active) return;
+
+                setProducts(data.map(product => ({
+                    id: product.no,
+                    brand: product.brandName,
+                    name: product.name,
+                    price: product.salePrice,
+                    image: product.mainImageUrl ?? '',
+                    category: product.categoryName as Product['category'],
+                    discountRate: product.discountRate > 0
+                        ? product.discountRate
+                        : undefined,
+                    originalPrice: product.discountRate > 0
+                        ? product.price
+                        : undefined,
+                })));
+            } catch (err) {
+                if (active) {
+                    setError(
+                        err instanceof Error
+                            ? err.message
+                            : '추천 상품을 불러오지 못했습니다.',
+                    );
+                }
+            } finally {
+                if (active) setLoading(false);
+            }
+        };
+
+        void loadProducts();
+
+        return () => {
+            active = false;
+        };
+    }, [retryCount]);
+
     return (
         <section className="md-picks">
-            {/* 섹션 제목 */}
             <div className="md-picks-title">
                 <h2>MD’s Picks</h2>
             </div>
 
-            {/* 상품 카테고리 태그 - 실제 필터 기능은 이후 연결 */}
-            <ul className="md-picks-tags">
-                {mdTags.map((tag) => (
-                    <li key={tag}>
-                        <button type="button">#{tag}</button>
-                    </li>
-                ))}
-            </ul>
+            {loading && <p role="status">추천 상품을 불러오는 중입니다.</p>}
 
-            {/* 기존 ProductCard 공통 컴포넌트 재사용 */}
-            <div className="md-picks-products">
-                {mdPickProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                ))}
-            </div>
+            {!loading && error && (
+                <div role="alert">
+                    <p>{error}</p>
+                    <button
+                        type="button"
+                        onClick={() => setRetryCount(prev => prev + 1)}
+                    >
+                        다시 조회
+                    </button>
+                </div>
+            )}
+
+            {!loading && !error && products.length === 0 && (
+                <p>준비 중인 컬렉션입니다.</p>
+            )}
+
+            {!loading && !error && products.length > 0 && (
+                <div className="md-picks-products">
+                    {products.map(product => (
+                        <ProductCard key={product.id} product={product} />
+                    ))}
+                </div>
+            )}
         </section>
     );
 }

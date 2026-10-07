@@ -149,3 +149,30 @@ export async function disableProduct(productNo: number): Promise<void> {
         throw new Error(message || `상품 비활성화 실패: ${response.status}`);
     }
 }
+
+// 메인 MD 추천 상품 조회
+export async function getMdPicks(size = 5): Promise<ProductResponse[]> {
+    const response = await fetch(`${PRODUCT_API_URL}/md-picks?size=${size}`);
+    if (!response.ok) {
+        throw new Error((await response.text()) || 'MD 추천 상품 조회에 실패했습니다.');
+    }
+    return response.json();
+}
+
+// 관리자 MD 추천 여부·표시 순서 저장
+export async function updateMdPick(
+    productNo: number,
+    mdPickYn: 'Y' | 'N',
+    mdSeqNo: number,
+): Promise<ProductResponse> {
+    const response = await fetch(`${PRODUCT_API_URL}/${productNo}/md-pick`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mdPickYn, mdSeqNo }),
+    });
+
+    if (!response.ok) {
+        throw new Error((await response.text()) || 'MD 추천 설정 저장에 실패했습니다.');
+    }
+    return response.json();
+}

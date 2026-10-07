@@ -27,6 +27,9 @@ export interface ProductResponse {
     salePrice: number;
     mainImageUrl: string | null;
     statusNo: number;
+    // MD 추천 설정
+    mdPickYn: 'Y' | 'N';
+    mdSeqNo: number;
     cdate: string;
 }
 
@@ -78,8 +81,8 @@ export interface ProductCreateRequest {
     statusNo: number;
 }
 
-// 상품 목록 정렬값: 백엔드에서 허용하는 값과 맞춥니다.
-export type ProductSortType = 'LATEST' | 'PRICE_LOW' | 'PRICE_HIGH';
+// 최신순·가격순·판매량 기준 인기순
+export type ProductSortType = 'LATEST' | 'PRICE_LOW' | 'PRICE_HIGH' | 'POPULAR';
 
 // Spring Boot 상품 페이징 API 응답
 export interface ProductPageResponse {
@@ -101,3 +104,4 @@ export interface ProductPageRequest {
     sort?: ProductSortType;
     keyword?: string;          // 상품명·브랜드명·CODE 검색어
 }
+

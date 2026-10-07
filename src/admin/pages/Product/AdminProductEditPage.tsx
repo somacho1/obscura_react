@@ -10,6 +10,7 @@ import type { BrandResponse } from '../../../ts/brand';
 import type { CategoryResponse } from '../../../ts/category';
 import './AdminProductCreatePage.css';
 import './AdminProductEditPage.css';
+import AdminMdPickPanel from './AdminMdPickPanel';
 
 interface ProductImage { no?: number; url: string; file?: File; }
 interface ProductImageDTO { no: number; imageUrl: string; imageType: string; displayYn: string; seqNo: number; }
@@ -60,6 +61,7 @@ function AdminProductEditPage() {
     const [removedOptionNos, setRemovedOptionNos] = useState<number[]>([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [mdSaving, setMdSaving] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [error, setError] = useState('');
     const salePrice = useMemo(() => Math.floor(price * (100 - discountRate) / 100), [price, discountRate]);
@@ -207,7 +209,7 @@ function AdminProductEditPage() {
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (saving || loading) return;
+        if (saving || loading || deleting || mdSaving) return;
 
         // 기존 상품도 수정할 때 CODE를 채우도록 검사합니다.
         if (!code.trim()) {
@@ -338,7 +340,7 @@ function AdminProductEditPage() {
 
     // 서버에서 주문 이력을 확인한 뒤, 삭제 가능한 상품만 영구 삭제합니다.
     const deletePermanently = async () => {
-        if (saving || deleting || !window.confirm('이 상품을 영구 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) return;
+        if (saving || deleting || mdSaving || !window.confirm('이 상품을 영구 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) return;
         try {
             setDeleting(true);
             setError('');
@@ -528,10 +530,17 @@ function AdminProductEditPage() {
                                 </div>
                             </section>
 
+                            <AdminMdPickPanel
+                                key={no}
+                                productNo={no}
+                                disabled={saving || deleting}
+                                onBusyChange={setMdSaving}
+                            />
+
                             <div className="admin-product-create__actions">
-                                <button type="button" className="admin-product-edit__permanent" disabled={saving || deleting} onClick={() => void deletePermanently()}>영구 삭제</button>
-                                <button type="button" className="admin-product-create__cancel" disabled={saving} onClick={() => navigate(-1)}>취소</button>
-                                <button type="submit" className="admin-product-create__submit" disabled={saving}>
+                                <button type="button" className="admin-product-edit__permanent" disabled={saving || deleting || mdSaving}onClick={() => void deletePermanently()}>영구 삭제</button>
+                                <button type="button" className="admin-product-create__cancel" disabled={saving || deleting || mdSaving} onClick={() => navigate(-1)}>취소</button>
+                                <button type="submit" className="admin-product-create__submit" disabled={saving || deleting || mdSaving}>
                                     {saving ? '저장 중...' : '상품 정보 저장'}
                                 </button>
                             </div>

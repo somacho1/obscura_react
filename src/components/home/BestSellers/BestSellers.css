@@ -1,18 +1,19 @@
-/* =========================
-   BEST SELLERS 전체 영역
-========================= */
+/* BEST SELLERS 전체 영역 */
 .best-sellers {
-    width: 100%;
-    max-width: 1800px;
+    box-sizing: border-box;
     display: flex;
     gap: 40px;
+    width: 100%;
+    max-width: 1800px;
     margin: 0 auto;
     padding: 40px 70px 130px;
+    font-family: 'Noto Sans KR', sans-serif;
 }
 
-/* 왼쪽 제목 / 메뉴 */
+/* 왼쪽 제목과 메뉴 */
 .best-sellers-menu {
     flex: 0 0 260px;
+    min-width: 0;
 }
 
 .best-sellers-menu h2 {
@@ -22,33 +23,74 @@
     font-weight: 700;
 }
 
-.best-all {
+/* 전체 상품 목록으로 이동하는 ALL > 링크 */
+.best-sellers-menu .best-all {
     display: inline-block;
     color: #222;
     font-size: 13px;
     font-weight: 600;
+    text-decoration: none;
+    transition: color .2s ease;
 }
 
+/* 카테고리 메뉴 */
 .best-sellers-menu ul {
     display: flex;
     flex-direction: column;
     gap: 25px;
-    margin-top: 30px;
+    margin: 30px 0 0;
+    padding: 0;
+    list-style: none;
 }
 
-.best-sellers-menu li a {
+.best-sellers-menu ul li button {
+    display: inline-block;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
     color: #888;
+    font-family: inherit;
     font-size: 18px;
+    font-weight: 400;
+    line-height: 1.5;
+    cursor: pointer;
     transition: color .2s ease;
 }
 
-.best-sellers-menu li a:hover {
-    color: #222;
-    text-decoration: underline;
-    text-underline-offset: 6px;
+/* 선택된 카테고리 */
+.best-sellers-menu ul li button.active {
+    color: #111;
+    font-weight: 600;
 }
 
-/* 오른쪽 상품 영역 */
+/* ALL 메뉴는 선택된 상태에서도 기본 회색 */
+.best-sellers-menu ul li:first-child button {
+    color: #888;
+    font-weight: 400;
+}
+
+/* PC 메뉴 호버 */
+@media (hover: hover) {
+    .best-sellers-menu ul li button:hover {
+        color: #111;
+        text-decoration: underline;
+        text-underline-offset: 6px;
+        text-decoration-thickness: 1px;
+    }
+
+    .best-sellers-menu .best-all:hover {
+        color: #777;
+    }
+}
+
+.best-sellers-menu ul li button:focus-visible,
+.best-sellers-menu .best-all:focus-visible {
+    outline: 1px solid #111;
+    outline-offset: 4px;
+}
+
+/* 오른쪽 상품 슬라이더 */
 .best-sellers-products {
     flex: 1;
     min-width: 0;
@@ -56,10 +98,11 @@
 }
 
 .best-sellers-products .swiper {
+    width: 100%;
     padding-bottom: 32px;
 }
 
-/* 순위 숫자 */
+/* 상품 카드 위 순위 */
 .best-product {
     position: relative;
     padding-top: 27px;
@@ -72,21 +115,53 @@
     color: #222;
     font-size: 14px;
     font-weight: 500;
+    line-height: 1;
 }
 
-/* Swiper 하단 스크롤바 */
+/* 하단 스크롤바 */
 .best-sellers-products .swiper-scrollbar {
     bottom: 0;
     height: 3px;
+    border-radius: 0;
     background: #ddd;
 }
 
 .best-sellers-products .swiper-scrollbar-drag {
+    border-radius: 0;
     background: #222;
+    cursor: grab;
 }
 
-/* 태블릿 */
-@media (max-width:1024px) {
+.best-sellers-products .swiper-scrollbar-drag:active {
+    cursor: grabbing;
+}
+
+/* 로딩·오류·빈 목록 */
+.best-sellers-products>p,
+.best-sellers-products>div[role='alert'] {
+    padding: 60px 10px;
+    color: #777;
+    font-size: 13px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.best-sellers-products>div[role='alert'] p {
+    margin-bottom: 12px;
+}
+
+.best-sellers-products>div[role='alert'] button {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 0;
+    background: #fff;
+    color: #333;
+    font: inherit;
+    cursor: pointer;
+}
+
+/* 태블릿: 제목과 메뉴를 상품 위에 배치 */
+@media (max-width: 1024px) {
     .best-sellers {
         flex-direction: column;
         gap: 35px;
@@ -102,25 +177,28 @@
         font-size: 36px;
     }
 
-    .best-all {
+    .best-sellers-menu .best-all {
         display: none;
     }
 
     .best-sellers-menu ul {
         flex-direction: row;
+        flex-wrap: wrap;
         justify-content: center;
-        gap: 30px;
+        gap: 12px 30px;
         margin-top: 20px;
     }
 
-    .best-sellers-menu li a {
-        font-size: 18px;
+    .best-sellers-products {
+        flex: auto;
+        width: 100%;
     }
 }
 
 /* 모바일 */
-@media (max-width:768px) {
+@media (max-width: 768px) {
     .best-sellers {
+        gap: 28px;
         padding: 20px 15px 90px;
     }
 
@@ -129,22 +207,35 @@
     }
 
     .best-sellers-menu ul {
-        gap: 22px;
+        gap: 12px 22px;
     }
 
-    .best-sellers-menu li a {
+    .best-sellers-menu ul li button {
+        padding: 4px 0;
         font-size: 15px;
     }
 
     .best-product {
         padding-top: 23px;
     }
+
+    .best-rank {
+        font-size: 12px;
+    }
+
+    .best-sellers-products .swiper {
+        padding-bottom: 26px;
+    }
 }
 
 /* 작은 모바일 */
-@media (max-width:480px) {
+@media (max-width: 480px) {
     .best-sellers {
         padding-left: 10px;
         padding-right: 10px;
+    }
+
+    .best-sellers-menu ul {
+        column-gap: 18px;
     }
 }
