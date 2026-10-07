@@ -1,0 +1,492 @@
+/* 관리자 상세 기본 영역: 바깥 여백은 AdminLayout에서 적용합니다. */
+.admin-order-detail {
+    width: 100%;
+    min-width: 0;
+    color: #111;
+}
+
+.admin-order-detail button {
+    font-family: inherit;
+}
+
+/* 제목과 조회·목록 버튼 */
+.admin-order-detail__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #111;
+}
+
+.admin-order-detail__heading p {
+    margin: 0 0 8px;
+    color: #999;
+    font-size: 10px;
+    letter-spacing: .08em;
+}
+
+.admin-order-detail__heading h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.admin-order-detail__heading h1 span {
+    margin-left: 8px;
+    color: #888;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.admin-order-detail__heading-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.admin-order-detail__heading-actions button,
+.admin-order-detail__heading-actions a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 8px 14px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 0;
+    background: #fff;
+    color: #555;
+    font-size: 11px;
+    line-height: 1.5;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.admin-order-detail__heading-actions button:hover,
+.admin-order-detail__heading-actions a:hover {
+    border-color: #111;
+    color: #111;
+}
+
+/* 주문·상품·결제·배송을 각각 분리해서 표시합니다. */
+.admin-order-detail__section {
+    margin-top: 36px;
+}
+
+.admin-order-detail__section>h2 {
+    margin: 0;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #111;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+/* 기본정보: PC에서는 두 열, 긴 주소는 전체 너비를 사용합니다. */
+.admin-order-detail__info {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0;
+}
+
+.admin-order-detail__info>div {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 16px;
+    padding: 17px 16px;
+    border-bottom: 1px solid #eee;
+}
+
+.admin-order-detail__info dt {
+    color: #888;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.admin-order-detail__info dd {
+    min-width: 0;
+    margin: 0;
+    color: #333;
+    font-size: 12px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.admin-order-detail__info dd strong {
+    color: #111;
+    font-weight: 600;
+}
+
+.admin-order-detail__info>.admin-order-detail__info-wide {
+    grid-column: 1 / -1;
+}
+
+/* 주문 상품 표: 좁은 화면에서는 표 영역만 가로로 스크롤합니다. */
+.admin-order-detail__table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.admin-order-detail__table {
+    width: 100%;
+    min-width: 780px;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.admin-order-detail__table th {
+    padding: 14px 16px;
+    border-bottom: 1px solid #ddd;
+    background: #f7f7f7;
+    color: #777;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.admin-order-detail__table td {
+    padding: 20px 16px;
+    border-bottom: 1px solid #eee;
+    color: #555;
+    font-size: 12px;
+    line-height: 1.7;
+    vertical-align: top;
+}
+
+.admin-order-detail__table th:nth-child(1) {
+    width: 32%;
+}
+
+.admin-order-detail__table th:nth-child(2) {
+    width: 22%;
+}
+
+.admin-order-detail__table td:nth-child(n + 3) {
+    white-space: nowrap;
+}
+
+.admin-order-detail__table td strong {
+    color: #111;
+    font-weight: 600;
+}
+
+.admin-order-detail__table .admin-order-detail__product {
+    color: #111;
+    overflow-wrap: anywhere;
+}
+
+/* 입금 확인 등 관리가 필요한 상태를 안내합니다. */
+.admin-order-detail__notice {
+    margin: 18px 0 0;
+    padding: 14px 16px;
+    border: 1px solid #eadfc6;
+    background: #fbf7ef;
+    color: #8a6b2d;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.admin-order-detail__empty {
+    margin: 0;
+    padding: 24px 16px;
+    border-bottom: 1px solid #eee;
+    color: #888;
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+/* 여러 배송을 각각 구분합니다. */
+.admin-order-detail__delivery {
+    margin-top: 20px;
+    border: 1px solid #e5e5e5;
+}
+
+.admin-order-detail__delivery+.admin-order-detail__delivery {
+    margin-top: 24px;
+}
+
+.admin-order-detail__delivery h3 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0;
+    padding: 14px 16px;
+    border-bottom: 1px solid #e5e5e5;
+    background: #f7f7f7;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.admin-order-detail__delivery h3 span {
+    color: #777;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.admin-order-detail__delivery .admin-order-detail__info>div {
+    border-bottom-color: #f0f0f0;
+}
+
+/* 로딩·오류 상태 */
+.admin-order-detail__state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    min-height: 300px;
+    padding: 30px 20px;
+    box-sizing: border-box;
+    color: #888;
+    font-size: 12px;
+    line-height: 1.8;
+    text-align: center;
+}
+
+.admin-order-detail__state p {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.admin-order-detail__state button,
+.admin-order-detail__state a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 8px 16px;
+    box-sizing: border-box;
+    border: 1px solid #111;
+    border-radius: 0;
+    background: #fff;
+    color: #111;
+    font-size: 11px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.admin-order-detail button:focus-visible,
+.admin-order-detail a:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 3px;
+}
+
+/* 입금 대기 안내와 관리 버튼을 한 줄로 배치합니다. */
+.admin-order-detail__notice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.admin-order-detail__notice p {
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* 입금 확인 버튼은 작고 명확하게 표시합니다. */
+.admin-order-detail__confirm-button {
+    flex-shrink: 0;
+    min-height: 36px;
+    padding: 8px 16px;
+    border: 1px solid #111;
+    border-radius: 0;
+    background: #111;
+    color: #fff;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.admin-order-detail__confirm-button:hover:not(:disabled) {
+    background: #333;
+}
+
+.admin-order-detail__confirm-button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.admin-order-detail__confirm-error {
+    margin: 12px 0 0;
+    color: #b4232b;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* 출고 입력란과 처리 버튼 */
+.admin-order-detail__shipping-form {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 20px 16px;
+    background: #fafafa;
+}
+
+.admin-order-detail__shipping-form label {
+    display: flex;
+    flex: 1 1 180px;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.admin-order-detail__shipping-form label span {
+    color: #777;
+    font-size: 11px;
+}
+
+.admin-order-detail__shipping-form input {
+    width: 100%;
+    min-height: 38px;
+    padding: 9px 12px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 0;
+    background: #fff;
+    color: #111;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.admin-order-detail__shipping-form input:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 2px;
+}
+
+.admin-order-detail__shipping-form input:disabled {
+    background: #f2f2f2;
+    color: #888;
+}
+
+.admin-order-detail__shipping-form button {
+    min-height: 38px;
+}
+
+.admin-order-detail__heading-actions button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+/* 배송 완료 안내와 버튼 */
+.admin-order-detail__delivery-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 16px;
+    background: #fafafa;
+}
+
+.admin-order-detail__delivery-actions p {
+    margin: 0;
+    color: #777;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+    .admin-order-detail__delivery-actions {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px 12px;
+    }
+
+    .admin-order-detail__delivery-actions button {
+        width: 100%;
+    }
+}
+
+/* 모바일에서는 입력란과 버튼을 세로로 배치합니다. */
+@media (max-width: 768px) {
+    .admin-order-detail__shipping-form {
+        align-items: stretch;
+        flex-direction: column;
+        padding: 16px 12px;
+    }
+
+    .admin-order-detail__shipping-form label {
+        flex: none;
+        width: 100%;
+    }
+
+    .admin-order-detail__shipping-form button {
+        width: 100%;
+    }
+}
+
+/* 모바일에서는 안내 아래에 버튼을 배치합니다. */
+@media (max-width: 768px) {
+    .admin-order-detail__notice {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+
+/* 태블릿: 정보 라벨의 너비와 간격을 줄입니다. */
+@media (max-width: 1024px) {
+    .admin-order-detail__info>div {
+        grid-template-columns: 90px minmax(0, 1fr);
+        gap: 12px;
+        padding: 16px 12px;
+    }
+}
+
+/* 모바일: 제목 아래 버튼을 배치하고 기본정보를 한 열로 표시합니다. */
+@media (max-width: 768px) {
+    .admin-order-detail__heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 16px;
+        padding-bottom: 20px;
+    }
+
+    .admin-order-detail__heading h1 {
+        font-size: 20px;
+    }
+
+    .admin-order-detail__heading h1 span {
+        font-size: 16px;
+    }
+
+    .admin-order-detail__section {
+        margin-top: 28px;
+    }
+
+    .admin-order-detail__section>h2 {
+        font-size: 14px;
+    }
+
+    .admin-order-detail__info {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .admin-order-detail__info>div {
+        grid-template-columns: 88px minmax(0, 1fr);
+        padding: 14px 12px;
+    }
+
+    .admin-order-detail__table th {
+        padding: 13px 12px;
+    }
+
+    .admin-order-detail__table td {
+        padding: 16px 12px;
+        font-size: 11px;
+    }
+
+    .admin-order-detail__notice {
+        padding: 12px;
+        font-size: 11px;
+    }
+
+    .admin-order-detail__delivery h3 {
+        padding: 13px 12px;
+    }
+}

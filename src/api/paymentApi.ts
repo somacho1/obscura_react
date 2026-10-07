@@ -88,3 +88,30 @@ export async function getPaymentByOrder(orderNo: number): Promise<PaymentRespons
 
     return response.json();
 }
+
+// 관리자가 무통장입금을 확인합니다.
+// 서버에서 결제 상태를 결제 완료로, 주문 상태를 결제 완료로 함께 변경합니다.
+export async function confirmBankDeposit(orderNo: number): Promise<PaymentResponse> {
+    const response = await fetch(`${PAYMENT_API_URL}/bank/order/${orderNo}/confirm`, {
+        method: 'PUT',
+    });
+
+    // 입금 확인이 불가능한 주문 등의 서버 안내를 전달합니다.
+    if (!response.ok) {
+        const text = await response.text();
+        let message = `입금 확인에 실패했습니다. (${response.status})`;
+
+        if (text.trim()) {
+            try {
+                const error: unknown = JSON.parse(text);
+                if (typeof error === 'string') message = error;
+                else if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') message = error.message;
+            } catch {
+                message = text;
+            }
+        }
+        throw new Error(message);
+    }
+
+    return response.json();
+}

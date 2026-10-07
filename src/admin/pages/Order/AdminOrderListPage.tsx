@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { getAdminOrderPage } from '../../../api/orderApi';
 import type { AdminOrderPageResponse } from '../../../ts/order';
 import './AdminOrderListPage.css';
@@ -130,6 +130,7 @@ export default function AdminOrderListPage() {
                                     <th scope="col">총 수량</th>
                                     <th scope="col">주문 금액</th>
                                     <th scope="col">주문 상태</th>
+                                    <th scope="col">관리</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -153,6 +154,12 @@ export default function AdminOrderListPage() {
                                                 <span className={`admin-order-list__status admin-order-list__status--${order.statusNo}`}>
                                                     {ORDER_STATUS[order.statusNo] ?? '확인 필요'}
                                                 </span>
+                                            </td>
+                                            {/* 관리 버튼으로 해당 주문 상세에 진입합니다. */}
+                                            <td>
+                                                <Link className="admin-order-list__detail-button" to={`/admin/orders/${order.no}`} aria-label={`주문 ${order.no} 상세 및 관리`}>
+                                                    주문 관리 <span aria-hidden="true">→</span>
+                                                </Link>
                                             </td>
                                         </tr>
                                     );
