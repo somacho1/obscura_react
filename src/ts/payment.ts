@@ -20,3 +20,10 @@ export interface PaymentResponse {
     cancelDate: string | null;
     cdate: string;
 }
+
+// 무통장입금 신청 요청: 결제금액은 서버에서 주문 정보로 확인합니다.
+export interface BankPaymentRequest {
+    mno: number;       // 로그인 회원번호
+    ordno: number;     // 결제 대기 주문번호
+    depositor: string; // 입금자명
+}

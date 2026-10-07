@@ -1,4 +1,4 @@
-import type { PaymentResponse, TossConfirmRequest } from '../ts/payment';
+import type { BankPaymentRequest, PaymentResponse, TossConfirmRequest } from '../ts/payment';
 
 const PAYMENT_API_URL = 'http://localhost:9101/api/payments';
 
@@ -28,6 +28,33 @@ export async function confirmTossPayment(request: TossConfirmRequest): Promise<P
         }
 
         // 오류가 발생했다고 주문 취소 API를 자동 호출하지 않습니다.
+        throw new Error(message);
+    }
+
+    return response.json();
+}
+
+// 무통장입금을 신청합니다. 실제 입금 확인 전에는 결제 완료로 처리하지 않습니다.
+export async function applyBankPayment(request: BankPaymentRequest): Promise<PaymentResponse> {
+    const response = await fetch(`${PAYMENT_API_URL}/bank/apply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(request),
+    });
+
+    // 다른 회원의 주문·취소된 주문·결제수단 충돌 등의 서버 안내를 전달합니다.
+    if (!response.ok) {
+        const text = await response.text();
+        let message = `무통장입금 신청에 실패했습니다. (${response.status})`;
+        if (text.trim()) {
+            try {
+                const error: unknown = JSON.parse(text);
+                if (typeof error === 'string') message = error;
+                else if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') message = error.message;
+            } catch {
+                message = text;
+            }
+        }
         throw new Error(message);
     }
 

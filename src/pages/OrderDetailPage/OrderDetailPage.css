@@ -220,6 +220,118 @@
     border-color: #ddd;
 }
 
+/* 결제수단 선택: 선택한 버튼만 검정 배경으로 표시합니다. */
+.order-detail-payment-methods {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.order-detail-payment-methods button {
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 0;
+    background: #fff;
+    color: #666;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.order-detail-payment-methods button:hover:not(:disabled) {
+    border-color: #111;
+    color: #111;
+}
+
+.order-detail-payment-methods button.active {
+    border-color: #111;
+    background: #111;
+    color: #fff;
+}
+
+.order-detail-payment-methods button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+/* 입금자명 입력: 모바일에서도 입력란이 화면 너비를 넘지 않게 합니다. */
+.order-detail-bank-form {
+    margin-top: 22px;
+}
+
+.order-detail-bank-form label {
+    display: block;
+    margin-bottom: 9px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.order-detail-bank-form input {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    padding: 11px 12px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 0;
+    background: #fff;
+    color: #111;
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.order-detail-bank-form input::placeholder {
+    color: #999;
+}
+
+.order-detail-bank-form input:focus {
+    outline: 2px solid #111;
+    outline-offset: 2px;
+}
+
+.order-detail-bank-form input:disabled {
+    background: #f5f5f5;
+    color: #888;
+}
+
+.order-detail-bank-form p {
+    margin: 10px 0 0;
+    color: #777;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+/* 신청 완료 안내: 입금 대기 상태와 신청 정보를 구분해서 보여줍니다. */
+.order-detail-bank-notice {
+    padding: 22px;
+    border: 1px solid #e5e5e5;
+    background: #f7f7f7;
+}
+
+.order-detail-bank-notice strong {
+    display: block;
+    margin-bottom: 16px;
+    color: #111;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.order-detail-bank-notice p {
+    margin: 7px 0 0;
+    color: #555;
+    font-size: 12px;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+}
+
+.order-detail-bank-notice p:last-child {
+    margin-top: 14px;
+    color: #888;
+    font-size: 11px;
+}
+
+
 @media (max-width: 768px) {
     .order-detail-page {
         padding: 36px 20px 60px;
@@ -249,6 +361,15 @@
     .order-detail-actions a,
     .order-detail-actions button {
         flex: 1;
+    }
+
+    .order-detail-payment-methods button {
+        padding: 10px 8px;
+        font-size: 11px;
+    }
+
+    .order-detail-bank-notice {
+        padding: 18px 16px;
     }
 }
 

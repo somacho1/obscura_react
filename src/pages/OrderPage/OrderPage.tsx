@@ -409,6 +409,10 @@ export default function OrderPage() {
                             </p>
                         )}
 
+                        {createdOrder?.statusNo === 1 && (
+                            <Link to={`/orders/${createdOrder.no}`}>결제하러 가기</Link>
+                        )}
+
                         {/* 취소 후 다시 구매할 상품은 장바구니에 새로 담습니다. */}
                         {createdOrder?.statusNo === 0 && <Link to="/products">상품 보러 가기</Link>}
                     </aside>

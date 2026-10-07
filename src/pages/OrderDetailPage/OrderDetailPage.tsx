@@ -5,6 +5,8 @@ import { useAuth } from '../../context/AuthContext';
 import type { OrderResponse } from '../../ts/order';
 import './OrderDetailPage.css';
 import { openTossPayment } from '../../ts/tossPayment';
+import { applyBankPayment } from '../../api/paymentApi';
+import type { PaymentResponse } from '../../ts/payment';
 
 // 주문 상태값에 맞는 안내 문구를 표시합니다.
 const ORDER_STATUS: Record<number, string> = {
@@ -29,6 +31,9 @@ export default function OrderDetailPage() {
     const [cancelError, setCancelError] = useState('');
     const [retryCount, setRetryCount] = useState(0);
     const cancellingRef = useRef(false);
+    const [paymentMethod, setPaymentMethod] = useState<'TOSS' | 'BANK'>('TOSS');
+    const [depositor, setDepositor] = useState('');
+    const [bankPayment, setBankPayment] = useState<PaymentResponse | null>(null);
 
     // 주소의 주문번호로 DB에 저장된 주문을 조회합니다.
     useEffect(() => {
@@ -115,6 +120,42 @@ export default function OrderDetailPage() {
         }
     };
 
+    // 무통장입금을 신청합니다. 신청 성공은 입금 대기이며 결제 완료가 아닙니다.
+    const handleBankPayment = async () => {
+        if (!order || memberNo === undefined || order.statusNo !== 1 || paymentOpeningRef.current || cancellingRef.current) return;
+
+        const depositorName = depositor.trim();
+        if (!depositorName) {
+            setCancelError('입금자명을 입력해주세요.');
+            return;
+        }
+
+        // Toss 결제·주문 취소와 동시에 실행되지 않도록 기존 잠금 상태를 공유합니다.
+        paymentOpeningRef.current = true;
+        setPaymentLoading(true);
+        setCancelError('');
+
+        try {
+            const result = await applyBankPayment({
+                mno: memberNo,
+                ordno: order.no,
+                depositor: depositorName,
+            });
+
+            // 서버에서 해당 주문의 무통장입금 대기 정보가 반환됐는지 확인합니다.
+            if (result.ordno !== order.no || result.method !== 'BANK' || result.statusNo !== 0) {
+                throw new Error('무통장입금 신청 결과를 확인해주세요.');
+            }
+
+            setBankPayment(result);
+        } catch (err) {
+            setCancelError(err instanceof Error ? err.message : '무통장입금 신청에 실패했습니다.');
+        } finally {
+            paymentOpeningRef.current = false;
+            setPaymentLoading(false);
+        }
+    };
+
     if (!member) {
         return <main className="order-detail-page"><div className="order-detail-state"><p>로그인 후 주문을 확인해주세요.</p><Link to="/login">로그인</Link></div></main>;
     }
@@ -175,15 +216,54 @@ export default function OrderDetailPage() {
                 {cancelError && <p className="order-detail-error" role="alert">{cancelError}</p>}
                 {order.statusNo === 0 && <p className="order-detail-notice" role="status">취소된 주문입니다.</p>}
 
+                {/* 결제 대기 주문에서 결제수단을 선택합니다. 신청 후에는 입금 대기 정보를 표시합니다. */}
+                {order.statusNo === 1 && (
+                    <section className="order-detail-section">
+                        <h2>결제수단</h2>
+
+                        {bankPayment ? (
+                            <div className="order-detail-bank-notice" role="status">
+                                <strong>무통장입금 신청이 완료되었습니다.</strong>
+                                <p>입금자명: {bankPayment.depositor}</p>
+                                <p>입금 예정 금액: {bankPayment.amount.toLocaleString('ko-KR')}원</p>
+                                <p>현재 입금 대기 상태입니다. 관리자 입금 확인 후 결제 완료로 변경됩니다.</p>
+                                {/* 개인 프로젝트에서는 실제 송금 없이 관리자 확인 기능으로 테스트합니다. */}
+                                <p>테스트용 신청입니다. 실제 송금하지 마세요.</p>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="order-detail-payment-methods">
+                                    <button type="button" className={paymentMethod === 'TOSS' ? 'active' : ''} aria-pressed={paymentMethod === 'TOSS'} disabled={paymentLoading || cancelLoading} onClick={() => { setPaymentMethod('TOSS'); setCancelError(''); }}>
+                                        카드 / 간편결제
+                                    </button>
+                                    <button type="button" className={paymentMethod === 'BANK' ? 'active' : ''} aria-pressed={paymentMethod === 'BANK'} disabled={paymentLoading || cancelLoading} onClick={() => { setPaymentMethod('BANK'); setCancelError(''); }}>
+                                        무통장입금
+                                    </button>
+                                </div>
+
+                                {paymentMethod === 'BANK' && (
+                                    <div className="order-detail-bank-form">
+                                        <label htmlFor="bank-depositor">입금자명</label>
+                                        <input id="bank-depositor" type="text" value={depositor} maxLength={50} placeholder="입금자명을 입력해주세요." disabled={paymentLoading || cancelLoading} onChange={event => setDepositor(event.target.value)} />
+                                        <p>신청 후 관리자 입금 확인 전까지 입금 대기 상태로 유지됩니다.</p>
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </section>
+                )}
+
                 <div className="order-detail-actions">
                     <Link to="/products">쇼핑 계속하기</Link>
 
-                    {/* 결제 대기 주문에서만 결제·취소 버튼을 표시합니다. */}
                     {order.statusNo === 1 && (
                         <>
-                            <button type="button" className="order-detail-pay" disabled={paymentLoading || cancelLoading} onClick={handlePayment}>
-                                {paymentLoading ? '결제창 연결 중...' : '결제하기'}
-                            </button>
+                            {/* 무통장입금 신청 후에는 결제 신청 버튼을 숨겨 중복 진행을 방지합니다. */}
+                            {!bankPayment && (
+                                <button type="button" className="order-detail-pay" disabled={paymentLoading || cancelLoading} onClick={paymentMethod === 'BANK' ? handleBankPayment : handlePayment}>
+                                    {paymentLoading ? '처리 중...' : paymentMethod === 'BANK' ? '무통장입금 신청' : '결제하기'}
+                                </button>
+                            )}
                             <button type="button" disabled={paymentLoading || cancelLoading} onClick={handleCancel}>
                                 {cancelLoading ? '취소 처리 중...' : '주문 취소'}
                             </button>
