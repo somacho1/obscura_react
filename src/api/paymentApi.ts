@@ -1,4 +1,5 @@
 import type { BankPaymentRequest, PaymentResponse, TossConfirmRequest } from '../ts/payment';
+import type { OrderResponse } from '../ts/order';
 
 const PAYMENT_API_URL = 'http://localhost:9101/api/payments';
 
@@ -110,6 +111,47 @@ export async function confirmBankDeposit(orderNo: number): Promise<PaymentRespon
                 message = text;
             }
         }
+        throw new Error(message);
+    }
+
+    return response.json();
+}
+
+// Toss 출고 전 주문을 전체 취소합니다. 금액과 결제키는 서버에서 확인합니다.
+export async function cancelTossPayment(
+    orderNo: number,
+    memberNo: number,
+    reason: string,
+): Promise<OrderResponse> {
+    const response = await fetch('http://localhost:9101/api/payments/toss/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            orderNo,
+            mno: memberNo,
+            reason: reason.trim(),
+        }),
+    });
+
+    if (!response.ok) {
+        const text = await response.text();
+        let message = `결제 취소에 실패했습니다. (${response.status})`;
+
+        if (text.trim()) {
+            try {
+                const data: unknown = JSON.parse(text);
+                if (typeof data === 'string') message = data;
+                else if (
+                    data && typeof data === 'object'
+                    && 'message' in data && typeof data.message === 'string'
+                ) {
+                    message = data.message;
+                }
+            } catch {
+                message = text;
+            }
+        }
+
         throw new Error(message);
     }
 

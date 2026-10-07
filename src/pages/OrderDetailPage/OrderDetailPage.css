@@ -331,6 +331,31 @@
     font-size: 11px;
 }
 
+/* 결제 취소 버튼 */
+.order-detail-actions .order-detail-refund {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 110px;
+    min-height: 40px;
+    padding: 10px 16px;
+    border: 1px solid #deded9;
+    background: #fff;
+    color: #242424;
+    font-family: "Noto Sans KR", sans-serif;
+    font-size: 11px;
+    cursor: pointer;
+    transition: background-color .18s ease;
+}
+
+.order-detail-actions .order-detail-refund:hover:not(:disabled) {
+    background: #f0f0ee;
+}
+
+.order-detail-actions .order-detail-refund:disabled {
+    opacity: .5;
+    cursor: wait;
+}
+
 
 @media (max-width: 768px) {
     .order-detail-page {

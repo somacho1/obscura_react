@@ -1,15 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { cancelPendingOrder, getOrderDetail } from '../../api/orderApi';
+import {
+    applyBankPayment,
+    getPaymentByOrder,
+    cancelTossPayment,
+} from '../../api/paymentApi';
 import { useAuth } from '../../context/AuthContext';
-import type { OrderResponse } from '../../ts/order';
-import './OrderDetailPage.css';
 import { openTossPayment } from '../../ts/tossPayment';
-import { applyBankPayment, getPaymentByOrder } from '../../api/paymentApi';
+import type { OrderResponse } from '../../ts/order';
 import type { PaymentResponse } from '../../ts/payment';
 import OrderDeliveryInfo from './OrderDeliveryInfo';
+import './OrderDetailPage.css';
+import BankRefundPanel from '../../components/payment/BankRefundPanel';
 
-// 주문 상태값에 맞는 안내 문구를 표시합니다.
 const ORDER_STATUS: Record<number, string> = {
     0: '주문 취소',
     1: '결제 대기',
@@ -19,42 +23,56 @@ const ORDER_STATUS: Record<number, string> = {
     5: '배송 완료',
 };
 
+type ActionType = '' | 'PAYMENT' | 'CANCEL' | 'REFUND';
+
 export default function OrderDetailPage() {
     const { orderNo } = useParams();
     const { member } = useAuth();
     const memberNo = member?.no;
+
     const [order, setOrder] = useState<OrderResponse | null>(null);
+    const [paymentInfo, setPaymentInfo] = useState<PaymentResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [cancelLoading, setCancelLoading] = useState(false);
-    const [paymentLoading, setPaymentLoading] = useState(false); // 결제창 호출 중 중복 클릭 방지
-    const paymentOpeningRef = useRef(false);
-    const [cancelError, setCancelError] = useState('');
+    const [actionError, setActionError] = useState('');
     const [retryCount, setRetryCount] = useState(0);
-    const cancellingRef = useRef(false);
     const [paymentMethod, setPaymentMethod] = useState<'TOSS' | 'BANK'>('TOSS');
     const [depositor, setDepositor] = useState('');
-    const [bankPayment, setBankPayment] = useState<PaymentResponse | null>(null);
+    const [action, setAction] = useState<ActionType>('');
 
-    // 주소의 주문번호로 DB에 저장된 주문을 조회합니다.
+    // 모든 처리에서 같은 잠금을 사용해 중복 클릭을 방지합니다.
+    const actionRef = useRef<ActionType>('');
+    const versionRef = useRef(0);
+    const busy = action !== '';
+
+    const bankPayment = paymentInfo?.method === 'BANK'
+        && paymentInfo.statusNo === 0 ? paymentInfo : null;
+
     useEffect(() => {
-        let cancelled = false;
-        setOrder(null);
-        setError('');
-        setCancelError('');
+        window.scrollTo({ top: 0, behavior: 'instant' });
+    }, [orderNo]);
 
-        // 다른 주문의 결제수단·입금정보가 남지 않도록 초기화합니다.
-        setBankPayment(null);
+    // 주문과 결제정보를 조회하고, 다른 화면으로 이동하면 이전 응답을 무시합니다.
+    useEffect(() => {
+        const version = ++versionRef.current;
+        let active = true;
+
+        setOrder(null);
+        setPaymentInfo(null);
+        setError('');
+        setActionError('');
         setPaymentMethod('TOSS');
         setDepositor('');
+        setAction('');
+        actionRef.current = '';
 
         if (memberNo === undefined) {
             setLoading(false);
             return;
         }
 
-        setLoading(true);
         const currentMemberNo = memberNo;
+        setLoading(true);
 
         async function loadOrder() {
             try {
@@ -64,137 +82,273 @@ export default function OrderDetailPage() {
                 }
 
                 const result = await getOrderDetail(no);
-                if (cancelled) return;
+                if (!active) return;
 
-                // 본인 주문인지 확인한 다음 해당 주문의 결제정보를 조회합니다.
-                // 서버의 조회 권한 검증은 인증 기능 구현 시 함께 적용해야 합니다.
-                if (result.mno !== currentMemberNo) {
+                if (result.no !== no || result.mno !== currentMemberNo) {
                     throw new Error('본인의 주문만 조회할 수 있습니다.');
                 }
 
                 const payment = await getPaymentByOrder(no);
-                if (cancelled) return;
+                if (!active) return;
 
-                // 다른 주문의 응답이 표시되지 않도록 주문번호를 확인합니다.
                 if (payment && payment.ordno !== no) {
                     throw new Error('주문의 결제정보가 일치하지 않습니다.');
                 }
 
-                // 무통장입금 대기 상태이면 신청 정보를 복원하고 재신청 버튼을 숨깁니다.
+                setOrder(result);
+                setPaymentInfo(payment);
+
                 if (payment?.method === 'BANK' && payment.statusNo === 0) {
-                    setBankPayment(payment);
                     setPaymentMethod('BANK');
                     setDepositor(payment.depositor ?? '');
                 }
-
-                setOrder(result);
             } catch (err) {
-                if (!cancelled) setError(err instanceof Error ? err.message : '주문 정보를 불러오지 못했습니다.');
+                if (active) {
+                    setError(err instanceof Error ? err.message : '주문 정보를 불러오지 못했습니다.');
+                }
             } finally {
-                if (!cancelled) setLoading(false);
+                if (active) setLoading(false);
             }
         }
 
         void loadOrder();
-        return () => { cancelled = true; };
+
+        return () => {
+            active = false;
+            if (versionRef.current === version) versionRef.current += 1;
+        };
     }, [orderNo, memberNo, retryCount]);
 
-    // 결제 대기 주문만 취소합니다. 재고 복구는 서버에서 처리합니다.
-    const handleCancel = async () => {
-        if (!order || memberNo === undefined || order.statusNo !== 1 || cancellingRef.current || paymentOpeningRef.current) return;
+    function validateOrder(result: OrderResponse, no: number, mno: number) {
+        if (result.no !== no || result.mno !== mno) {
+            throw new Error('주문정보가 일치하지 않습니다.');
+        }
+    }
+
+    function startAction(value: ActionType) {
+        actionRef.current = value;
+        setAction(value);
+        setActionError('');
+        return versionRef.current;
+    }
+
+    function finishAction(version: number) {
+        if (version !== versionRef.current) return;
+        actionRef.current = '';
+        setAction('');
+    }
+
+    // 결제 대기 주문 취소: 서버에서 재고를 복구합니다.
+    async function handleCancel() {
+        if (!order || memberNo === undefined || order.statusNo !== 1 || actionRef.current) return;
         if (!window.confirm('주문을 취소하시겠습니까?')) return;
 
-        cancellingRef.current = true;
-        setCancelLoading(true);
-        setCancelError('');
+        const no = order.no;
+        const mno = memberNo;
+        const version = startAction('CANCEL');
 
         try {
-            const result = await cancelPendingOrder(order.no, memberNo);
+            const result = await cancelPendingOrder(no, mno);
+            if (version !== versionRef.current) return;
+
+            validateOrder(result, no, mno);
             setOrder(result);
+            setPaymentInfo((prev) => prev?.method === 'BANK'
+                ? { ...prev, statusNo: 3 }
+                : prev);
         } catch (err) {
-            setCancelError(err instanceof Error ? err.message : '주문 취소에 실패했습니다.');
+            if (version === versionRef.current) {
+                setActionError(err instanceof Error ? err.message : '주문 취소에 실패했습니다.');
+            }
         } finally {
-            cancellingRef.current = false;
-            setCancelLoading(false);
+            finishAction(version);
         }
-    };
+    }
 
-    // 최신 주문 상태를 다시 조회한 뒤 Toss 결제창을 엽니다.
-    const handlePayment = async () => {
-        if (!order || memberNo === undefined || paymentOpeningRef.current || cancellingRef.current) return;
+    // 최신 주문·결제 상태를 확인한 다음 Toss 결제창을 엽니다.
+    async function handlePayment() {
+        if (!order || memberNo === undefined || order.statusNo !== 1 || actionRef.current) return;
 
-        paymentOpeningRef.current = true;
-        setPaymentLoading(true);
-        setCancelError('');
+        const no = order.no;
+        const mno = memberNo;
+        const version = startAction('PAYMENT');
 
         try {
-            const latestOrder = await getOrderDetail(order.no);
-            if (latestOrder.mno !== memberNo) throw new Error('본인의 주문만 결제할 수 있습니다.');
+            const latestOrder = await getOrderDetail(no);
+            if (version !== versionRef.current) return;
 
+            validateOrder(latestOrder, no, mno);
             setOrder(latestOrder);
-            await openTossPayment(latestOrder, memberNo);
+
+            if (latestOrder.statusNo !== 1) {
+                throw new Error('결제 대기 주문만 결제할 수 있습니다.');
+            }
+
+            const payment = await getPaymentByOrder(no);
+            if (version !== versionRef.current) return;
+
+            if (payment && payment.ordno !== no) {
+                throw new Error('주문의 결제정보가 일치하지 않습니다.');
+            }
+            setPaymentInfo(payment);
+
+            if (payment?.method === 'BANK') {
+                throw new Error('무통장입금 신청 정보가 있습니다. 입금 상태를 확인해주세요.');
+            }
+
+            await openTossPayment(latestOrder, mno);
         } catch (err) {
-            // 결제창 중단이나 통신 오류만으로 주문을 자동 취소하지 않습니다.
-            setCancelError(err instanceof Error ? err.message : '결제창을 열지 못했거나 결제가 중단되었습니다. 주문 상태를 확인해주세요.');
+            if (version === versionRef.current) {
+                setActionError(err instanceof Error ? err.message : '결제창을 열지 못했습니다.');
+            }
         } finally {
-            setPaymentLoading(false);
-            paymentOpeningRef.current = false;
+            finishAction(version);
         }
-    };
+    }
 
-    // 무통장입금을 신청합니다. 신청 성공은 입금 대기이며 결제 완료가 아닙니다.
-    const handleBankPayment = async () => {
-        if (!order || memberNo === undefined || order.statusNo !== 1 || paymentOpeningRef.current || cancellingRef.current) return;
+    // 무통장입금 신청은 결제 완료가 아닌 입금 대기 상태입니다.
+    async function handleBankPayment() {
+        if (!order || memberNo === undefined || order.statusNo !== 1 || actionRef.current) return;
 
-        const depositorName = depositor.trim();
-        if (!depositorName) {
-            setCancelError('입금자명을 입력해주세요.');
+        const name = depositor.trim();
+        if (!name || name.length > 50) {
+            setActionError('입금자명을 1~50자로 입력해주세요.');
             return;
         }
 
-        // Toss 결제·주문 취소와 동시에 실행되지 않도록 기존 잠금 상태를 공유합니다.
-        paymentOpeningRef.current = true;
-        setPaymentLoading(true);
-        setCancelError('');
+        const no = order.no;
+        const mno = memberNo;
+        const version = startAction('PAYMENT');
 
         try {
             const result = await applyBankPayment({
-                mno: memberNo,
-                ordno: order.no,
-                depositor: depositorName,
+                mno,
+                ordno: no,
+                depositor: name,
             });
+            if (version !== versionRef.current) return;
 
-            // 서버에서 해당 주문의 무통장입금 대기 정보가 반환됐는지 확인합니다.
-            if (result.ordno !== order.no || result.method !== 'BANK' || result.statusNo !== 0) {
+            if (result.ordno !== no || result.method !== 'BANK' || result.statusNo !== 0) {
                 throw new Error('무통장입금 신청 결과를 확인해주세요.');
             }
 
-            setBankPayment(result);
+            setPaymentInfo(result);
+            setDepositor(result.depositor ?? name);
         } catch (err) {
-            setCancelError(err instanceof Error ? err.message : '무통장입금 신청에 실패했습니다.');
+            if (version === versionRef.current) {
+                setActionError(err instanceof Error ? err.message : '무통장입금 신청에 실패했습니다.');
+            }
         } finally {
-            paymentOpeningRef.current = false;
-            setPaymentLoading(false);
+            finishAction(version);
         }
-    };
+    }
+
+    // 출고 전 Toss 전체 취소: 실제 취소·재고 복구는 서버에서 처리합니다.
+    async function handleRefund() {
+        if (
+            !order || memberNo === undefined || actionRef.current
+            || paymentInfo?.method !== 'TOSS'
+            || paymentInfo.statusNo !== 1
+            || ![2, 3].includes(order.statusNo)
+            || ![0, 3].includes(order.cancelStatusNo)
+        ) return;
+
+        const retrying = order.cancelStatusNo === 3;
+        let reason = '구매 의사 변경';
+
+        if (retrying) {
+            if (!window.confirm('기존 취소 요청의 결과를 다시 확인하시겠습니까?')) return;
+        } else {
+            const input = window.prompt('전체 주문 취소 사유를 입력해주세요.', reason);
+            if (input === null) return;
+
+            reason = input.trim();
+            if (!reason || reason.length > 200) {
+                setActionError('취소 사유는 1~200자로 입력해주세요.');
+                return;
+            }
+        }
+
+        const no = order.no;
+        const mno = memberNo;
+        const version = startAction('REFUND');
+
+        try {
+            // 재시도일 때는 서버가 처음 저장한 취소 사유를 사용합니다.
+            const result = await cancelTossPayment(no, mno, reason);
+            if (version !== versionRef.current) return;
+
+            validateOrder(result, no, mno);
+            if (result.statusNo !== 0 || result.cancelStatusNo !== 2) {
+                throw new Error('전체 취소 결과를 다시 확인해주세요.');
+            }
+
+            setOrder(result);
+            setPaymentInfo((prev) => prev ? { ...prev, statusNo: 3 } : prev);
+        } catch (err) {
+            if (version !== versionRef.current) return;
+
+            setActionError(err instanceof Error ? err.message : '취소 결과를 확인하지 못했습니다.');
+
+            // 통신 오류여도 취소 요청이 저장됐을 수 있으므로 주문을 다시 확인합니다.
+            try {
+                const latest = await getOrderDetail(no);
+                if (version !== versionRef.current) return;
+
+                validateOrder(latest, no, mno);
+                setOrder(latest);
+
+                if (latest.statusNo === 0 && latest.cancelStatusNo === 2) {
+                    setPaymentInfo((prev) => prev ? { ...prev, statusNo: 3 } : prev);
+                    setActionError('');
+                }
+            } catch {
+                // 조회 실패 시 현재 화면과 오류 안내를 유지합니다.
+            }
+        } finally {
+            finishAction(version);
+        }
+    }
 
     if (!member) {
-        return <main className="order-detail-page"><div className="order-detail-state"><p>로그인 후 주문을 확인해주세요.</p><Link to="/login">로그인</Link></div></main>;
+        return (
+            <main className="order-detail-page">
+                <div className="order-detail-state">
+                    <p>로그인 후 주문을 확인해주세요.</p>
+                    <Link to="/login">로그인</Link>
+                </div>
+            </main>
+        );
     }
+
     if (loading) {
-        return <main className="order-detail-page"><div className="order-detail-state" role="status">주문 정보를 불러오는 중입니다.</div></main>;
+        return (
+            <main className="order-detail-page">
+                <div className="order-detail-state" role="status">
+                    주문 정보를 불러오는 중입니다.
+                </div>
+            </main>
+        );
     }
+
     if (error || !order) {
         return (
             <main className="order-detail-page">
                 <div className="order-detail-state" role="alert">
                     <p>{error || '주문 정보가 없습니다.'}</p>
-                    <button type="button" onClick={() => setRetryCount(count => count + 1)}>다시 조회</button>
-                    <Link to="/products">상품 보러 가기</Link>
+                    <button type="button" onClick={() => setRetryCount((prev) => prev + 1)}>
+                        다시 조회
+                    </button>
+                    <Link to="/mypage/orders">주문 목록</Link>
                 </div>
             </main>
         );
     }
+
+    const canRefund = paymentInfo?.method === 'TOSS'
+        && paymentInfo.statusNo === 1
+        && [2, 3].includes(order.statusNo)
+        && [0, 3].includes(order.cancelStatusNo);
 
     return (
         <main className="order-detail-page">
@@ -204,17 +358,20 @@ export default function OrderDetailPage() {
                     <p>주문번호 {order.no}</p>
                 </header>
 
-                {/* 새로고침해도 서버에 저장된 현재 주문 상태를 표시합니다. */}
                 <section className="order-detail-status">
                     <span>주문 상태</span>
-                    <strong>{ORDER_STATUS[order.statusNo] ?? '상태 확인 필요'}</strong>
+                    <strong>
+                        {order.cancelStatusNo === 3
+                            ? '취소 처리 중 / 결과 확인 필요'
+                            : ORDER_STATUS[order.statusNo] ?? '상태 확인 필요'}
+                    </strong>
                 </section>
 
-                {/* 상품이 변경돼도 주문 당시 상품명·옵션·단가를 표시합니다. */}
+                {/* 주문 당시 저장된 상품명·옵션·가격을 표시합니다. */}
                 <section className="order-detail-section">
                     <h2>주문 상품</h2>
                     <div className="order-detail-items">
-                        {order.items.map(item => (
+                        {order.items.map((item) => (
                             <article className="order-detail-item" key={item.no}>
                                 <div>
                                     <h3>{item.productName}</h3>
@@ -227,21 +384,52 @@ export default function OrderDetailPage() {
                     </div>
                 </section>
 
-                {/* totalPrice는 상품 합계와 배송비를 포함한 주문 금액입니다. */}
                 <section className="order-detail-section">
                     <h2>주문 금액</h2>
-                    <div className="order-detail-price-row"><span>상품 금액</span><span>{(order.totalPrice - order.shippingFee).toLocaleString('ko-KR')}원</span></div>
-                    <div className="order-detail-price-row"><span>배송비</span><span>{order.shippingFee === 0 ? '무료' : `${order.shippingFee.toLocaleString('ko-KR')}원`}</span></div>
-                    <div className="order-detail-total"><span>총 주문 금액</span><strong>{order.totalPrice.toLocaleString('ko-KR')}원</strong></div>
+                    <div className="order-detail-price-row">
+                        <span>상품 금액</span>
+                        <span>{(order.totalPrice - order.shippingFee).toLocaleString('ko-KR')}원</span>
+                    </div>
+                    <div className="order-detail-price-row">
+                        <span>배송비</span>
+                        <span>
+                            {order.shippingFee === 0
+                                ? '무료'
+                                : `${order.shippingFee.toLocaleString('ko-KR')}원`}
+                        </span>
+                    </div>
+                    <div className="order-detail-total">
+                        <span>총 주문 금액</span>
+                        <strong>{order.totalPrice.toLocaleString('ko-KR')}원</strong>
+                    </div>
                 </section>
-               
-                {/* 등록된 배송정보를 모두 표시해 부분배송도 확인할 수 있습니다. */}
+
+                {/* 기존 배송정보와 배송조회 버튼을 유지합니다. */}
                 <OrderDeliveryInfo key={order.no} orderNo={order.no} />
 
-                {cancelError && <p className="order-detail-error" role="alert">{cancelError}</p>}
-                {order.statusNo === 0 && <p className="order-detail-notice" role="status">취소된 주문입니다.</p>}
+                {/* 입금 확인된 무통장 주문의 환불 요청 */}
+                {paymentInfo?.method === 'BANK' && paymentInfo.statusNo !== 0 && (
+                    <BankRefundPanel
+                        key={`${order.no}-${memberNo}`}
+                        orderNo={order.no}
+                        memberNo={memberNo!}
+                        disabled={busy}
+                        onUpdated={() => setRetryCount((prev) => prev + 1)}
+                    />
+                )}
 
-                {/* 결제 대기 주문에서 결제수단을 선택합니다. 신청 후에는 입금 대기 정보를 표시합니다. */}
+                {actionError && (
+                    <p className="order-detail-error" role="alert">{actionError}</p>
+                )}
+                {order.statusNo === 0 && (
+                    <p className="order-detail-notice" role="status">취소된 주문입니다.</p>
+                )}
+                {order.cancelStatusNo === 3 && (
+                    <p className="order-detail-notice" role="status">
+                        취소 결과 확인 전까지 출고가 보류됩니다. 결제 취소 재시도로 결과를 확인해주세요.
+                    </p>
+                )}
+
                 {order.statusNo === 1 && (
                     <section className="order-detail-section">
                         <h2>결제수단</h2>
@@ -251,17 +439,34 @@ export default function OrderDetailPage() {
                                 <strong>무통장입금 신청이 완료되었습니다.</strong>
                                 <p>입금자명: {bankPayment.depositor}</p>
                                 <p>입금 예정 금액: {bankPayment.amount.toLocaleString('ko-KR')}원</p>
-                                <p>현재 입금 대기 상태입니다. 관리자 입금 확인 후 결제 완료로 변경됩니다.</p>
-                                {/* 개인 프로젝트에서는 실제 송금 없이 관리자 확인 기능으로 테스트합니다. */}
+                                <p>관리자 입금 확인 후 결제 완료로 변경됩니다.</p>
                                 <p>테스트용 신청입니다. 실제 송금하지 마세요.</p>
                             </div>
                         ) : (
                             <>
                                 <div className="order-detail-payment-methods">
-                                    <button type="button" className={paymentMethod === 'TOSS' ? 'active' : ''} aria-pressed={paymentMethod === 'TOSS'} disabled={paymentLoading || cancelLoading} onClick={() => { setPaymentMethod('TOSS'); setCancelError(''); }}>
+                                    <button
+                                        type="button"
+                                        className={paymentMethod === 'TOSS' ? 'active' : ''}
+                                        aria-pressed={paymentMethod === 'TOSS'}
+                                        disabled={busy}
+                                        onClick={() => {
+                                            setPaymentMethod('TOSS');
+                                            setActionError('');
+                                        }}
+                                    >
                                         카드 / 간편결제
                                     </button>
-                                    <button type="button" className={paymentMethod === 'BANK' ? 'active' : ''} aria-pressed={paymentMethod === 'BANK'} disabled={paymentLoading || cancelLoading} onClick={() => { setPaymentMethod('BANK'); setCancelError(''); }}>
+                                    <button
+                                        type="button"
+                                        className={paymentMethod === 'BANK' ? 'active' : ''}
+                                        aria-pressed={paymentMethod === 'BANK'}
+                                        disabled={busy}
+                                        onClick={() => {
+                                            setPaymentMethod('BANK');
+                                            setActionError('');
+                                        }}
+                                    >
                                         무통장입금
                                     </button>
                                 </div>
@@ -269,8 +474,16 @@ export default function OrderDetailPage() {
                                 {paymentMethod === 'BANK' && (
                                     <div className="order-detail-bank-form">
                                         <label htmlFor="bank-depositor">입금자명</label>
-                                        <input id="bank-depositor" type="text" value={depositor} maxLength={50} placeholder="입금자명을 입력해주세요." disabled={paymentLoading || cancelLoading} onChange={event => setDepositor(event.target.value)} />
-                                        <p>신청 후 관리자 입금 확인 전까지 입금 대기 상태로 유지됩니다.</p>
+                                        <input
+                                            id="bank-depositor"
+                                            type="text"
+                                            value={depositor}
+                                            maxLength={50}
+                                            placeholder="입금자명을 입력해주세요."
+                                            disabled={busy}
+                                            onChange={(event) => setDepositor(event.target.value)}
+                                        />
+                                        <p>관리자 입금 확인 전까지 입금 대기 상태로 유지됩니다.</p>
                                     </div>
                                 )}
                             </>
@@ -279,20 +492,48 @@ export default function OrderDetailPage() {
                 )}
 
                 <div className="order-detail-actions">
+                    <Link to="/mypage/orders">주문 목록</Link>
                     <Link to="/products">쇼핑 계속하기</Link>
 
                     {order.statusNo === 1 && (
                         <>
-                            {/* 무통장입금 신청 후에는 결제 신청 버튼을 숨겨 중복 진행을 방지합니다. */}
                             {!bankPayment && (
-                                <button type="button" className="order-detail-pay" disabled={paymentLoading || cancelLoading} onClick={paymentMethod === 'BANK' ? handleBankPayment : handlePayment}>
-                                    {paymentLoading ? '처리 중...' : paymentMethod === 'BANK' ? '무통장입금 신청' : '결제하기'}
+                                <button
+                                    type="button"
+                                    className="order-detail-pay"
+                                    disabled={busy}
+                                    onClick={() => void (
+                                        paymentMethod === 'BANK'
+                                            ? handleBankPayment()
+                                            : handlePayment()
+                                    )}
+                                >
+                                    {action === 'PAYMENT'
+                                        ? '처리 중…'
+                                        : paymentMethod === 'BANK'
+                                            ? '무통장입금 신청'
+                                            : '결제하기'}
                                 </button>
                             )}
-                            <button type="button" disabled={paymentLoading || cancelLoading} onClick={handleCancel}>
-                                {cancelLoading ? '취소 처리 중...' : '주문 취소'}
+                            <button type="button" disabled={busy} onClick={() => void handleCancel()}>
+                                {action === 'CANCEL' ? '취소 처리 중…' : '주문 취소'}
                             </button>
                         </>
+                    )}
+
+                    {canRefund && (
+                        <button
+                            type="button"
+                            className="order-detail-refund"
+                            disabled={busy}
+                            onClick={() => void handleRefund()}
+                        >
+                            {action === 'REFUND'
+                                ? '취소 확인 중…'
+                                : order.cancelStatusNo === 3
+                                    ? '결제 취소 재시도'
+                                    : '결제 취소'}
+                        </button>
                     )}
                 </div>
             </div>

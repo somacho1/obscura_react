@@ -7,6 +7,7 @@ import type { OrderResponse } from '../../../ts/order';
 import type { PaymentResponse } from '../../../ts/payment';
 import type { DeliveryResponse } from '../../../ts/delivery';
 import './AdminOrderDetailPage.css';
+import BankRefundPanel from '../../../components/payment/BankRefundPanel';
 
 // 주문·결제·배송 상태 표시
 const ORDER_STATUS: Record<number, string> = {
@@ -57,8 +58,10 @@ export default function AdminOrderDetailPage() {
     const [shippingError, setShippingError] = useState('');
     const shippingRef = useRef(false);
     const completingRef = useRef(false);
+    const [refundBusy, setRefundBusy] = useState(false);
 
-    const processing = confirmLoading || shippingLoadingNo !== null || completeLoadingNo !== null;
+    const processing = confirmLoading || shippingLoadingNo !== null || completeLoadingNo !== null || refundBusy;
+
 
     // 주문·결제·배송정보를 함께 조회
     useEffect(() => {
@@ -159,6 +162,8 @@ export default function AdminOrderDetailPage() {
         if (!order || shippingRef.current || confirmingRef.current || completingRef.current) return;
         if (delivery.ordno !== order.no) return;
         if (![2, 3, 4].includes(order.statusNo) || delivery.statusNo !== 0) return;
+        // 취소·환불 요청이 있거나 환불 처리 중이면 출고를 막습니다.
+        if (order.cancelStatusNo !== 0 || refundBusy) return;
 
         const input = shippingInputs[delivery.no];
         const company = input?.company.trim() || '';
@@ -259,7 +264,7 @@ export default function AdminOrderDetailPage() {
                     <div><dt>주문번호</dt><dd>{order.no}</dd></div>
                     <div><dt>회원번호</dt><dd>{order.mno}</dd></div>
                     <div><dt>주문일시</dt><dd>{formatDate(order.cdate)}</dd></div>
-                    <div><dt>주문 상태</dt><dd><strong>{ORDER_STATUS[order.statusNo] ?? '확인 필요'}</strong></dd></div>
+                    <div><dt>주문 상태</dt><dd><strong> {order.cancelStatusNo === 3 ? '취소·환불 처리 대기' : ORDER_STATUS[order.statusNo] ?? '확인 필요'}</strong></dd></div>
                     <div><dt>상품 금액</dt><dd>{(order.totalPrice - order.shippingFee).toLocaleString('ko-KR')}원</dd></div>
                     <div><dt>배송비</dt><dd>{order.shippingFee === 0 ? '무료' : `${order.shippingFee.toLocaleString('ko-KR')}원`}</dd></div>
                     <div><dt>총 주문 금액</dt><dd><strong>{order.totalPrice.toLocaleString('ko-KR')}원</strong></dd></div>
@@ -338,6 +343,21 @@ export default function AdminOrderDetailPage() {
                 {confirmError && <p className="admin-order-detail__confirm-error" role="alert">{confirmError}</p>}
             </section>
 
+            {payment?.method === 'BANK' && payment.statusNo !== 0 && (
+                <BankRefundPanel
+                    key={order.no}
+                    orderNo={order.no}
+                    memberNo={order.mno}
+                    admin
+                    disabled={confirmLoading || shippingLoadingNo !== null || completeLoadingNo !== null}
+                    onBusyChange={setRefundBusy}
+                    onUpdated={() => {
+                        setRefundBusy(false);
+                        setRetryCount((prev) => prev + 1);
+                    }}
+                />
+            )}
+
             {/* 배송별 정보 및 처리 버튼 */}
             <section className="admin-order-detail__section">
                 <h2>배송 정보</h2>
@@ -363,7 +383,7 @@ export default function AdminOrderDetailPage() {
                         </dl>
 
                         {/* 배송 준비 상태: 송장 입력 및 출고 */}
-                        {[2, 3, 4].includes(order.statusNo) && delivery.statusNo === 0 && (
+                        {order.cancelStatusNo === 0 && [2, 3, 4].includes(order.statusNo) && delivery.statusNo === 0 && (
                             <div className="admin-order-detail__shipping-form">
                                 <label>
                                     <span>택배사</span>

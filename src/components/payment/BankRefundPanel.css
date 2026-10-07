@@ -1,0 +1,124 @@
+/* 고객·관리자 화면에서 공통으로 사용합니다. */
+.bank-refund {
+    margin-top: 24px;
+    padding: 22px;
+    border: 1px solid #deded9;
+    color: #242424;
+    font-family: "Noto Sans KR", sans-serif;
+    font-size: 12px;
+}
+
+.bank-refund * {
+    box-sizing: border-box;
+}
+
+.bank-refund h2 {
+    margin: 0 0 16px;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.bank-refund p {
+    margin: 0 0 14px;
+    color: #777;
+    line-height: 1.7;
+}
+
+.bank-refund fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.bank-refund label {
+    display: block;
+    margin-bottom: 14px;
+    font-size: 11px;
+}
+
+.bank-refund input {
+    display: block;
+    width: 100%;
+    max-width: 520px;
+    height: 40px;
+    margin-top: 7px;
+    padding: 10px 12px;
+    border: 1px solid #deded9;
+    border-radius: 0;
+    background: #fff;
+    font: inherit;
+}
+
+.bank-refund dl {
+    display: grid;
+    gap: 10px;
+    margin: 0 0 18px;
+}
+
+.bank-refund dl>div {
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr);
+    gap: 12px;
+    line-height: 1.7;
+}
+
+.bank-refund dt {
+    color: #858580;
+}
+
+.bank-refund dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.bank-refund .bank-refund__status {
+    color: #242424;
+    font-weight: 500;
+}
+
+.bank-refund__button {
+    min-height: 40px;
+    padding: 10px 16px;
+    border: 1px solid #242424;
+    background: #242424;
+    color: #fff;
+    font: inherit;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.bank-refund__button:hover:not(:disabled) {
+    background: #444;
+}
+
+.bank-refund button:disabled {
+    opacity: .5;
+    cursor: default;
+}
+
+.bank-refund__error {
+    margin-bottom: 16px;
+    padding: 12px;
+    background: #f0f0ee;
+}
+
+.bank-refund__error button {
+    border: 0;
+    background: transparent;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.bank-refund input:focus-visible,
+.bank-refund button:focus-visible {
+    outline: 2px solid #242424;
+    outline-offset: 3px;
+}
+
+@media (max-width: 768px) {
+    .bank-refund {
+        padding: 18px 16px;
+    }
+}
