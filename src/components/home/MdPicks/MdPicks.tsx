@@ -1,6 +1,6 @@
 import './MdPicks.css';
 import ProductCard from '../../product/ProductCard';
-import type { Product } from '../../../types/product';
+import type { Product } from '../../../ts/product';
 
 // 원본 Obscura MD's Picks 상품 이미지
 import eytysImage from '../../../assets/images/obscura/s eytys.jpg';

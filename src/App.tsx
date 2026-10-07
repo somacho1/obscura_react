@@ -16,6 +16,8 @@ import LoginPage from './pages/LoginPage/LoginPage';
 import JoinPage from './pages/JoinPage/JoinPage';
 import OrderPage from './pages/OrderPage/OrderPage';
 import OrderDetailPage from './pages/OrderDetailPage/OrderDetailPage';
+import PaymentSuccessPage from './pages/PaymentPage/PaymentSuccessPage';
+import PaymentFailPage from './pages/PaymentPage/PaymentFailPage';
 
 
 
@@ -33,6 +35,8 @@ function App() {
           <Route path="/join" element={<JoinPage />} />
           <Route path="/order" element={<OrderPage />} />
           <Route path="/orders/:orderNo" element={<OrderDetailPage />} />
+          <Route path="/payments/success" element={<PaymentSuccessPage />} />
+          <Route path="/payments/fail" element={<PaymentFailPage />} />
         </Route>
 
         {/* 관리자 페이지: 기존 AdminLayout을 별도로 사용합니다. */}

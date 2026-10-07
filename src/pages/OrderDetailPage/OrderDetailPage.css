@@ -203,6 +203,23 @@
     cursor: pointer;
 }
 
+/* 결제 버튼을 하단의 주요 동작으로 표시합니다. */
+.order-detail-actions button.order-detail-pay {
+    border-color: #111;
+    background: #111;
+    color: #fff;
+}
+
+.order-detail-actions button.order-detail-pay:hover:not(:disabled) {
+    background: #333;
+}
+
+.order-detail-actions a {
+    background: #fff;
+    color: #111;
+    border-color: #ddd;
+}
+
 @media (max-width: 768px) {
     .order-detail-page {
         padding: 36px 20px 60px;
