@@ -1,4 +1,4 @@
-import type { OrderCreateRequest, OrderResponse } from '../ts/order';
+import type { AdminOrderPageResponse, OrderCreateRequest, OrderResponse } from '../ts/order';
 
 const ORDER_API_URL = 'http://localhost:9101/api/orders';
 
@@ -62,3 +62,34 @@ export async function getOrderDetail(orderNo: number): Promise<OrderResponse> {
 
     return response.json();
 }
+
+// 관리자 주문 목록을 최신순으로 페이지 단위 조회합니다.
+// 화면의 페이지 번호는 1부터 시작하고 서버 응답의 number는 0부터 시작합니다.
+export async function getAdminOrderPage(page = 1, size = 20): Promise<AdminOrderPageResponse> {
+    const query = new URLSearchParams({
+        page: String(page),
+        size: String(size),
+    });
+
+    const response = await fetch(`${ORDER_API_URL}/admin/page?${query.toString()}`);
+
+    // 조회 실패 시 서버가 전달한 오류 내용을 화면에 표시합니다.
+    if (!response.ok) {
+        const text = await response.text();
+        let message = `관리자 주문 목록 조회에 실패했습니다. (${response.status})`;
+
+        if (text.trim()) {
+            try {
+                const error: unknown = JSON.parse(text);
+                if (typeof error === 'string') message = error;
+                else if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') message = error.message;
+            } catch {
+                message = text;
+            }
+        }
+        throw new Error(message);
+    }
+
+    return response.json();
+}
+

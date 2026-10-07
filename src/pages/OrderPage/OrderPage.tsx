@@ -464,60 +464,35 @@ export default function OrderPage() {
                             <span>{createdOrder ? '결제 예정금액' : '예상 결제금액'}</span>
                             <strong>{(createdOrder?.totalPrice ?? paymentTotal).toLocaleString('ko-KR')}원</strong>
                         </div>
-                        {/* 생성된 주문은 다시 제출하지 않습니다. */}
-                        <button type="submit" className="order-submit" disabled={formLocked}>
-                            {orderLoading ? '주문 생성 중...' : createdOrder?.statusNo === 0 ? '주문 취소 완료' : createdOrder ? '주문 생성 완료' : '주문 생성'}
+
+                        {/* 제출 버튼은 주문 요약 안에 하나만 배치합니다. */}
+                        <button type="submit" className="order-submit" disabled={formLocked || cancelLoading}>
+                            {orderLoading ? '주문 및 결제 연결 중...' : createdOrder?.statusNo === 0 ? '주문 취소 완료' : createdOrder ? '주문 생성 완료' : paymentMethod === 'BANK' ? '무통장입금 신청' : '결제하기'}
                         </button>
 
-                        {/* 결제 대기 상태일 때만 취소 버튼을 표시합니다. */}
+                        {/* 결제가 중단되면 생성된 주문에서 이어서 진행합니다. */}
                         {createdOrder?.statusNo === 1 && (
-                            <button type="button" className="order-cancel" disabled={cancelLoading} onClick={handleCancelOrder}>
-                                {cancelLoading ? '주문 취소 중...' : '주문 취소'}
-                            </button>
+                            <>
+                                {!orderLoading && (
+                                    <Link className="order-payment-link" to={`/orders/${createdOrder.no}`}>
+                                        주문 확인 / 결제 계속하기
+                                    </Link>
+                                )}
+                                <button type="button" className="order-cancel" disabled={orderLoading || cancelLoading} onClick={handleCancelOrder}>
+                                    {cancelLoading ? '주문 취소 중...' : '주문 취소'}
+                                </button>
+                            </>
                         )}
 
                         {createdOrder && (
                             <p className="order-summary-note order-summary-note--bottom" role="status">
                                 주문번호: {createdOrder.no}<br />
-                                {createdOrder.statusNo === 0 ? '주문이 취소되었습니다.' : '주문이 생성되었습니다. 결제 대기 상태입니다.'}
+                                {createdOrder.statusNo === 0 ? '주문이 취소되었습니다.' : orderLoading ? '선택한 결제수단으로 연결 중입니다.' : '생성된 주문에서 결제를 이어갈 수 있습니다.'}
                             </p>
                         )}
 
-                        {createdOrder?.statusNo === 1 && (
-                            <Link to={`/orders/${createdOrder.no}`}>결제하러 가기</Link>
-                        )}
-
-                        {/* 취소 후 다시 구매할 상품은 장바구니에 새로 담습니다. */}
                         {createdOrder?.statusNo === 0 && <Link to="/products">상품 보러 가기</Link>}
-                    </aside>                        {/* 선택한 결제수단에 맞춰 주문 생성과 결제를 이어갑니다. */}
-                    <button type="submit" className="order-submit" disabled={formLocked || cancelLoading}>
-                        {orderLoading ? '주문 및 결제 연결 중...' : createdOrder?.statusNo === 0 ? '주문 취소 완료' : createdOrder ? '주문 생성 완료' : paymentMethod === 'BANK' ? '무통장입금 신청' : '결제하기'}
-                    </button>
-
-                    {/* 결제 연결이 중단되면 이미 생성된 주문에서 다시 진행합니다. */}
-                    {createdOrder?.statusNo === 1 && (
-                        <>
-                            {!orderLoading && (
-                                <Link className="order-payment-link" to={`/orders/${createdOrder.no}`}>
-                                    주문 확인 / 결제 계속하기
-                                </Link>
-                            )}
-                            <button type="button" className="order-cancel" disabled={orderLoading || cancelLoading} onClick={handleCancelOrder}>
-                                {cancelLoading ? '주문 취소 중...' : '주문 취소'}
-                            </button>
-                        </>
-                    )}
-
-                    {/* 주문 생성 후 결제가 중단돼도 주문번호를 확인할 수 있습니다. */}
-                    {createdOrder && (
-                        <p className="order-summary-note order-summary-note--bottom" role="status">
-                            주문번호: {createdOrder.no}<br />
-                            {createdOrder.statusNo === 0 ? '주문이 취소되었습니다.' : orderLoading ? '선택한 결제수단으로 연결 중입니다.' : '생성된 주문에서 결제를 이어갈 수 있습니다.'}
-                        </p>
-                    )}
-
-                    {/* 취소 후 다시 구매할 상품은 장바구니에 새로 담습니다. */}
-                    {createdOrder?.statusNo === 0 && <Link to="/products">상품 보러 가기</Link>}
+                    </aside>
                 </form>
             </div>
         </main>

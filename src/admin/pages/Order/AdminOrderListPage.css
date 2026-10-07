@@ -1,0 +1,327 @@
+/* 관리자 주문 목록 기본 영역: 바깥 여백은 AdminLayout을 사용합니다. */
+.admin-order-list {
+    width: 100%;
+    min-width: 0;
+    color: #111;
+}
+
+.admin-order-list button {
+    font-family: inherit;
+}
+
+/* 페이지 제목과 새로고침 버튼 */
+.admin-order-list__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #111;
+}
+
+.admin-order-list__heading p {
+    margin: 0 0 8px;
+    color: #999;
+    font-size: 10px;
+    letter-spacing: .08em;
+}
+
+.admin-order-list__heading h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.admin-order-list__heading button {
+    flex-shrink: 0;
+    min-height: 36px;
+    padding: 8px 16px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 0;
+    background: #fff;
+    color: #555;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.admin-order-list__heading button:hover:not(:disabled) {
+    border-color: #111;
+    color: #111;
+}
+
+.admin-order-list__heading button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+/* 전체 주문 건수 */
+.admin-order-list__summary {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 24px 0 18px;
+}
+
+.admin-order-list__summary span {
+    color: #777;
+    font-size: 12px;
+}
+
+.admin-order-list__summary strong {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* 긴 표는 화면을 밀어내지 않고 표 영역 안에서 가로로 스크롤합니다. */
+.admin-order-list__table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.admin-order-list__table {
+    width: 100%;
+    min-width: 860px;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.admin-order-list__table th {
+    padding: 15px 14px;
+    border-top: 1px solid #111;
+    border-bottom: 1px solid #ddd;
+    background: #f7f7f7;
+    color: #666;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.admin-order-list__table td {
+    padding: 20px 14px;
+    border-bottom: 1px solid #eee;
+    color: #555;
+    font-size: 12px;
+    line-height: 1.6;
+    vertical-align: middle;
+}
+
+.admin-order-list__table tbody tr:hover {
+    background: #fafafa;
+}
+
+.admin-order-list__table td strong {
+    color: #111;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.admin-order-list__table th:nth-child(1) {
+    width: 70px;
+}
+
+.admin-order-list__table th:nth-child(2) {
+    width: 155px;
+}
+
+.admin-order-list__table th:nth-child(3) {
+    width: 70px;
+}
+
+.admin-order-list__table th:nth-child(5) {
+    width: 65px;
+}
+
+.admin-order-list__table th:nth-child(6) {
+    width: 110px;
+}
+
+.admin-order-list__table th:nth-child(7) {
+    width: 95px;
+}
+
+/* 상품명은 줄바꿈하고 추가 옵션 개수는 작은 글씨로 표시합니다. */
+.admin-order-list__product {
+    min-width: 180px;
+}
+
+.admin-order-list__product span {
+    display: block;
+    color: #111;
+    overflow-wrap: anywhere;
+}
+
+.admin-order-list__product small {
+    display: block;
+    margin-top: 5px;
+    color: #999;
+    font-size: 10px;
+}
+
+.admin-order-list__table .admin-order-list__amount {
+    color: #111;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* 주문 상태: 취소·대기·완료·배송을 구분합니다. */
+.admin-order-list__status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 72px;
+    padding: 5px 8px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #666;
+    font-size: 10px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.admin-order-list__status--0 {
+    border-color: #eee;
+    background: #f5f5f5;
+    color: #999;
+}
+
+.admin-order-list__status--1 {
+    border-color: #eadfc6;
+    background: #fbf7ef;
+    color: #8a6b2d;
+}
+
+.admin-order-list__status--2 {
+    border-color: #111;
+    background: #111;
+    color: #fff;
+}
+
+.admin-order-list__status--3 {
+    border-color: #d8d8d8;
+    background: #f3f3f3;
+    color: #444;
+}
+
+.admin-order-list__status--4 {
+    border-color: #d6e0ee;
+    background: #f1f5fa;
+    color: #49688c;
+}
+
+.admin-order-list__status--5 {
+    border-color: #d8e5dc;
+    background: #f2f7f3;
+    color: #4a7255;
+}
+
+/* 페이지 이동 버튼 */
+.admin-order-list__pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 30px;
+}
+
+.admin-order-list__pagination button {
+    min-width: 34px;
+    min-height: 34px;
+    padding: 7px 10px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 0;
+    background: #fff;
+    color: #777;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.admin-order-list__pagination button:hover:not(:disabled) {
+    border-color: #111;
+    color: #111;
+}
+
+.admin-order-list__pagination button.active {
+    border-color: #111;
+    background: #111;
+    color: #fff;
+}
+
+.admin-order-list__pagination button:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+}
+
+/* 로딩·오류·빈 목록 안내 */
+.admin-order-list__state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    min-height: 240px;
+    padding: 30px 20px;
+    box-sizing: border-box;
+    border-top: 1px solid #eee;
+    color: #888;
+    font-size: 12px;
+    line-height: 1.8;
+    text-align: center;
+}
+
+.admin-order-list__state p {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.admin-order-list__state button {
+    min-height: 36px;
+    padding: 8px 16px;
+    border: 1px solid #111;
+    border-radius: 0;
+    background: #fff;
+    color: #111;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.admin-order-list button:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 3px;
+}
+
+/* 모바일: 제목·버튼·셀 여백을 줄이고 가로 스크롤을 유지합니다. */
+@media (max-width: 768px) {
+    .admin-order-list__heading {
+        gap: 12px;
+        padding-bottom: 20px;
+    }
+
+    .admin-order-list__heading h1 {
+        font-size: 20px;
+    }
+
+    .admin-order-list__heading button {
+        padding: 8px 12px;
+    }
+
+    .admin-order-list__summary {
+        padding-top: 20px;
+    }
+
+    .admin-order-list__table th {
+        padding: 13px 10px;
+    }
+
+    .admin-order-list__table td {
+        padding: 16px 10px;
+        font-size: 11px;
+    }
+
+    .admin-order-list__pagination {
+        margin-top: 24px;
+    }
+}

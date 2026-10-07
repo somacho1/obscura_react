@@ -43,3 +43,16 @@ export interface OrderCreateRequest {
     cartItemNos: number[];
     delivery: OrderDeliveryRequest;
 }
+
+// 관리자 주문 목록 API 응답: 목록과 서버 페이징 정보를 함께 받습니다.
+export interface AdminOrderPageResponse {
+    content: OrderResponse[]; // 현재 페이지의 주문 목록
+    totalElements: number;   // 전체 주문 수
+    totalPages: number;      // 전체 페이지 수
+    number: number;          // 현재 페이지 번호: 서버 기준 0부터 시작
+    size: number;            // 페이지당 주문 수
+    numberOfElements: number;
+    first: boolean;
+    last: boolean;
+    empty: boolean;
+}
