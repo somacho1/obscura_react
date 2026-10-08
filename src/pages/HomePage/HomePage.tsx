@@ -3,7 +3,7 @@ import TodayNew from '../../components/home/TodayNew/TodayNew';
 import BestSellers from '../../components/home/BestSellers/BestSellers';
 import TopBrands from '../../components/home/TopBrands/TopBrands';
 import MdPicks from '../../components/home/MdPicks/MdPicks';
-import Trending from '../../components/home/Trending/Trending';
+import Trending from '../../components/home/ForYou/ForYou';
 
 export default function HomePage() {
   return (

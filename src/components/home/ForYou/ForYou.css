@@ -1,0 +1,336 @@
+/* =========================
+   FOR YOU 전체 영역
+========================= */
+.for-you {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 40px 70px 130px;
+  color: #222;
+}
+
+.for-you-layout {
+  display: grid;
+  grid-template-columns: minmax(180px, .75fr) minmax(0, 3fr);
+  gap: 40px;
+  align-items: start;
+}
+
+.for-you-left,
+.for-you-content {
+  min-width: 0;
+}
+
+.for-you-title h2 {
+  margin: 0 0 12px;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.for-you-title p {
+  margin: 0;
+  color: #888;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* =========================
+   추천 브랜드 선택
+========================= */
+.for-you-brand-list {
+  display: flex;
+  flex-direction: column;
+  margin-top: 30px;
+}
+
+.for-you-brand-list button {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 0;
+  border-bottom: 1px solid #e5e5e5;
+  background: #fff;
+  color: #777;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  transition: color .2s ease, background .2s ease;
+}
+
+.for-you-brand-list button.active {
+  background: #111;
+  color: #fff;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .for-you-brand-list button:hover {
+    background: #111;
+    color: #fff;
+  }
+}
+
+.for-you-brand-list button:focus-visible,
+.for-you-refresh:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+
+.for-you-refresh {
+  margin-top: 18px;
+  padding: 6px 0;
+  border: 0;
+  border-bottom: 1px solid #aaa;
+  background: transparent;
+  color: #777;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* =========================
+   PC: 작은 이미지 6개 + 오른쪽 큰 이미지
+========================= */
+.for-you-products {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 2fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.for-you-product {
+  min-width: 0;
+}
+
+/* 첫 추천 상품은 오른쪽 끝에 크게 배치합니다. */
+.for-you-product--featured {
+  grid-column: 4;
+  grid-row: 1 / span 2;
+}
+
+/* 상품명·가격·하트 없이 대표 이미지만 표시합니다. */
+.for-you-image-card {
+  display: block;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.for-you-image-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .35s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .for-you-image-card:hover img {
+    transform: scale(1.025);
+  }
+}
+
+.for-you-image-card:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: -2px;
+}
+
+/* 이미지 미등록 상품도 상세페이지로 이동할 수 있습니다. */
+.for-you-no-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: #999;
+  font-size: 12px;
+}
+
+/* 로딩·오류·상품 없음 안내 */
+.for-you-message {
+  margin: 0;
+  padding: 50px 15px;
+  color: #777;
+  font-size: 14px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.for-you-message button {
+  margin-top: 12px;
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #222;
+  cursor: pointer;
+}
+
+/* =========================
+   태블릿: 작은 이미지 2열 + 오른쪽 큰 이미지
+========================= */
+@media (max-width: 1200px) {
+  .for-you {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+
+  .for-you-layout {
+    grid-template-columns: minmax(150px, .7fr) minmax(0, 2.5fr);
+    gap: 24px;
+  }
+
+  .for-you-products {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) minmax(0, 1.8fr);
+    gap: 12px;
+  }
+
+  .for-you-product--featured {
+    grid-column: 3;
+    grid-row: 1 / span 3;
+  }
+}
+
+/* =========================
+   모바일: 큰 이미지 위 + 작은 이미지 2열
+========================= */
+@media (max-width: 768px) {
+  .for-you {
+    padding: 30px 15px 90px;
+  }
+
+  .for-you-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .for-you-title {
+    text-align: center;
+  }
+
+  .for-you-title h2 {
+    font-size: 30px;
+  }
+
+  /* 브랜드 목록은 가로 스크롤로 선택합니다. */
+  .for-you-brand-list {
+    flex-direction: row;
+    gap: 8px;
+    margin-top: 24px;
+    padding-bottom: 8px;
+    overflow-x: auto;
+  }
+
+  .for-you-brand-list button {
+    flex: 0 0 auto;
+    width: auto;
+    min-height: 36px;
+    padding: 8px 14px;
+    border: 1px solid #ddd;
+    white-space: nowrap;
+  }
+
+  .for-you-refresh {
+    display: block;
+    margin: 12px auto 0;
+  }
+
+  .for-you-products {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  /* 모바일에서는 첫 추천 이미지를 위쪽에 배치합니다. */
+  .for-you-product--featured {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .for-you {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+}
+
+/* 움직임 최소화 설정 */
+@media (prefers-reduced-motion: reduce) {
+
+  .for-you-brand-list button,
+  .for-you-image-card img {
+    transition: none;
+  }
+
+  .for-you-image-card:hover img {
+    transform: none;
+  }
+}
+
+/* 모바일 추천 브랜드: 박스 대신 가벼운 텍스트 탭 */
+@media (max-width: 768px) {
+  .for-you .for-you-brand-list {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 24px;
+    width: fit-content;
+    max-width: 100%;
+    margin: 22px auto 0;
+    padding: 0 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .for-you .for-you-brand-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .for-you .for-you-brand-list button {
+    position: relative;
+    flex: 0 0 auto;
+    width: auto;
+    min-height: 44px;
+    margin: 0;
+    padding: 10px 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #999;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.4;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color .2s ease;
+  }
+
+  /* 기존 박스·밑줄 효과 제거 */
+  .for-you .for-you-brand-list button::before,
+  .for-you .for-you-brand-list button::after {
+    display: none;
+  }
+
+  .for-you .for-you-brand-list button:hover,
+  .for-you .for-you-brand-list button.active,
+  .for-you .for-you-brand-list button[aria-pressed='true'] {
+    border: 0;
+    background: transparent;
+    color: #111;
+  }
+
+  .for-you .for-you-brand-list button.active,
+  .for-you .for-you-brand-list button[aria-pressed='true'] {
+    font-weight: 600;
+  }
+
+  .for-you .for-you-brand-list button:focus-visible {
+    outline: 1px solid #777;
+    outline-offset: -1px;
+  }
+}

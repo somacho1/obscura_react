@@ -9,6 +9,7 @@ import AdminProductCreatePage from './admin/pages/Product/AdminProductCreatePage
 import AdminProductEditPage from './admin/pages/Product/AdminProductEditPage';
 import AdminOrderListPage from './admin/pages/Order/AdminOrderListPage';
 import AdminOrderDetailPage from './admin/pages/Order/AdminOrderDetailPage';
+import AdminBannerPage from './admin/pages/Banner/AdminBannerPage';
 
 import Home from './pages/HomePage/HomePage';
 import ProductListPage from './pages/ProductListPage/ProductListPage';
@@ -60,6 +61,7 @@ function App() {
           <Route path="products/:productNo/edit" element={<AdminProductEditPage />} />
           <Route path="orders" element={<AdminOrderListPage />} />
           <Route path="orders/:orderNo" element={<AdminOrderDetailPage />} />
+          <Route path="banners" element={<AdminBannerPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
