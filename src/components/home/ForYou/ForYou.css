@@ -1,6 +1,4 @@
-/* =========================
-   FOR YOU 전체 영역
-========================= */
+/* 전체 영역 */
 .for-you {
   box-sizing: border-box;
   width: 100%;
@@ -22,6 +20,7 @@
   min-width: 0;
 }
 
+/* 제목과 설명 */
 .for-you-title h2 {
   margin: 0 0 12px;
   font-size: 36px;
@@ -36,49 +35,48 @@
   line-height: 1.7;
 }
 
-/* =========================
-   추천 브랜드 선택
-========================= */
+/* 추천 브랜드: 상품 필터가 아닌 브랜드관 이동 링크 */
 .for-you-brand-list {
   display: flex;
   flex-direction: column;
+  gap: 4px;
   margin-top: 30px;
 }
 
-.for-you-brand-list button {
+.for-you-brand-link {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
   width: 100%;
   min-height: 48px;
-  padding: 12px 14px;
+  padding: 10px 0;
   border: 0;
-  border-bottom: 1px solid #e5e5e5;
-  background: #fff;
-  color: #777;
-  font-size: 13px;
-  line-height: 1.4;
+  background: transparent;
+  color: #333;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.5;
   text-align: left;
+  text-decoration: none;
   overflow-wrap: anywhere;
-  cursor: pointer;
-  transition: color .2s ease, background .2s ease;
-}
-
-.for-you-brand-list button.active {
-  background: #111;
-  color: #fff;
+  transition: color .2s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .for-you-brand-list button:hover {
-    background: #111;
-    color: #fff;
+  .for-you-brand-link:hover {
+    color: #000;
+    text-decoration: underline;
+    text-underline-offset: 5px;
   }
 }
 
-.for-you-brand-list button:focus-visible,
+.for-you-brand-link:focus-visible,
 .for-you-refresh:focus-visible {
   outline: 2px solid #111;
   outline-offset: 2px;
 }
 
+/* 로그인 회원 추천 새로고침 */
 .for-you-refresh {
   margin-top: 18px;
   padding: 6px 0;
@@ -90,9 +88,7 @@
   cursor: pointer;
 }
 
-/* =========================
-   PC: 작은 이미지 6개 + 오른쪽 큰 이미지
-========================= */
+/* PC: 작은 이미지 최대 6개와 오른쪽 큰 이미지 */
 .for-you-products {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 2fr);
@@ -104,13 +100,13 @@
   min-width: 0;
 }
 
-/* 첫 추천 상품은 오른쪽 끝에 크게 배치합니다. */
+/* 첫 추천 상품을 오른쪽 끝에 크게 표시 */
 .for-you-product--featured {
   grid-column: 4;
   grid-row: 1 / span 2;
 }
 
-/* 상품명·가격·하트 없이 대표 이미지만 표시합니다. */
+/* 상품명·가격·하트 없이 대표 이미지만 표시 */
 .for-you-image-card {
   display: block;
   position: relative;
@@ -139,7 +135,7 @@
   outline-offset: -2px;
 }
 
-/* 이미지 미등록 상품도 상세페이지로 이동할 수 있습니다. */
+/* 이미지 없는 상품도 상세페이지 링크 유지 */
 .for-you-no-image {
   display: flex;
   align-items: center;
@@ -150,7 +146,7 @@
   font-size: 12px;
 }
 
-/* 로딩·오류·상품 없음 안내 */
+/* 로딩·오류·빈 목록 안내 */
 .for-you-message {
   margin: 0;
   padding: 50px 15px;
@@ -169,9 +165,7 @@
   cursor: pointer;
 }
 
-/* =========================
-   태블릿: 작은 이미지 2열 + 오른쪽 큰 이미지
-========================= */
+/* 태블릿: 작은 이미지 2열과 오른쪽 큰 이미지 */
 @media (max-width: 1200px) {
   .for-you {
     padding-right: 40px;
@@ -194,9 +188,7 @@
   }
 }
 
-/* =========================
-   모바일: 큰 이미지 위 + 작은 이미지 2열
-========================= */
+/* 모바일: 제목·브랜드 링크 위, 추천 상품 아래 */
 @media (max-width: 768px) {
   .for-you {
     padding: 30px 15px 90px;
@@ -215,22 +207,40 @@
     font-size: 30px;
   }
 
-  /* 브랜드 목록은 가로 스크롤로 선택합니다. */
+  /* 박스 없는 텍스트 링크, 브랜드가 많으면 가로 스크롤 */
   .for-you-brand-list {
     flex-direction: row;
-    gap: 8px;
-    margin-top: 24px;
-    padding-bottom: 8px;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 24px;
+    width: fit-content;
+    max-width: 100%;
+    margin: 22px auto 0;
+    padding: 4px 0;
     overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .for-you-brand-list button {
+  .for-you-brand-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .for-you-brand-link {
     flex: 0 0 auto;
     width: auto;
-    min-height: 36px;
-    padding: 8px 14px;
-    border: 1px solid #ddd;
+    min-height: 44px;
+    padding: 10px 0;
+    color: #333;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
     white-space: nowrap;
+    overflow-wrap: normal;
+  }
+
+  .for-you-brand-link:focus-visible {
+    outline-offset: -2px;
   }
 
   .for-you-refresh {
@@ -243,7 +253,7 @@
     gap: 12px;
   }
 
-  /* 모바일에서는 첫 추천 이미지를 위쪽에 배치합니다. */
+  /* 첫 추천 상품은 위쪽에 크게 표시 */
   .for-you-product--featured {
     grid-column: 1 / -1;
     grid-row: 1;
@@ -257,80 +267,15 @@
   }
 }
 
-/* 움직임 최소화 설정 */
+/* 사용자 기기의 움직임 최소화 설정 반영 */
 @media (prefers-reduced-motion: reduce) {
 
-  .for-you-brand-list button,
+  .for-you-brand-link,
   .for-you-image-card img {
     transition: none;
   }
 
   .for-you-image-card:hover img {
     transform: none;
-  }
-}
-
-/* 모바일 추천 브랜드: 박스 대신 가벼운 텍스트 탭 */
-@media (max-width: 768px) {
-  .for-you .for-you-brand-list {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 24px;
-    width: fit-content;
-    max-width: 100%;
-    margin: 22px auto 0;
-    padding: 0 4px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .for-you .for-you-brand-list::-webkit-scrollbar {
-    display: none;
-  }
-
-  .for-you .for-you-brand-list button {
-    position: relative;
-    flex: 0 0 auto;
-    width: auto;
-    min-height: 44px;
-    margin: 0;
-    padding: 10px 0;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    color: #999;
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 1.4;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: color .2s ease;
-  }
-
-  /* 기존 박스·밑줄 효과 제거 */
-  .for-you .for-you-brand-list button::before,
-  .for-you .for-you-brand-list button::after {
-    display: none;
-  }
-
-  .for-you .for-you-brand-list button:hover,
-  .for-you .for-you-brand-list button.active,
-  .for-you .for-you-brand-list button[aria-pressed='true'] {
-    border: 0;
-    background: transparent;
-    color: #111;
-  }
-
-  .for-you .for-you-brand-list button.active,
-  .for-you .for-you-brand-list button[aria-pressed='true'] {
-    font-weight: 600;
-  }
-
-  .for-you .for-you-brand-list button:focus-visible {
-    outline: 1px solid #777;
-    outline-offset: -1px;
   }
 }

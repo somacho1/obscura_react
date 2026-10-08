@@ -26,6 +26,8 @@ import MyOrderListPage from './pages/MyPage/MyOrderListPage';
 import MyWishlistPage from './pages/MyPage/MyWishlistPage';
 import MyProfilePage from './pages/MyPage/MyProfilePage';
 import MyAddressPage from './pages/MyPage/MyAddressPage';
+import BrandPage from './pages/BrandPage/BrandPage';
+
 
 
 
@@ -38,6 +40,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<ProductListPage />} />
           <Route path="/products/:productNo" element={<ProductDetailPage />} />
+          <Route path="/brands/:brandNo" element={<BrandPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/join" element={<JoinPage />} />
