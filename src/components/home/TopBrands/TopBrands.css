@@ -250,6 +250,87 @@
   font-weight: 500;
 }
 
+/* 로고가 없는 브랜드도 이름으로 선택할 수 있습니다. */
+.top-brand-tab span {
+  color: #111;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: .4;
+}
+
+.top-brand-tab.active span {
+  opacity: 1;
+}
+
+.top-brands-message {
+  padding: 24px 0;
+  color: #666;
+  font-size: 14px;
+  text-align: center;
+}
+
+.top-brand-visual-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  padding: 20px;
+  color: #777;
+  font-size: 24px;
+}
+
+/* 실제 상품 카드와 공통 찜 기능을 사용합니다. */
+.top-brand-content .product-card {
+  min-width: 0;
+  background: #fff;
+}
+
+.top-brand-content .product-card-image img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+}
+
+/* DB 대표 이미지 높이에 관계없이 상품이 정상 배치되도록 조정합니다. */
+@media (max-width: 1024px) {
+  .top-brand-showcase {
+    display: block;
+    padding-bottom: 0;
+  }
+
+  .top-brand-content {
+    position: static;
+    padding: 0;
+    margin-top: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .top-brand-showcase {
+    padding-bottom: 0;
+  }
+
+  .top-brand-content {
+    position: static;
+    padding: 0;
+    margin-top: 20px;
+  }
+
+  .top-brand-content .product-card-name {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .top-brand-showcase {
+    padding-bottom: 0;
+  }
+
+  .top-brand-content {
+    padding: 0;
+  }
+}
+
 /* =========================
    1400
 ========================= */
@@ -267,6 +348,35 @@
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
     gap: 40px;
   }
+}
+
+/* 기본 상태: 살짝 투명하게 표시 */
+.top-brand-tab img,
+.top-brand-tab span {
+  opacity: .4;
+  filter: none;
+  transform: none;
+  transition: opacity .25s ease;
+}
+
+/* 호버·선택 상태: 원래 색상으로 선명하게 표시 */
+.top-brand-tab:hover img,
+.top-brand-tab:hover span,
+.top-brand-tab.active img,
+.top-brand-tab.active span {
+  opacity: 1;
+  transform: none;
+}
+
+/* 기존 클릭 시 축소 효과 제거 */
+.top-brand-tab:active img,
+.top-brand-tab:active span {
+  transform: none;
+}
+
+/* 기존 밑줄 효과 제거 */
+.top-brand-tab::after {
+  display: none;
 }
 
 /* =========================

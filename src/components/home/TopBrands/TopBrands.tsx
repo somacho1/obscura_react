@@ -1,187 +1,225 @@
-import { useState } from 'react';
-import { Navigation } from 'swiper/modules';
+import { useEffect, useRef, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import type { Swiper as SwiperInstance } from 'swiper';
+import { getTopBrands } from '../../../api/brandApi';
+import { getProductsByBrand } from '../../../api/productApi';
+import type { BrandResponse } from '../../../ts/brand';
+import type { Product, ProductResponse } from '../../../ts/product';
+import { getImageUrl } from '../../../ts/imageUrl';
+import ProductCard from '../../product/ProductCard';
 import 'swiper/css';
 import './TopBrands.css';
 
-// 브랜드 로고
-import youthLogo from '../../../assets/images/obscura/Rectangle 72.png';
-import hopeLogo from '../../../assets/images/obscura/Rectangle 73.png';
-import logo032c from '../../../assets/images/obscura/032c_logo.png';
-import eytysLogo from '../../../assets/images/obscura/Rectangle 74.png';
-import sansanLogo from '../../../assets/images/obscura/Rectangle 75.png';
-import openyyLogo from '../../../assets/images/obscura/Rectangle 76.png';
+// 공통 ProductCard에 맞춰 서버 상품 데이터를 변환합니다.
+function toCardProduct(product: ProductResponse): Product {
+  const categoryName = product.categoryName.toUpperCase();
+  const category: Product['category'] =
+    categoryName === 'WOMEN' ? 'WOMEN'
+      : categoryName === 'SHOES' ? 'SHOES'
+        : categoryName === 'ACC' ? 'ACC'
+          : 'MEN';
 
-// 현재 032c 대표 이미지 / 상품 이미지
-import main032c from '../../../assets/images/obscura/MdPick-032c_wide3.webp';
-import product01 from '../../../assets/images/obscura/MdPick-032c_1.jpg';
-import product02 from '../../../assets/images/obscura/MdPick032c_2.jpg';
-import product03 from '../../../assets/images/obscura/MdPick-032c_3.jpg';
-
-interface Brand {
-  id: number;
-  name: string;
-  logo: string;
+  return {
+    id: product.no,
+    brand: product.brandName,
+    name: product.name,
+    price: product.salePrice,
+    image: product.mainImageUrl ?? '',
+    category,
+    discountRate: product.discountRate > 0 ? product.discountRate : undefined,
+    originalPrice: product.discountRate > 0 ? product.price : undefined,
+  };
 }
-
-interface BrandProduct {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-}
-
-const brands: Brand[] = [
-  { id: 1, name: 'YOUTH', logo: youthLogo },
-  { id: 2, name: 'HOPE', logo: hopeLogo },
-  { id: 3, name: '032c', logo: logo032c },
-  { id: 4, name: 'EYTYS', logo: eytysLogo },
-  { id: 5, name: 'SAN SAN GEAR', logo: sansanLogo },
-  { id: 6, name: 'OPEN YY', logo: openyyLogo },
-];
-
-const products: BrandProduct[] = [
-  { id: 1, name: '[032c] “Clay” Utility Bomber Jacket', price: 1830000, image: product01 },
-  { id: 2, name: '[032c] “Clay” Utility Trousers', price: 980000, image: product02 },
-  { id: 3, name: '[032c] Leather Keychain', price: 190000, image: product03 },
-];
 
 export default function TopBrands() {
-  const [selectedBrand, setSelectedBrand] = useState('032c');
-  const [likedProducts, setLikedProducts] = useState<number[]>([]);
+  const [brands, setBrands] = useState<BrandResponse[]>([]);
+  const [selectedNo, setSelectedNo] = useState<number | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [brandsLoading, setBrandsLoading] = useState(true);
+  const [productsLoading, setProductsLoading] = useState(false);
+  const [brandsError, setBrandsError] = useState('');
+  const [productsError, setProductsError] = useState('');
+  const brandSwiper = useRef<SwiperInstance | null>(null);
 
-  // 상품 찜 ON / OFF
-  const toggleLike = (id: number) => {
-    setLikedProducts((prev) =>
-      prev.includes(id)
-        ? prev.filter((productId) => productId !== id)
-        : [...prev, id]
-    );
+  // 서버가 정렬한 노출 브랜드를 조회하고 첫 브랜드를 선택합니다.
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadBrands = async () => {
+      try {
+        const data = await getTopBrands(controller.signal);
+        if (controller.signal.aborted) return;
+
+        setBrands(data);
+        setSelectedNo(data[0]?.no ?? null);
+      } catch (error) {
+        if (controller.signal.aborted) return;
+        setBrandsError(error instanceof Error ? error.message : '브랜드 조회 실패');
+      } finally {
+        if (!controller.signal.aborted) setBrandsLoading(false);
+      }
+    };
+
+    void loadBrands();
+    return () => controller.abort();
+  }, []);
+
+  // 브랜드 전환 중 이전 요청이 늦게 끝나도 새 브랜드의 상품을 덮어쓰지 않습니다.
+  useEffect(() => {
+    if (selectedNo === null) return;
+    let cancelled = false;
+
+    const loadProducts = async () => {
+      setProductsLoading(true);
+      setProductsError('');
+      setProducts([]);
+
+      try {
+        const data = await getProductsByBrand(selectedNo);
+        if (cancelled) return;
+
+        // 판매중 상품만 최신 등록순으로 정렬하고 최대 3개 표시합니다.
+        const visible = data
+          .filter((product) => product.statusNo === 1)
+          .sort((a, b) => b.no - a.no)
+          .slice(0, 3)
+          .map(toCardProduct);
+
+        setProducts(visible);
+      } catch (error) {
+        if (cancelled) return;
+        setProductsError(error instanceof Error ? error.message : '상품 조회 실패');
+      } finally {
+        if (!cancelled) setProductsLoading(false);
+      }
+    };
+
+    void loadProducts();
+    return () => { cancelled = true; };
+  }, [selectedNo]);
+
+  const selectedBrand = brands.find((brand) => brand.no === selectedNo);
+
+  // 브랜드 변경 즉시 기존 상품을 숨겨 다른 브랜드의 상품이 잠시 보이지 않게 합니다.
+  const handleSelectBrand = (brandNo: number) => {
+    if (brandNo === selectedNo) return;
+    setProducts([]);
+    setProductsError('');
+    setProductsLoading(true);
+    setSelectedNo(brandNo);
   };
 
-  // 가격에 천 단위 콤마 적용
-  const formatPrice = (price: number) => price.toLocaleString('ko-KR');
+  // 노출 설정한 브랜드가 없으면 메인 영역 자체를 숨깁니다.
+  if (!brandsLoading && !brandsError && brands.length === 0) return null;
 
   return (
     <section className="top-brands">
       <div className="top-brands-inner">
-
-        {/* 제목 */}
         <div className="top-brands-heading">
           <h2>Top Brands</h2>
         </div>
 
-        {/* 브랜드 로고 슬라이더 */}
-        <div className="brand-slider-wrap">
-          <button type="button" className="brand-prev" aria-label="이전 브랜드">‹</button>
+        {brandsLoading && <p className="top-brands-message" role="status">브랜드를 불러오는 중입니다.</p>}
+        {brandsError && <p className="top-brands-message" role="alert">{brandsError}</p>}
 
-          <Swiper
-            modules={[Navigation]}
-            navigation={{ prevEl: '.brand-prev', nextEl: '.brand-next' }}
-            spaceBetween={20}
-            slidesPerView={3}
-            breakpoints={{
-              480: { slidesPerView: 3, spaceBetween: 18 },
-              769: { slidesPerView: 4, spaceBetween: 24 },
-              1025: { slidesPerView: 5, spaceBetween: 30 },
-            }}
-          >
-            {brands.map((brand) => (
-              <SwiperSlide key={brand.id}>
-                <button
-                  type="button"
-                  className={`top-brand-tab ${selectedBrand === brand.name ? 'active' : ''}`}
-                  onClick={() => setSelectedBrand(brand.name)}
-                  aria-label={`${brand.name} 브랜드 보기`}
-                >
-                  <img src={brand.logo} alt={brand.name} />
-                </button>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+        {!brandsLoading && !brandsError && selectedBrand && (
+          <>
+            {/* 브랜드 로고 슬라이더: 로고가 없으면 브랜드명을 표시합니다. */}
+            <div className="brand-slider-wrap">
+              <button
+                type="button"
+                className="brand-prev"
+                aria-label="이전 브랜드"
+                onClick={() => brandSwiper.current?.slidePrev()}
+              >
+                ‹
+              </button>
 
-          <button type="button" className="brand-next" aria-label="다음 브랜드">›</button>
-        </div>
-
-        {/* 브랜드 쇼케이스 */}
-        <div className="top-brand-showcase">
-
-          {/* 대표 이미지 */}
-          <div className="top-brand-visual">
-            <img src={main032c} alt="032c 브랜드 대표 이미지" />
-          </div>
-
-          {/* 상품 영역 */}
-          <div className="top-brand-content">
-
-            {/* PC + TABLET : 상품 3개 고정 */}
-            <div className="top-brand-products-desktop">
-              {products.map((product) => {
-                const liked = likedProducts.includes(product.id);
-
-                return (
-                  <article className="top-brand-product" key={product.id}>
-                    <div className="top-brand-product-image">
-                      <img src={product.image} alt={product.name} />
-
-                      {/* 찜 버튼 */}
-                      <button
-                        type="button"
-                        className={`top-brand-like ${liked ? 'active' : ''}`}
-                        aria-label={liked ? '찜 삭제' : '찜 추가'}
-                        aria-pressed={liked}
-                        onClick={() => toggleLike(product.id)}
-                      >
-                        <span aria-hidden="true">{liked ? '♥' : '♡'}</span>
-                      </button>
-                    </div>
-
-                    <div className="top-brand-product-info">
-                      <p>{product.name}</p>
-                      <strong>￦{formatPrice(product.price)}</strong>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-
-            {/* MOBILE : 768px 이하부터 2개씩 Swiper */}
-            <div className="top-brand-products-mobile">
-              <Swiper spaceBetween={12} slidesPerView={2}>
-                {products.map((product) => {
-                  const liked = likedProducts.includes(product.id);
-
-                  return (
-                    <SwiperSlide key={product.id}>
-                      <article className="top-brand-product">
-                        <div className="top-brand-product-image">
-                          <img src={product.image} alt={product.name} />
-
-                          {/* 찜 버튼 */}
-                          <button
-                            type="button"
-                            className={`top-brand-like ${liked ? 'active' : ''}`}
-                            aria-label={liked ? '찜 삭제' : '찜 추가'}
-                            aria-pressed={liked}
-                            onClick={() => toggleLike(product.id)}
-                          >
-                            <span aria-hidden="true">{liked ? '♥' : '♡'}</span>
-                          </button>
-                        </div>
-
-                        <div className="top-brand-product-info">
-                          <p>{product.name}</p>
-                          <strong>￦{formatPrice(product.price)}</strong>
-                        </div>
-                      </article>
-                    </SwiperSlide>
-                  );
-                })}
+              <Swiper
+                onSwiper={(swiper) => { brandSwiper.current = swiper; }}
+                spaceBetween={20}
+                slidesPerView={3}
+                watchOverflow
+                breakpoints={{
+                  480: { slidesPerView: 3, spaceBetween: 18 },
+                  769: { slidesPerView: 4, spaceBetween: 24 },
+                  1025: { slidesPerView: 5, spaceBetween: 30 },
+                }}
+              >
+                {brands.map((brand) => (
+                  <SwiperSlide key={brand.no}>
+                    <button
+                      type="button"
+                      className={`top-brand-tab ${selectedNo === brand.no ? 'active' : ''}`}
+                      aria-label={`${brand.name} 브랜드 보기`}
+                      aria-pressed={selectedNo === brand.no}
+                      onClick={() => handleSelectBrand(brand.no)}
+                    >
+                      {brand.logoUrl
+                        ? <img src={getImageUrl(brand.logoUrl)} alt={brand.name} />
+                        : <span>{brand.name}</span>}
+                    </button>
+                  </SwiperSlide>
+                ))}
               </Swiper>
+
+              <button
+                type="button"
+                className="brand-next"
+                aria-label="다음 브랜드"
+                onClick={() => brandSwiper.current?.slideNext()}
+              >
+                ›
+              </button>
             </div>
 
-          </div>
-        </div>
+            <div className="top-brand-showcase">
+              {/* 선택한 브랜드의 대표 이미지 */}
+              <div className="top-brand-visual">
+                {selectedBrand.visualUrl
+                  ? <img
+                    src={getImageUrl(selectedBrand.visualUrl)}
+                    alt={`${selectedBrand.name} 브랜드 대표 이미지`}
+                  />
+                  : <div className="top-brand-visual-placeholder">{selectedBrand.name}</div>}
+              </div>
+
+              <div className="top-brand-content">
+                {productsLoading && <p className="top-brands-message" role="status">상품을 불러오는 중입니다.</p>}
+                {productsError && <p className="top-brands-message" role="alert">{productsError}</p>}
+                {!productsLoading && !productsError && products.length === 0
+                  && <p className="top-brands-message">판매 중인 상품이 없습니다.</p>}
+
+                {!productsLoading && !productsError && products.length > 0 && (
+                  <>
+                    {/* PC·태블릿: 상품 3개 고정 */}
+                    <div className="top-brand-products-desktop">
+                      {products.map((product) => (
+                        <ProductCard key={product.id} product={product} />
+                      ))}
+                    </div>
+
+                    {/* 모바일: 2개씩 표시하고 좌우로 슬라이드 */}
+                    <div className="top-brand-products-mobile">
+                      <Swiper
+                        key={selectedNo}
+                        slidesPerView={2}
+                        spaceBetween={12}
+                        watchOverflow
+                      >
+                        {products.map((product) => (
+                          <SwiperSlide key={product.id}>
+                            <ProductCard product={product} />
+                          </SwiperSlide>
+                        ))}
+                      </Swiper>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

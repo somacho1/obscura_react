@@ -6,6 +6,7 @@ import type { BrandResponse } from '../../../ts/brand';
 import type { ProductResponse } from '../../../ts/product';
 import { getImageUrl } from '../../../ts/imageUrl';
 import './AdminBrandDetailPage.css';
+import TopBrandSettings from './TopBrandSettings';
 
 function AdminBrandDetailPage() {
     const navigate = useNavigate();
@@ -192,6 +193,13 @@ function AdminBrandDetailPage() {
                     <p>{brand.statusNo === 1 ? '사용 중인 브랜드' : '비활성 브랜드'}</p>
                 </div>
             </div>
+
+            {/* 브랜드별 메인 노출 설정 */}
+            <TopBrandSettings
+                key={brand.no}
+                brand={brand}
+                onSaved={setBrand}
+            />
 
             {/* 상품 목록 상단 */}
             <div className="brand-product-heading">

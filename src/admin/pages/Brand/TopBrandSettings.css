@@ -1,0 +1,51 @@
+.top-brand-settings {
+    margin: 24px 0 32px;
+    padding: 24px;
+    border: 1px solid #ddd;
+    background: #fff;
+}
+.top-brand-settings h2 {
+    margin: 0 0 8px;
+    font-size: 18px;
+}
+.top-brand-settings p {
+    margin: 8px 0 0;
+    color: #666;
+    font-size: 13px;
+    line-height: 1.6;
+}
+.top-brand-settings-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-end;
+    margin-top: 20px;
+}
+.top-brand-settings-controls label {
+    display: grid;
+    gap: 8px;
+    font-size: 13px;
+}
+.top-brand-settings-controls input,
+.top-brand-settings-controls select {
+    width: 160px;
+    height: 38px;
+    padding: 0 10px;
+    border: 1px solid #ccc;
+    background: #fff;
+}
+.top-brand-settings-controls button {
+    height: 38px;
+    padding: 0 18px;
+    border: 1px solid #111;
+    background: #111;
+    color: #fff;
+    cursor: pointer;
+}
+.top-brand-settings-controls button:disabled {
+    opacity: .5;
+    cursor: wait;
+}
+.top-brand-settings .top-brand-settings-error {
+    color: #c62828;
+}
