@@ -1,6 +1,7 @@
+import { apiFetch } from './apiFetch';
 import type { MainBannerRequest, MainBannerResponse } from '../ts/mainBanner';
 
-const MAIN_BANNER_API_URL = 'http://localhost:9101/api/main-banners';
+const MAIN_BANNER_API_URL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:9101'}/api/main-banners`;
 
 // 서버의 오류 문구를 읽고, 정상 응답은 배너 데이터로 변환합니다.
 async function readResponse<T>(response: Response): Promise<T> {
@@ -24,19 +25,19 @@ async function readResponse<T>(response: Response): Promise<T> {
 
 // 관리자 전체 목록
 export async function getMainBanners(signal?: AbortSignal): Promise<MainBannerResponse[]> {
-    const response = await fetch(MAIN_BANNER_API_URL, { signal });
+    const response = await apiFetch(MAIN_BANNER_API_URL, { signal });
     return readResponse<MainBannerResponse[]>(response);
 }
 
 // Hero에 표시할 노출 중인 배너
 export async function getActiveMainBanners(signal?: AbortSignal): Promise<MainBannerResponse[]> {
-    const response = await fetch(`${MAIN_BANNER_API_URL}/active`, { signal });
+    const response = await apiFetch(`${MAIN_BANNER_API_URL}/active`, { signal });
     return readResponse<MainBannerResponse[]>(response);
 }
 
 // 신규 등록: 백엔드에서 숨김 상태로 생성합니다.
 export async function createMainBanner(data: MainBannerRequest): Promise<MainBannerResponse> {
-    const response = await fetch(MAIN_BANNER_API_URL, {
+    const response = await apiFetch(MAIN_BANNER_API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -49,7 +50,7 @@ export async function updateMainBanner(
     no: number,
     data: MainBannerRequest,
 ): Promise<MainBannerResponse> {
-    const response = await fetch(`${MAIN_BANNER_API_URL}/${no}`, {
+    const response = await apiFetch(`${MAIN_BANNER_API_URL}/${no}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -65,7 +66,7 @@ export async function uploadMainBannerImage(
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await fetch(`${MAIN_BANNER_API_URL}/${no}/image`, {
+    const response = await apiFetch(`${MAIN_BANNER_API_URL}/${no}/image`, {
         method: 'POST',
         body: formData,
     });
@@ -74,7 +75,7 @@ export async function uploadMainBannerImage(
 
 // 이미지 연결 제거: 서버에서 배너도 자동으로 숨깁니다.
 export async function removeMainBannerImage(no: number): Promise<MainBannerResponse> {
-    const response = await fetch(`${MAIN_BANNER_API_URL}/${no}/image`, {
+    const response = await apiFetch(`${MAIN_BANNER_API_URL}/${no}/image`, {
         method: 'DELETE',
     });
     return readResponse<MainBannerResponse>(response);
@@ -82,7 +83,7 @@ export async function removeMainBannerImage(no: number): Promise<MainBannerRespo
 
 // 배너 삭제: 204 응답이므로 JSON을 읽지 않습니다.
 export async function deleteMainBanner(no: number): Promise<void> {
-    const response = await fetch(`${MAIN_BANNER_API_URL}/${no}`, {
+    const response = await apiFetch(`${MAIN_BANNER_API_URL}/${no}`, {
         method: 'DELETE',
     });
 

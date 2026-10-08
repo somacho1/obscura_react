@@ -1,3 +1,4 @@
+import { apiFetch } from '../../../api/apiFetch';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ChangeEvent, DragEvent, FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -18,13 +19,13 @@ interface ProductOptionDTO { no: number; color: string | null; sizeValue: string
 interface StockDTO { no: number; qty: number; }
 interface ProductOptionForm { no?: number; stockNo?: number; color: string; sizeValue: string; qty: number; }
 
-const API_ROOT = 'http://localhost:9101/api';
+const API_ROOT = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:9101'}/api`;
 const MAX_DETAIL_IMAGES = 10;
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 // 이미지·옵션·재고 API 호출 시 백엔드 오류 메시지를 화면에 전달합니다.
 async function apiRequest<T = unknown>(path: string, init?: RequestInit): Promise<T> {
-    const response = await fetch(`${API_ROOT}${path}`, init?.body ? { ...init, headers: { 'Content-Type': 'application/json' } } : init);
+    const response = await apiFetch(`${API_ROOT}${path}`, init?.body ? { ...init, headers: { 'Content-Type': 'application/json' } } : init);
     if (!response.ok) throw new Error((await response.text()) || `요청 실패: ${response.status}`);
     return response.status === 204 ? undefined as T : response.json() as Promise<T>;
 }
@@ -316,7 +317,7 @@ function AdminProductEditPage() {
             }
 
             // 이미지·옵션 작업 뒤 기본정보와 판매상태를 저장합니다.
-            const response = await fetch(`http://localhost:9101/api/products/${no}`, {
+            const response = await apiFetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:9101'}/api/products/${no}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -344,7 +345,7 @@ function AdminProductEditPage() {
         try {
             setDeleting(true);
             setError('');
-            const response = await fetch(`http://localhost:9101/api/products/${no}/permanent`, { method: 'DELETE' });
+            const response = await apiFetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:9101'}/api/products/${no}/permanent`, { method: 'DELETE' });
             if (!response.ok) throw new Error((await response.text()) || '영구 삭제 실패');
             alert('상품이 영구 삭제되었습니다.');
             navigate(`/admin/brands/${brandNo}`);

@@ -1,11 +1,12 @@
+import { apiFetch } from './apiFetch';
 import type { DeliveryResponse } from '../ts/delivery';
 
-const DELIVERY_API_URL = 'http://localhost:9101/api/deliveries';
+const DELIVERY_API_URL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:9101'}/api/deliveries`;
 
 // 주문번호에 속한 배송정보를 조회합니다.
 // 부분배송을 고려해 첫 번째 배송만 가져오지 않고 전체 배열을 반환합니다.
 export async function getDeliveriesByOrder(orderNo: number): Promise<DeliveryResponse[]> {
-    const response = await fetch(`${DELIVERY_API_URL}/order/${orderNo}`);
+    const response = await apiFetch(`${DELIVERY_API_URL}/order/${orderNo}`);
 
     // 조회 오류를 배송정보 없음으로 처리하지 않고 화면에 안내합니다.
     if (!response.ok) {
@@ -45,7 +46,7 @@ export async function startDeliveryShipping(
     }
 
     // 조회와 출고 요청에 같은 서버 주소를 사용합니다.
-    const response = await fetch(`${DELIVERY_API_URL}/${deliveryNo}/shipping`, {
+    const response = await apiFetch(`${DELIVERY_API_URL}/${deliveryNo}/shipping`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         // 상태와 출고일시는 서버에서 결정하며, 화면에서는 송장정보만 보냅니다.
@@ -89,7 +90,7 @@ export async function completeDeliveryShipping(deliveryNo: number): Promise<Deli
     }
 
     // 배송 상태와 완료일시는 서버에서 결정하므로 요청 본문은 필요 없습니다.
-    const response = await fetch(`${DELIVERY_API_URL}/${deliveryNo}/complete`, {
+    const response = await apiFetch(`${DELIVERY_API_URL}/${deliveryNo}/complete`, {
         method: 'PUT',
     });
 

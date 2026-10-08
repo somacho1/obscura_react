@@ -14,7 +14,7 @@ export interface LoginResponse {
     id: string;
     name: string;
     email: string;
-    role: 'USER' | 'ADMIN';
+    role: 'USER' | 'ADMIN' | 'SUPER_ADMIN';
 }
 
 export interface JoinRequest {
@@ -31,7 +31,7 @@ export interface MemberResponse {
     name: string;
     email: string;
     phone: string;
-    role: 'USER' | 'ADMIN';
+    role: 'USER' | 'ADMIN' | 'SUPER_ADMIN';
     statusNo: number;
     cdate: string;
 }

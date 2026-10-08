@@ -4,11 +4,15 @@ import './AdminHeader.css';
 
 function AdminHeader() {
     const navigate = useNavigate();
-    const { logoutMember } = useAuth();
+    const { member, logoutMember } = useAuth();
 
-    const handleLogout = () => {
-        logoutMember();
-        navigate('/login');
+    const handleLogout = async () => {
+        try {
+            await logoutMember();
+            navigate('/login');
+        } catch (err) {
+            window.alert(err instanceof Error ? err.message : '로그아웃에 실패했습니다.');
+        }
     };
 
     return (
@@ -31,7 +35,7 @@ function AdminHeader() {
                 <NavLink to="/admin/brands" className={({ isActive }) => isActive ? 'active' : ''}>BRANDS</NavLink>
                 <NavLink to="/admin/products" className={({ isActive }) => isActive ? 'active' : ''}>PRODUCTS</NavLink>
                 <NavLink to="/admin/orders" className={({ isActive }) => isActive ? 'active' : ''}>ORDERS</NavLink>
-                <NavLink to="/admin/members" className={({ isActive }) => isActive ? 'active' : ''}>MEMBERS</NavLink>
+                {member?.role === 'SUPER_ADMIN' && (<NavLink to="/admin/members" className={({ isActive }) => isActive ? 'active' : ''}>MEMBERS</NavLink>)}
             </nav>
         </header>
     );

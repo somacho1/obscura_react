@@ -35,6 +35,7 @@ function scrollToTop() {
 export default function Header() {
   const navigate = useNavigate();
   const { member, logoutMember } = useAuth();
+  const isAdmin = member?.role === 'ADMIN' || member?.role === 'SUPER_ADMIN';
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [keyword, setKeyword] = useState('');
@@ -138,11 +139,15 @@ export default function Header() {
   };
 
   // 로그아웃 후 홈으로 이동합니다.
-  const handleLogout = () => {
-    logoutMember();
-    closePanels();
-    navigate('/');
-    scrollToTop();
+  const handleLogout = async () => {
+    try {
+      await logoutMember();
+      closePanels();
+      navigate('/');
+      scrollToTop();
+    } catch (err) {
+      window.alert(err instanceof Error ? err.message : '로그아웃에 실패했습니다.');
+    }
   };
 
   // 헤더의 찜·마이페이지 아이콘에서 공통으로 사용합니다.
@@ -188,6 +193,8 @@ export default function Header() {
           <button type="button" className="header-icon-button header-secondary" aria-label="찜 목록" onClick={() => openMemberPage('찜 목록')}><img src={likeIcon} alt="" /></button>
           <button type="button" className="header-icon-button header-secondary" aria-label="마이페이지" onClick={() => openMemberPage('마이페이지')}><img src={myPageIcon} alt="" /></button>
 
+          {/* 관리자 권한이 있는 계정에게만 진입 링크를 표시합니다. */}
+          {isAdmin && <Link to="/admin" className="header-account" onClick={handlePageLink}>ADMIN</Link>}
           {/* 로그인 상태에 따라 LOGIN·LOGOUT 표시 */}
           {member ? (
             <button type="button" className="header-account" onClick={handleLogout}>LOGOUT</button>
@@ -257,6 +264,7 @@ export default function Header() {
 
         {/* 모바일 회원 메뉴 */}
         <div className="mobile-menu-bottom">
+          {isAdmin && <Link to="/admin" onClick={handlePageLink}>ADMIN</Link>}
           <button type="button" onClick={() => openMemberPage('찜 목록')}>WISHLIST</button>
           <button type="button" onClick={() => openMemberPage('마이페이지')}>MY PAGE</button>
           {member ? <button type="button" onClick={handleLogout}>LOGOUT</button> : <Link to="/login" onClick={handlePageLink}>LOGIN</Link>}

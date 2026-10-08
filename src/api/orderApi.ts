@@ -1,6 +1,7 @@
+import { apiFetch } from './apiFetch';
 import type { AdminOrderPageResponse, OrderCreateRequest, OrderResponse } from '../ts/order';
 
-const ORDER_API_URL = 'http://localhost:9101/api/orders';
+const ORDER_API_URL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:9101'}/api/orders`;
 
 // 서버 오류가 일반 문자열 또는 JSON으로 와도 안내 메시지를 추출합니다.
 async function getErrorMessage(response: Response, fallback: string): Promise<string> {
@@ -23,7 +24,7 @@ async function getErrorMessage(response: Response, fallback: string): Promise<st
 // 선택한 장바구니 상품과 배송지로 주문을 생성합니다.
 // 최종 금액 계산과 재고 검증은 백엔드에서 처리합니다.
 export async function createOrder(request: OrderCreateRequest): Promise<OrderResponse> {
-    const response = await fetch(ORDER_API_URL, {
+    const response = await apiFetch(ORDER_API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(request),
@@ -39,7 +40,7 @@ export async function createOrder(request: OrderCreateRequest): Promise<OrderRes
 // 결제 대기 주문을 취소합니다.
 // 백엔드에서 취소 상태를 저장하고 차감한 재고를 복구합니다.
 export async function cancelPendingOrder(orderNo: number, memberNo: number): Promise<OrderResponse> {
-    const response = await fetch(`${ORDER_API_URL}/${orderNo}/cancel-pending`, {
+    const response = await apiFetch(`${ORDER_API_URL}/${orderNo}/cancel-pending`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mno: memberNo }),
@@ -54,7 +55,7 @@ export async function cancelPendingOrder(orderNo: number, memberNo: number): Pro
 
 // 페이지를 이동하거나 새로고침한 뒤에도 저장된 주문을 다시 조회합니다.
 export async function getOrderDetail(orderNo: number): Promise<OrderResponse> {
-    const response = await fetch(`${ORDER_API_URL}/${orderNo}`);
+    const response = await apiFetch(`${ORDER_API_URL}/${orderNo}`);
 
     if (!response.ok) {
         throw new Error(await getErrorMessage(response, '주문 조회에 실패했습니다.'));
@@ -71,7 +72,7 @@ export async function getAdminOrderPage(page = 1, size = 20): Promise<AdminOrder
         size: String(size),
     });
 
-    const response = await fetch(`${ORDER_API_URL}/admin/page?${query.toString()}`);
+    const response = await apiFetch(`${ORDER_API_URL}/admin/page?${query.toString()}`);
 
     // 조회 실패 시 서버가 전달한 오류 내용을 화면에 표시합니다.
     if (!response.ok) {
@@ -99,7 +100,7 @@ export async function getOrdersByMember(memberNo: number): Promise<OrderResponse
         throw new Error('잘못된 회원번호입니다.');
     }
 
-    const response = await fetch(`${ORDER_API_URL}/member/${memberNo}`);
+    const response = await apiFetch(`${ORDER_API_URL}/member/${memberNo}`);
 
     if (!response.ok) {
         throw new Error(await getErrorMessage(response, '주문 내역을 불러오지 못했습니다.'));
@@ -107,4 +108,5 @@ export async function getOrdersByMember(memberNo: number): Promise<OrderResponse
 
     return response.json();
 }
+
 

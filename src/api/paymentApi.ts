@@ -1,12 +1,13 @@
+import { apiFetch } from './apiFetch';
 import type { BankPaymentRequest, PaymentResponse, TossConfirmRequest } from '../ts/payment';
 import type { OrderResponse } from '../ts/order';
 
-const PAYMENT_API_URL = 'http://localhost:9101/api/payments';
+const PAYMENT_API_URL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:9101'}/api/payments`;
 
 // Toss 인증 결과를 백엔드로 보내 결제 승인을 요청합니다.
 // 시크릿 키와 Toss 승인 API 호출은 백엔드에서만 처리합니다.
 export async function confirmTossPayment(request: TossConfirmRequest): Promise<PaymentResponse> {
-    const response = await fetch(`${PAYMENT_API_URL}/toss/confirm`, {
+    const response = await apiFetch(`${PAYMENT_API_URL}/toss/confirm`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(request),
@@ -37,7 +38,7 @@ export async function confirmTossPayment(request: TossConfirmRequest): Promise<P
 
 // 무통장입금을 신청합니다. 실제 입금 확인 전에는 결제 완료로 처리하지 않습니다.
 export async function applyBankPayment(request: BankPaymentRequest): Promise<PaymentResponse> {
-    const response = await fetch(`${PAYMENT_API_URL}/bank/apply`, {
+    const response = await apiFetch(`${PAYMENT_API_URL}/bank/apply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(request),
@@ -65,7 +66,7 @@ export async function applyBankPayment(request: BankPaymentRequest): Promise<Pay
 // 주문번호로 저장된 결제정보를 조회합니다.
 // 무통장입금 신청 후 화면을 다시 열어도 입금자명·금액·상태를 복원할 때 사용합니다.
 export async function getPaymentByOrder(orderNo: number): Promise<PaymentResponse | null> {
-    const response = await fetch(`${PAYMENT_API_URL}/order/${orderNo}`);
+    const response = await apiFetch(`${PAYMENT_API_URL}/order/${orderNo}`);
 
     // 204는 결제 미신청 상태입니다. JSON 본문이 없으므로 바로 반환합니다.
     if (response.status === 204) return null;
@@ -93,7 +94,7 @@ export async function getPaymentByOrder(orderNo: number): Promise<PaymentRespons
 // 관리자가 무통장입금을 확인합니다.
 // 서버에서 결제 상태를 결제 완료로, 주문 상태를 결제 완료로 함께 변경합니다.
 export async function confirmBankDeposit(orderNo: number): Promise<PaymentResponse> {
-    const response = await fetch(`${PAYMENT_API_URL}/bank/order/${orderNo}/confirm`, {
+    const response = await apiFetch(`${PAYMENT_API_URL}/bank/order/${orderNo}/confirm`, {
         method: 'PUT',
     });
 
@@ -123,7 +124,7 @@ export async function cancelTossPayment(
     memberNo: number,
     reason: string,
 ): Promise<OrderResponse> {
-    const response = await fetch('http://localhost:9101/api/payments/toss/cancel', {
+    const response = await apiFetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:9101'}/api/payments/toss/cancel`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -1,3 +1,5 @@
+import RequireAdmin from './admin/RequireAdmin';
+import AdminMemberPage from './admin/pages/Member/AdminMemberPage';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import SiteLayout from './layouts/SiteLayout';
@@ -56,6 +58,7 @@ function App() {
         </Route>
 
         {/* 관리자 페이지: 기존 AdminLayout을 별도로 사용합니다. */}
+        <Route element={<RequireAdmin />}>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboardPage />} />
           <Route path="brands" element={<AdminBrandListPage />} />
@@ -65,6 +68,10 @@ function App() {
           <Route path="orders" element={<AdminOrderListPage />} />
           <Route path="orders/:orderNo" element={<AdminOrderDetailPage />} />
           <Route path="banners" element={<AdminBannerPage />} />
+          <Route element={<RequireAdmin superOnly />}>
+            <Route path="members" element={<AdminMemberPage />} />
+          </Route>
+        </Route>
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,6 +1,7 @@
+import { apiFetch } from './apiFetch';
 import type { MemberAddressRequest, MemberAddressResponse } from '../ts/memberAddress';
 
-const MEMBER_ADDRESS_API_URL = 'http://localhost:9101/api/member-addresses';
+const MEMBER_ADDRESS_API_URL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:9101'}/api/member-addresses`;
 
 // 서버에서 전달한 오류 메시지를 화면에 표시합니다.
 async function checkResponse(response: Response): Promise<void> {
@@ -30,14 +31,14 @@ async function checkResponse(response: Response): Promise<void> {
 
 // 회원별 저장 배송지 조회: 주문서에서도 사용합니다.
 export async function getMemberAddresses(memberNo: number): Promise<MemberAddressResponse[]> {
-    const response = await fetch(`${MEMBER_ADDRESS_API_URL}/member/${memberNo}`);
+    const response = await apiFetch(`${MEMBER_ADDRESS_API_URL}/member/${memberNo}`);
     await checkResponse(response);
     return response.json();
 }
 
 // 배송지 등록
 export async function createMemberAddress(data: MemberAddressRequest): Promise<MemberAddressResponse> {
-    const response = await fetch(MEMBER_ADDRESS_API_URL, {
+    const response = await apiFetch(MEMBER_ADDRESS_API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -51,7 +52,7 @@ export async function updateMemberAddress(
     addressNo: number,
     data: MemberAddressRequest,
 ): Promise<MemberAddressResponse> {
-    const response = await fetch(`${MEMBER_ADDRESS_API_URL}/${addressNo}`, {
+    const response = await apiFetch(`${MEMBER_ADDRESS_API_URL}/${addressNo}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -62,7 +63,7 @@ export async function updateMemberAddress(
 
 // 배송지 삭제
 export async function deleteMemberAddress(addressNo: number): Promise<void> {
-    const response = await fetch(`${MEMBER_ADDRESS_API_URL}/${addressNo}`, {
+    const response = await apiFetch(`${MEMBER_ADDRESS_API_URL}/${addressNo}`, {
         method: 'DELETE',
     });
     await checkResponse(response);

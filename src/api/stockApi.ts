@@ -1,9 +1,10 @@
+import { apiFetch } from './apiFetch';
 import type { StockCreateRequest, StockResponse } from '../ts/stock';
 
-const STOCK_API_URL = 'http://localhost:9101/api/stocks';
+const STOCK_API_URL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:9101'}/api/stocks`;
 
 export async function createStock(data: StockCreateRequest): Promise<StockResponse> {
-    const response = await fetch(STOCK_API_URL, {
+    const response = await apiFetch(STOCK_API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

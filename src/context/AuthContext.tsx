@@ -1,113 +1,85 @@
-import {
-    createContext,
-    useContext,
-    useEffect,
-    useState,
-    type ReactNode,
-} from 'react';
-
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
+import { getCurrentMember, logout } from '../api/memberApi';
 import type { LoginResponse } from '../ts/member';
 
-/**
- * localStorage에 로그인 회원정보를 저장할 때 사용할 key
- */
-const LOGIN_MEMBER_KEY = 'obscuraLoginMember';
-
 interface AuthContextType {
-    member: LoginResponse | null;
-    loginMember: (member: LoginResponse) => void;
-    logoutMember: () => void;
+  member: LoginResponse | null;
+  authLoading: boolean;
+  authError: string;
+  loginMember: (member: LoginResponse) => void;
+  logoutMember: () => Promise<void>;
+  refreshMember: () => Promise<void>;
 }
 
-/**
- * 로그인 정보를 여러 컴포넌트에서 공유하기 위한 Context
- */
-const AuthContext =
-    createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | null>(null);
 
-interface AuthProviderProps {
-    children: ReactNode;
-}
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [member, setMember] = useState<LoginResponse | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [authError, setAuthError] = useState('');
+  const requestVersion = useRef(0);
 
-export function AuthProvider({
-    children,
-}: AuthProviderProps) {
-    const [member, setMember] =
-        useState<LoginResponse | null>(null);
-
-    /**
-     * 새로고침해도 로그인 정보가 유지되도록
-     * localStorage에서 회원정보를 가져온다.
-     */
-    useEffect(() => {
-        const savedMember =
-            localStorage.getItem(LOGIN_MEMBER_KEY);
-
-        if (!savedMember) {
-            return;
-        }
-
-        try {
-            const parsedMember: LoginResponse =
-                JSON.parse(savedMember);
-
-            setMember(parsedMember);
-        } catch {
-            localStorage.removeItem(
-                LOGIN_MEMBER_KEY,
-            );
-        }
-    }, []);
-
-    /**
-     * 로그인 성공
-     */
-    const loginMember = (
-        loginMemberData: LoginResponse,
-    ) => {
-        setMember(loginMemberData);
-
-        localStorage.setItem(
-            LOGIN_MEMBER_KEY,
-            JSON.stringify(loginMemberData),
-        );
-    };
-
-    /**
-     * 로그아웃
-     */
-    const logoutMember = () => {
+  const refreshMember = async () => {
+    const version = ++requestVersion.current;
+    setAuthLoading(true);
+    setAuthError('');
+    try {
+      const current = await getCurrentMember();
+      if (version === requestVersion.current) setMember(current);
+    } catch (err) {
+      if (version === requestVersion.current) {
         setMember(null);
+        setAuthError(err instanceof Error ? err.message : '로그인 확인에 실패했습니다.');
+      }
+    } finally {
+      if (version === requestVersion.current) setAuthLoading(false);
+    }
+  };
 
-        localStorage.removeItem(
-            LOGIN_MEMBER_KEY,
-        );
+  useEffect(() => {
+    // 이전 localStorage 로그인 값은 신뢰하지 않고 서버 세션을 확인합니다.
+    localStorage.removeItem('obscuraLoginMember');
+    void refreshMember();
+    const refresh = () => { void refreshMember(); };
+    window.addEventListener('obscura-auth-refresh', refresh);
+    return () => {
+      requestVersion.current++;
+      window.removeEventListener('obscura-auth-refresh', refresh);
     };
+  }, []);
 
-    return (
-        <AuthContext.Provider
-            value={{
-                member,
-                loginMember,
-                logoutMember,
-            }}
-        >
-            {children}
-        </AuthContext.Provider>
-    );
+  // 탭으로 돌아오면 DB에서 바뀐 권한을 다시 확인합니다.
+  useEffect(() => {
+    const onFocus = () => { void refreshMember(); };
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, []);
+
+  const loginMember = (value: LoginResponse) => {
+    requestVersion.current++;
+    setMember(value);
+    setAuthLoading(false);
+    setAuthError('');
+  };
+
+  const logoutMember = async () => {
+    // 서버 로그아웃이 실패하면 로그인 상태를 유지해 다시 시도할 수 있게 합니다.
+    await logout();
+    requestVersion.current++;
+    setMember(null);
+    setAuthLoading(false);
+    setAuthError('');
+  };
+
+  return (
+    <AuthContext.Provider value={{ member, authLoading, authError, loginMember, logoutMember, refreshMember }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
-/**
- * 로그인 Context 사용
- */
 export function useAuth() {
-    const context = useContext(AuthContext);
-
-    if (!context) {
-        throw new Error(
-            'useAuth는 AuthProvider 내부에서 사용해야 합니다.',
-        );
-    }
-
-    return context;
+  const context = useContext(AuthContext);
+  if (!context) throw new Error('useAuth는 AuthProvider 내부에서 사용해야 합니다.');
+  return context;
 }

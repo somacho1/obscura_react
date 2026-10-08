@@ -1,3 +1,4 @@
+import { apiFetch } from './apiFetch';
 import type {
     WishlistCheckResponse,
     WishlistRequest,
@@ -5,7 +6,7 @@ import type {
 } from '../ts/wishlist';
 
 const WISHLIST_API_URL =
-    'http://localhost:9101/api/wishlists';
+    `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:9101'}/api/wishlists`;
 
 /**
  * 찜 등록
@@ -13,7 +14,7 @@ const WISHLIST_API_URL =
 export async function addWishlist(
     request: WishlistRequest,
 ): Promise<WishlistResponse> {
-    const response = await fetch(
+    const response = await apiFetch(
         WISHLIST_API_URL,
         {
             method: 'POST',
@@ -43,7 +44,7 @@ export async function checkWishlist(
     memberNo: number,
     productNo: number,
 ): Promise<boolean> {
-    const response = await fetch(
+    const response = await apiFetch(
         `${WISHLIST_API_URL}/member/${memberNo}/product/${productNo}/check`,
     );
 
@@ -69,7 +70,7 @@ export async function deleteWishlist(
     memberNo: number,
     productNo: number,
 ): Promise<void> {
-    const response = await fetch(
+    const response = await apiFetch(
         `${WISHLIST_API_URL}/member/${memberNo}/product/${productNo}`,
         {
             method: 'DELETE',
@@ -88,7 +89,7 @@ export async function deleteWishlist(
 
 // 로그인 회원의 찜 목록을 최신 등록순으로 조회합니다.
 export async function getWishlistsByMember(memberNo: number): Promise<WishlistResponse[]> {
-    const response = await fetch(`${WISHLIST_API_URL}/member/${memberNo}`);
+    const response = await apiFetch(`${WISHLIST_API_URL}/member/${memberNo}`);
 
     if (!response.ok) {
         throw new Error(`찜 목록 조회에 실패했습니다. (${response.status})`);

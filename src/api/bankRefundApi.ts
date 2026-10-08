@@ -1,3 +1,4 @@
+import { apiFetch } from './apiFetch';
 export interface BankRefundInfo {
     orderNo: number;
     amount: number;
@@ -18,7 +19,7 @@ export interface BankRefundForm {
     holder: string;
 }
 
-const API_URL = 'http://localhost:9101/api/payments/bank';
+const API_URL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:9101'}/api/payments/bank`;
 
 async function readResponse(response: Response): Promise<BankRefundInfo> {
     if (!response.ok) {
@@ -53,7 +54,7 @@ export async function getBankRefund(
         ? `${API_URL}/admin/order/${orderNo}/refund`
         : `${API_URL}/order/${orderNo}/refund?mno=${memberNo}`;
 
-    return readResponse(await fetch(url));
+    return readResponse(await apiFetch(url));
 }
 
 export async function requestBankRefund(
@@ -61,7 +62,7 @@ export async function requestBankRefund(
     memberNo: number,
     form: BankRefundForm,
 ): Promise<BankRefundInfo> {
-    return readResponse(await fetch(`${API_URL}/order/${orderNo}/refund`, {
+    return readResponse(await apiFetch(`${API_URL}/order/${orderNo}/refund`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...form, mno: memberNo }),
@@ -69,7 +70,7 @@ export async function requestBankRefund(
 }
 
 export async function completeBankRefund(orderNo: number): Promise<BankRefundInfo> {
-    return readResponse(await fetch(`${API_URL}/admin/order/${orderNo}/refund/complete`, {
+    return readResponse(await apiFetch(`${API_URL}/admin/order/${orderNo}/refund/complete`, {
         method: 'PUT',
     }));
 }

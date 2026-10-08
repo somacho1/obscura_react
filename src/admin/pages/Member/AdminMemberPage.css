@@ -1,0 +1,13 @@
+.admin-members { max-width: 1400px; margin: 0 auto; padding: 24px; }
+.admin-members h1 { margin-bottom: 12px; font-size: 24px; font-weight: 700; }
+.admin-members p { margin: 12px 0; line-height: 1.6; }
+.admin-members-search { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 24px 0; }
+.admin-members-search input { width: min(100%, 360px); padding: 10px 12px; border: 1px solid #ccc; }
+.admin-members-table-wrap { overflow-x: auto; }
+.admin-members table { width: 100%; border-collapse: collapse; white-space: nowrap; }
+.admin-members th, .admin-members td { padding: 14px 12px; border-bottom: 1px solid #ddd; text-align: left; }
+.admin-members th { background: #f5f5f5; font-weight: 600; }
+.admin-members select, .admin-members button { padding: 8px 12px; border: 1px solid #ccc; background: #fff; }
+.admin-members select:disabled { opacity: .6; cursor: not-allowed; }
+.admin-members [role='alert'] { color: #b00020; }
+@media (max-width: 768px) { .admin-members { padding: 16px 8px; } }

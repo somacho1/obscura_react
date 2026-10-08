@@ -1,13 +1,14 @@
+import { apiFetch } from './apiFetch';
 import type { ProductImageResponse } from '../ts/productImage';
 
-const PRODUCT_IMAGE_API_URL = 'http://localhost:9101/api/product-images';
+const PRODUCT_IMAGE_API_URL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:9101'}/api/product-images`;
 
 export async function uploadMainImage(productNo: number, file: File): Promise<ProductImageResponse> {
     const formData = new FormData();
     formData.append('pno', String(productNo));
     formData.append('file', file);
 
-    const response = await fetch(`${PRODUCT_IMAGE_API_URL}/upload/main`, {
+    const response = await apiFetch(`${PRODUCT_IMAGE_API_URL}/upload/main`, {
         method: 'POST',
         body: formData,
     });
@@ -28,7 +29,7 @@ export async function uploadDetailImages(productNo: number, files: File[]): Prom
         formData.append('files', file);
     });
 
-    const response = await fetch(`${PRODUCT_IMAGE_API_URL}/upload/detail`, {
+    const response = await apiFetch(`${PRODUCT_IMAGE_API_URL}/upload/detail`, {
         method: 'POST',
         body: formData,
     });

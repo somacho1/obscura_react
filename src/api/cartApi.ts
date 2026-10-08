@@ -1,3 +1,4 @@
+import { apiFetch } from './apiFetch';
 import type {
     AddCartItemRequest,
     CartItemDetailResponse,
@@ -5,7 +6,7 @@ import type {
 } from '../ts/cart';
 
 const CART_ITEM_API_URL =
-    'http://localhost:9101/api/cart-items';
+    `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:9101'}/api/cart-items`;
 
 /**
  * 장바구니 상품 추가
@@ -13,7 +14,7 @@ const CART_ITEM_API_URL =
 export async function addCartItem(
     request: AddCartItemRequest,
 ): Promise<CartItemResponse> {
-    const response = await fetch(
+    const response = await apiFetch(
         CART_ITEM_API_URL,
         {
             method: 'POST',
@@ -42,7 +43,7 @@ export async function addCartItem(
 export async function getCartItems(
     memberNo: number,
 ): Promise<CartItemDetailResponse[]> {
-    const response = await fetch(
+    const response = await apiFetch(
         `${CART_ITEM_API_URL}/member/${memberNo}/detail`,
     );
 
@@ -65,7 +66,7 @@ export async function updateCartItemQty(
     cartItemNo: number,
     qty: number,
 ): Promise<CartItemResponse> {
-    const response = await fetch(
+    const response = await apiFetch(
         `${CART_ITEM_API_URL}/${cartItemNo}`,
         {
             method: 'PUT',
@@ -96,7 +97,7 @@ export async function updateCartItemQty(
 export async function deleteCartItem(
     cartItemNo: number,
 ): Promise<void> {
-    const response = await fetch(
+    const response = await apiFetch(
         `${CART_ITEM_API_URL}/${cartItemNo}`,
         {
             method: 'DELETE',
