@@ -7,7 +7,7 @@ import type { OrderResponse } from '../../../ts/order';
 import type { PaymentResponse } from '../../../ts/payment';
 import type { DeliveryResponse } from '../../../ts/delivery';
 import './AdminOrderDetailPage.css';
-import BankRefundPanel from '../../../components/payment/BankRefundPanel';
+import RefundPanel from '../../../components/payment/RefundPanel';
 
 // 주문·결제·배송 상태 표시
 const ORDER_STATUS: Record<number, string> = {
@@ -163,7 +163,7 @@ export default function AdminOrderDetailPage() {
         if (delivery.ordno !== order.no) return;
         if (![2, 3, 4].includes(order.statusNo) || delivery.statusNo !== 0) return;
         // 취소·환불 요청이 있거나 환불 처리 중이면 출고를 막습니다.
-        if (order.cancelStatusNo !== 0 || refundBusy) return;
+        if (![0, 1].includes(order.cancelStatusNo) || refundBusy) return;
 
         const input = shippingInputs[delivery.no];
         const company = input?.company.trim() || '';
@@ -343,11 +343,11 @@ export default function AdminOrderDetailPage() {
                 {confirmError && <p className="admin-order-detail__confirm-error" role="alert">{confirmError}</p>}
             </section>
 
-            {payment?.method === 'BANK' && payment.statusNo !== 0 && (
-                <BankRefundPanel
-                    key={order.no}
-                    orderNo={order.no}
-                    memberNo={order.mno}
+            {payment && [1, 2, 3].includes(payment.statusNo) && (
+                <RefundPanel
+                    key={`${order.no}-${retryCount}`}
+                    order={order}
+                    method={payment.method}
                     admin
                     disabled={confirmLoading || shippingLoadingNo !== null || completeLoadingNo !== null}
                     onBusyChange={setRefundBusy}
@@ -383,7 +383,7 @@ export default function AdminOrderDetailPage() {
                         </dl>
 
                         {/* 배송 준비 상태: 송장 입력 및 출고 */}
-                        {order.cancelStatusNo === 0 && [2, 3, 4].includes(order.statusNo) && delivery.statusNo === 0 && (
+                        {[0, 1].includes(order.cancelStatusNo) && [2, 3, 4].includes(order.statusNo) && delivery.statusNo === 0 && (
                             <div className="admin-order-detail__shipping-form">
                                 <label>
                                     <span>택배사</span>

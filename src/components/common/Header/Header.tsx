@@ -49,24 +49,34 @@ export default function Header() {
   const closePanels = () => { setMenuOpen(false); setSearchOpen(false); };
   const handlePageLink = () => { closePanels(); scrollToTop(); };
 
-  // 로그인 변경과 장바구니 변경 알림을 받으면 상품 종류 수를 다시 조회합니다.
+  // 일반회원만 장바구니 개수를 조회합니다.
+  // 비로그인·관리자·최고관리자는 조회 요청과 이벤트 등록을 생략합니다.
   useEffect(() => {
+    setCartCount(0);
+    if (!member || isAdmin) return;
+
     let active = true;
     let requestNo = 0;
+    const memberNo = member.no;
 
     const refreshCartCount = async () => {
       const currentRequest = ++requestNo;
-      if (!member) { setCartCount(0); return; }
 
       try {
-        const items = await getCartItems(member.no);
-        if (active && currentRequest === requestNo) setCartCount(items.length);
+        const items = await getCartItems(memberNo);
+
+        // 계정 변경·화면 이동 후 도착한 이전 응답은 반영하지 않습니다.
+        if (active && currentRequest === requestNo) {
+          setCartCount(items.length);
+        }
       } catch (error) {
-        console.error('장바구니 개수 조회 실패:', error);
+        if (active && currentRequest === requestNo) {
+          setCartCount(0);
+          console.error('장바구니 개수 조회 실패:', error);
+        }
       }
     };
 
-    setCartCount(0);
     void refreshCartCount();
     window.addEventListener('cart-updated', refreshCartCount);
 
@@ -74,7 +84,7 @@ export default function Header() {
       active = false;
       window.removeEventListener('cart-updated', refreshCartCount);
     };
-  }, [member]);
+  }, [member?.no, isAdmin]);
 
   // 두 글자 이상 입력한 후 300ms 동안 입력이 없으면 최대 5개 상품을 조회합니다.
   useEffect(() => {
@@ -202,11 +212,18 @@ export default function Header() {
             <Link to="/login" className="header-account" onClick={handlePageLink}>LOGIN</Link>
           )}
 
-          {/* 장바구니와 상품 종류 수 */}
-          <Link to="/cart" className="header-icon-link header-cart" aria-label={`장바구니 ${cartCount}개`} onClick={handlePageLink}>
-            <img src={bagIcon} alt="" />
-            {cartCount > 0 && <span className="header-cart-count">{cartCount}</span>}
-          </Link>
+          {/* 관리자·최고관리자에게는 장바구니 아이콘을 표시하지 않습니다. */}
+          {!isAdmin && (
+            <Link
+              to="/cart"
+              className="header-icon-link header-cart"
+              aria-label={`장바구니 ${cartCount}개`}
+              onClick={handlePageLink}
+            >
+              <img src={bagIcon} alt="" />
+              {cartCount > 0 && <span className="header-cart-count">{cartCount}</span>}
+            </Link>
+          )}
 
           {/* 검색 입력과 실제 상품 검색 제안 */}
           {searchOpen && (
@@ -268,7 +285,8 @@ export default function Header() {
           <button type="button" onClick={() => openMemberPage('찜 목록')}>WISHLIST</button>
           <button type="button" onClick={() => openMemberPage('마이페이지')}>MY PAGE</button>
           {member ? <button type="button" onClick={handleLogout}>LOGOUT</button> : <Link to="/login" onClick={handlePageLink}>LOGIN</Link>}
-          <Link to="/cart" onClick={handlePageLink}>CART ({cartCount})</Link>
+          {/* 모바일에서도 관리자 장바구니 메뉴를 숨깁니다. */}
+          {!isAdmin && (  <Link to="/cart" onClick={handlePageLink}>CART ({cartCount})</Link>  )}
         </div>
       </nav>
     </header>

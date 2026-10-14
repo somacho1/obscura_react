@@ -1,0 +1,58 @@
+/* 주문 상세의 구분선·여백과 맞춘 환불 영역입니다. */
+.refund-panel { margin: 40px 0 32px; padding: 0; border: 0; background: #fff; color: #222; font-family: inherit; font-size: 13px; }
+.refund-panel__heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid #222; }
+.refund-panel .refund-panel__heading h2 { margin: 0; font-size: 15px; font-weight: 600; line-height: 1.5; }
+.refund-panel button { font: inherit; cursor: pointer; transition: background-color .15s, border-color .15s; }
+.refund-panel button:disabled { opacity: .4; cursor: default; }
+.refund-panel button:focus-visible, .refund-panel input:focus-visible { outline: 2px solid #222; outline-offset: 3px; }
+.refund-panel .refund-panel__refresh { padding: 7px 12px; border: 1px solid #ddd; background: #fff; color: #777; font-size: 11px; line-height: 1.3; }
+.refund-panel .refund-panel__refresh:hover:not(:disabled) { border-color: #999; color: #222; }
+.refund-panel p { margin: 8px 0; line-height: 1.7; overflow-wrap: anywhere; }
+.refund-panel__amounts { display: grid; grid-template-columns: 1fr 1fr; margin: 20px 0 0; padding: 18px 20px; background: #f6f6f6; }
+.refund-panel__amounts > div { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; }
+.refund-panel__amounts > div + div { padding-left: 24px; margin-left: 24px; border-left: 1px solid #ddd; }
+.refund-panel__amounts dt { color: #777; font-size: 12px; }
+.refund-panel__amounts dd { margin: 0; font-size: 14px; font-variant-numeric: tabular-nums; }
+.refund-panel__notice { margin: 18px 0 8px; color: #777; font-size: 12px; }
+.refund-panel__notice p { margin: 3px 0; }
+.refund-panel__notice p:first-child { color: #333; }
+.refund-panel fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
+.refund-panel label { display: flex; flex-direction: column; gap: 9px; margin: 0; font-size: 12px; }
+.refund-panel input { width: 100%; min-width: 0; box-sizing: border-box; height: 42px; padding: 10px 12px; border: 1px solid #ddd; border-radius: 0; background: #fff; color: #222; font: inherit; }
+.refund-panel input::placeholder { color: #aaa; }
+.refund-panel input:disabled { background: #fafafa; color: #888; }
+.refund-panel label.refund-panel__item { display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 0; border-bottom: 1px solid #eee; }
+.refund-panel__product { min-width: 0; }
+.refund-panel__name { display: block; font-size: 13px; font-weight: 500; line-height: 1.6; overflow-wrap: anywhere; }
+.refund-panel__product small { display: block; margin-top: 5px; color: #888; font-size: 11px; line-height: 1.6; }
+.refund-panel__quantity { display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0; }
+.refund-panel__quantity > span { color: #888; font-size: 10px; }
+.refund-panel__quantity input { width: 74px; height: 38px; padding: 7px 8px; text-align: center; font-size: 12px; }
+.refund-panel .refund-panel__reason { margin-top: 22px; }
+.refund-panel__bank-fields { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 16px; margin-top: 18px; }
+.refund-panel__total { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 24px; padding: 20px 0; border-top: 1px solid #ddd; border-bottom: 1px solid #eee; }
+.refund-panel__total > span { font-size: 13px; }
+.refund-panel__total strong { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.refund-panel__actions { display: flex; justify-content: flex-end; margin-top: 18px; }
+.refund-panel .refund-panel__submit { min-width: 170px; padding: 13px 20px; border: 1px solid #222; background: #222; color: #fff; font-size: 12px; line-height: 1.5; }
+.refund-panel .refund-panel__submit:hover:not(:disabled) { background: #444; border-color: #444; }
+.refund-panel__pending { margin-top: 20px; padding: 20px; background: #f7f7f7; }
+.refund-panel__pending > p:first-child { margin-top: 0; font-weight: 600; }
+.refund-panel__pending .refund-panel__submit { margin-top: 12px; }
+.refund-panel__history { margin-top: 28px; }
+.refund-panel__history h3 { margin: 0; padding-bottom: 12px; border-bottom: 1px solid #ddd; font-size: 13px; font-weight: 600; }
+.refund-panel__history article { padding: 16px 0; border-bottom: 1px solid #eee; }
+.refund-panel__history article strong { font-size: 12px; font-weight: 500; }
+.refund-panel__history article p, .refund-panel__history article small { color: #888; font-size: 11px; }
+.refund-panel__error { margin: 14px 0; color: #b00020; font-size: 12px; }
+@media (max-width: 768px) {
+    .refund-panel { margin-top: 32px; }
+    .refund-panel__amounts { grid-template-columns: 1fr; gap: 14px; padding: 16px; }
+    .refund-panel__amounts > div + div { margin: 0; padding: 0; border: 0; }
+    .refund-panel label.refund-panel__item { gap: 14px; padding: 18px 0; }
+    .refund-panel__name { font-size: 12px; }
+    .refund-panel__quantity input { width: 60px; }
+    .refund-panel__bank-fields { grid-template-columns: 1fr; gap: 16px; }
+    .refund-panel__total strong { font-size: 18px; }
+    .refund-panel__actions .refund-panel__submit { width: 100%; min-height: 44px; }
+}

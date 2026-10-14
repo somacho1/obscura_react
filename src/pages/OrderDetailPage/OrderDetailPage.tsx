@@ -12,7 +12,7 @@ import type { OrderResponse } from '../../ts/order';
 import type { PaymentResponse } from '../../ts/payment';
 import OrderDeliveryInfo from './OrderDeliveryInfo';
 import './OrderDetailPage.css';
-import BankRefundPanel from '../../components/payment/BankRefundPanel';
+import RefundPanel from '../../components/payment/RefundPanel';
 
 const ORDER_STATUS: Record<number, string> = {
     0: '주문 취소',
@@ -38,12 +38,14 @@ export default function OrderDetailPage() {
     const [retryCount, setRetryCount] = useState(0);
     const [paymentMethod, setPaymentMethod] = useState<'TOSS' | 'BANK'>('TOSS');
     const [depositor, setDepositor] = useState('');
+    const [refundBusy, setRefundBusy] = useState(false);
+    const [hasRefundHistory, setHasRefundHistory] = useState<boolean | null>(null);
     const [action, setAction] = useState<ActionType>('');
 
     // 모든 처리에서 같은 잠금을 사용해 중복 클릭을 방지합니다.
     const actionRef = useRef<ActionType>('');
     const versionRef = useRef(0);
-    const busy = action !== '';
+    const busy = action !== '' || refundBusy;
 
     const bankPayment = paymentInfo?.method === 'BANK'
         && paymentInfo.statusNo === 0 ? paymentInfo : null;
@@ -59,6 +61,8 @@ export default function OrderDetailPage() {
 
         setOrder(null);
         setPaymentInfo(null);
+        setHasRefundHistory(null);
+        setRefundBusy(false);
         setError('');
         setActionError('');
         setPaymentMethod('TOSS');
@@ -348,7 +352,7 @@ export default function OrderDetailPage() {
     const canRefund = paymentInfo?.method === 'TOSS'
         && paymentInfo.statusNo === 1
         && [2, 3].includes(order.statusNo)
-        && [0, 3].includes(order.cancelStatusNo);
+        && order.cancelStatusNo === 3 && hasRefundHistory === false;
 
     return (
         <main className="order-detail-page">
@@ -376,7 +380,7 @@ export default function OrderDetailPage() {
                                 <div>
                                     <h3>{item.productName}</h3>
                                     <p>COLOR: {item.color || '-'} / SIZE: {item.sizeValue || '-'}</p>
-                                    <p>수량 {item.qty}개</p>
+                                    <p>주문 수량 {item.qty}개 · 취소 {item.cancelQty}개 · 남은 수량 {item.qty - item.cancelQty}개</p>
                                 </div>
                                 <strong>{(item.price * item.qty).toLocaleString('ko-KR')}원</strong>
                             </article>
@@ -407,14 +411,16 @@ export default function OrderDetailPage() {
                 {/* 기존 배송정보와 배송조회 버튼을 유지합니다. */}
                 <OrderDeliveryInfo key={order.no} orderNo={order.no} />
 
-                {/* 입금 확인된 무통장 주문의 환불 요청 */}
-                {paymentInfo?.method === 'BANK' && paymentInfo.statusNo !== 0 && (
-                    <BankRefundPanel
-                        key={`${order.no}-${memberNo}`}
-                        orderNo={order.no}
-                        memberNo={memberNo!}
-                        disabled={busy}
-                        onUpdated={() => setRetryCount((prev) => prev + 1)}
+                {/* 부분환불과 남은 상품 전체환불을 동일한 이력으로 처리합니다. */}
+                {paymentInfo && [1, 2, 3].includes(paymentInfo.statusNo) && (
+                    <RefundPanel
+                        key={`${order.no}-${memberNo}-${retryCount}`}
+                        order={order}
+                        method={paymentInfo.method}
+                        disabled={action !== ''}
+                        onBusyChange={setRefundBusy}
+                        onHistoryChange={setHasRefundHistory}
+                        onUpdated={() => { setRefundBusy(false); setRetryCount(prev => prev + 1); }}
                     />
                 )}
 

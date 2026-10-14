@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { updateTopBrand } from '../../../api/brandApi';
-import type { BrandResponse } from '../../../ts/brand';
+import { updateTopBrand } from '../../api/brandApi';
+import type { BrandResponse } from '../../ts/brand';
 import './TopBrandSettings.css';
 
 interface TopBrandSettingsProps {
