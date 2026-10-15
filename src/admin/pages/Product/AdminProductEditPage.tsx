@@ -3,6 +3,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ChangeEvent, DragEvent, FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getBrands } from '../../../api/brandApi';
+import SizeGuideEditor from '../../components/SizeGuideEditor';
+import CategoryQuickAdd from '../../components/CategoryQuickAdd';
 import { getCategories } from '../../../api/categoryApi';
 import { getProductDetail } from '../../../api/productApi';
 import { uploadDetailImages, uploadMainImage } from '../../../api/productImageApi';
@@ -17,7 +19,7 @@ interface ProductImage { no?: number; url: string; file?: File; }
 interface ProductImageDTO { no: number; imageUrl: string; imageType: string; displayYn: string; seqNo: number; }
 interface ProductOptionDTO { no: number; color: string | null; sizeValue: string | null; useYn: string; }
 interface StockDTO { no: number; qty: number; }
-interface ProductOptionForm { no?: number; stockNo?: number; color: string; sizeValue: string; qty: number; }
+interface ProductOptionForm { no?: number; stockNo?: number; color: string; sizeValue: string; qty: number | ''; }
 
 const API_ROOT = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:9101'}/api`;
 const MAX_DETAIL_IMAGES = 10;
@@ -229,7 +231,7 @@ function AdminProductEditPage() {
 
         // 옵션별 필수값·재고수량·중복 조합을 저장 전에 확인합니다.
         for (const [index, option] of options.entries()) {
-            if (!option.color.trim() || !option.sizeValue.trim() || !Number.isSafeInteger(option.qty) || option.qty < 0) {
+            if (!option.color.trim() || !option.sizeValue.trim() || option.qty === '' || !Number.isSafeInteger(option.qty) || option.qty < 0) {
                 alert(`${index + 1}번째 옵션의 색상·사이즈·재고를 확인해주세요.`);
                 return;
             }
@@ -292,7 +294,7 @@ function AdminProductEditPage() {
                 });
                 await apiRequest(`/stocks/${option.stockNo}`, {
                     method: 'PUT',
-                    body: JSON.stringify({ qty: option.qty }),
+                    body: JSON.stringify({ qty: Number(option.qty) }),
                 });
             }
 
@@ -307,7 +309,7 @@ function AdminProductEditPage() {
                 });
                 await apiRequest('/stocks', {
                     method: 'POST',
-                    body: JSON.stringify({ pono: created.no, qty: option.qty }),
+                    body: JSON.stringify({ pono: created.no, qty: Number(option.qty) }),
                 });
             }
 
@@ -390,6 +392,7 @@ function AdminProductEditPage() {
                                             ))}
                                         </select>
                                     </label>
+                        <CategoryQuickAdd categories={categories} onCreated={category => { setCategories(previous => [...previous.filter(item => item.no !== category.no), category]); setCategoryNo(category.no); }} />
                                     <label className="admin-product-create__field admin-product-create__field--full">
                                         <span>CODE *</span>
                                         <input type="text" value={code} onChange={(e) => setCode(e.target.value)} maxLength={50} placeholder="예: OCBDFWMWJK003OL" required />
@@ -402,10 +405,7 @@ function AdminProductEditPage() {
                                         <span>DESCRIPTION</span>
                                         <textarea value={detail} onChange={(e) => setDetail(e.target.value)} rows={6} />
                                     </label>
-                                    <label className="admin-product-create__field admin-product-create__field--full">
-                                        <span>SIZE DETAIL</span>
-                                        <textarea value={sizeDetail} onChange={(e) => setSizeDetail(e.target.value)} rows={5} />
-                                    </label>
+                                    <SizeGuideEditor value={sizeDetail} onChange={setSizeDetail} />
                                 </div>
                             </section>
 
@@ -517,14 +517,14 @@ function AdminProductEditPage() {
                                         <div className="admin-product-create__option-row" key={option.no ?? `new-${index}`}>
                                             <input value={option.color} onChange={(e) => changeOption(index, { color: e.target.value })} placeholder="BLACK" />
                                             <input value={option.sizeValue} onChange={(e) => changeOption(index, { sizeValue: e.target.value })} placeholder="S / M / L" />
-                                            <input type="number" min="0" step="1" value={option.qty} onChange={(e) => changeOption(index, { qty: Number(e.target.value) })} />
+                                            <input type="text" inputMode="numeric" pattern="[0-9]*" placeholder="재고 입력" value={option.qty} onChange={(e) => { const value = e.target.value; if (/^\d*$/.test(value)) changeOption(index, { qty: value === '' ? '' : Number(value) }); }} />
                                             <button type="button" onClick={() => removeOption(index)}>REMOVE</button>
                                         </div>
                                     ))}
                                     <button
                                         type="button"
                                         className="admin-product-create__add-option"
-                                        onClick={() => setOptions((prev) => [...prev, { color: '', sizeValue: '', qty: 0 }])}
+                                        onClick={() => setOptions((prev) => [...prev, { color: prev[prev.length - 1]?.color ?? '', sizeValue: '', qty: '' }])}
                                     >
                                         + ADD OPTION
                                     </button>
@@ -554,3 +554,4 @@ function AdminProductEditPage() {
 }
 
 export default AdminProductEditPage;
+

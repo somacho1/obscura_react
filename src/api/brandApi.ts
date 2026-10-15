@@ -79,3 +79,18 @@ export async function removeBrandImage(
     }
     return response.json();
 }
+
+
+// 기본 정보만 보내므로 이미지·Top Brands 설정을 덮어쓰지 않습니다.
+export async function updateBrand(no: number, data: { name: string; detail: string; statusNo: number }): Promise<BrandResponse> {
+    const response = await apiFetch(`${BRAND_API_URL}/${no}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    if (!response.ok) throw new Error((await response.text()) || '브랜드 수정 실패');
+    return response.json();
+}
+
+// 새 브랜드 기본 정보를 등록합니다. 이미지는 생성된 브랜드 번호로 별도 업로드합니다.
+export async function createBrand(data: { name: string; detail: string }): Promise<BrandResponse> {
+    const response = await apiFetch(BRAND_API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    if (!response.ok) throw new Error((await response.text()) || `브랜드 등록 실패: ${response.status}`);
+    return response.json();
+}

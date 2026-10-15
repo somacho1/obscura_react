@@ -7,6 +7,10 @@ import AdminLayout from './admin/AdminLayout';
 import AdminDashboardPage from './admin/pages/Dashboard/AdminDashboardPage';
 import AdminBrandListPage from './admin/pages/Brand/AdminBrandListPage';
 import AdminBrandDetailPage from './admin/pages/Brand/AdminBrandDetailPage';
+import AdminProductListPage from './admin/pages/Product/AdminProductListPage';
+import AdminCategoryPage from './admin/pages/Category/AdminCategoryPage';
+import AdminBrandCreatePage from './admin/pages/Brand/AdminBrandCreatePage';
+import AdminBrandEditPage from './admin/pages/Brand/AdminBrandEditPage';
 import AdminProductCreatePage from './admin/pages/Product/AdminProductCreatePage';
 import AdminProductEditPage from './admin/pages/Product/AdminProductEditPage';
 import AdminOrderListPage from './admin/pages/Order/AdminOrderListPage';
@@ -62,7 +66,11 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboardPage />} />
           <Route path="brands" element={<AdminBrandListPage />} />
+          <Route path="brands/create" element={<AdminBrandCreatePage />} />
           <Route path="brands/:no" element={<AdminBrandDetailPage />} />
+          <Route path="brands/:no/edit" element={<AdminBrandEditPage />} />
+          <Route path="products" element={<AdminProductListPage />} />
+          <Route path="categories" element={<AdminCategoryPage />} />
           <Route path="products/create" element={<AdminProductCreatePage />} />
           <Route path="products/:productNo/edit" element={<AdminProductEditPage />} />
           <Route path="orders" element={<AdminOrderListPage />} />
@@ -79,3 +87,4 @@ function App() {
 }
 
 export default App;
+

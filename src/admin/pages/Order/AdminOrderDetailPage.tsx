@@ -1,3 +1,4 @@
+import OrderActivityPanel from '../../components/OrderActivityPanel';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { confirmBankDeposit, getPaymentByOrder } from '../../../api/paymentApi';
@@ -358,6 +359,8 @@ export default function AdminOrderDetailPage() {
                 />
             )}
 
+
+
             {/* 배송별 정보 및 처리 버튼 */}
             <section className="admin-order-detail__section">
                 <h2>배송 정보</h2>
@@ -436,6 +439,8 @@ export default function AdminOrderDetailPage() {
                 ))}
                 {shippingError && <p className="admin-order-detail__confirm-error" role="alert">{shippingError}</p>}
             </section>
+
+            <OrderActivityPanel key={`activity-${order.no}-${retryCount}`} orderNo={order.no} />
         </main>
     );
 }

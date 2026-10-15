@@ -34,6 +34,7 @@ function AdminHeader() {
                 <NavLink  to="/admin/banners"  className={({ isActive }) => isActive ? 'active' : ''}  >  BANNERS </NavLink>
                 <NavLink to="/admin/brands" className={({ isActive }) => isActive ? 'active' : ''}>BRANDS</NavLink>
                 <NavLink to="/admin/products" className={({ isActive }) => isActive ? 'active' : ''}>PRODUCTS</NavLink>
+                <NavLink to="/admin/categories" className={({ isActive }) => isActive ? 'active' : ''}>CATEGORIES</NavLink>
                 <NavLink to="/admin/orders" className={({ isActive }) => isActive ? 'active' : ''}>ORDERS</NavLink>
                 {member?.role === 'SUPER_ADMIN' && (<NavLink to="/admin/members" className={({ isActive }) => isActive ? 'active' : ''}>MEMBERS</NavLink>)}
             </nav>
@@ -42,3 +43,4 @@ function AdminHeader() {
 }
 
 export default AdminHeader;
+

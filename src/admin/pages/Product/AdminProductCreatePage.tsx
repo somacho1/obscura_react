@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { ChangeEvent, DragEvent, FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getBrands } from '../../../api/brandApi';
+import CategoryQuickAdd from '../../components/CategoryQuickAdd';
 import { getCategories } from '../../../api/categoryApi';
 import { createProduct } from '../../../api/productApi';
 import { uploadDetailImages, uploadMainImage } from '../../../api/productImageApi';
@@ -18,7 +19,7 @@ import './AdminProductCreatePage.css';
 interface ProductOptionForm {
     color: string;
     sizeValue: string;
-    qty: number;
+    qty: number | '';
 }
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -199,7 +200,7 @@ function AdminProductCreatePage() {
     };
 
     const handleAddOption = () => {
-        setOptions((prev) => [...prev, { color: '', sizeValue: '', qty: 0 }]);
+        setOptions((prev) => [...prev, { color: prev[prev.length - 1]?.color ?? '', sizeValue: '', qty: '' }]);
     };
 
     const handleOptionChange = (index: number, field: keyof ProductOptionForm, value: string | number) => {
@@ -303,8 +304,8 @@ function AdminProductCreatePage() {
                 return false;
             }
 
-            if (option.qty < 0) {
-                alert(`${i + 1}번째 옵션의 재고는 0 이상이어야 합니다.`);
+            if (option.qty === '' || !Number.isSafeInteger(option.qty) || option.qty < 0) {
+                alert(`${i + 1}번째 옵션의 재고는 0 이상의 정수로 입력해주세요.`);
                 return false;
             }
 
@@ -399,7 +400,7 @@ function AdminProductCreatePage() {
 
                 await createStock({
                     pono: createdOption.no,
-                    qty: option.qty,
+                    qty: Number(option.qty),
                 });
             }
 
@@ -472,6 +473,7 @@ function AdminProductCreatePage() {
                                 ))}
                             </select>
                         </label>
+                        <CategoryQuickAdd categories={categories} onCreated={category => { setCategories(previous => [...previous.filter(item => item.no !== category.no), category]); setCategoryNo(category.no); }} />
 
                         <label className="admin-product-create__field admin-product-create__field--full">
                             <span>CODE *</span>
@@ -626,7 +628,7 @@ function AdminProductCreatePage() {
                             <div className="admin-product-create__option-row" key={index}>
                                 <input type="text" value={option.color} onChange={(e) => handleOptionChange(index, 'color', e.target.value)} placeholder="BLACK" />
                                 <input type="text" value={option.sizeValue} onChange={(e) => handleOptionChange(index, 'sizeValue', e.target.value)} placeholder="S / M / L / XL" />
-                                <input type="number" min="0" value={option.qty} onChange={(e) => handleOptionChange(index, 'qty', Number(e.target.value))} />
+                                <input type="text" inputMode="numeric" pattern="[0-9]*" placeholder="재고 입력" value={option.qty} onChange={(e) => { const value = e.target.value; if (/^\d*$/.test(value)) handleOptionChange(index, 'qty', value === '' ? '' : Number(value)); }} />
                                 <button type="button" onClick={() => handleRemoveOption(index)}>REMOVE</button>
                             </div>
                         ))}

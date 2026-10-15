@@ -1,0 +1,225 @@
+/* 기존 Header 높이와 맞춘 전체 SHOP 메뉴. native dialog가 포커스를 관리합니다. */
+.header-desktop-nav .header-shop-trigger {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: #222;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .02em;
+    cursor: pointer
+}
+
+.header-desktop-nav .header-shop-trigger:hover {
+    opacity: .55
+}
+
+.mobile-shop-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 50px;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #111;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer
+}
+
+.shop-menu-panel {
+    position: fixed;
+    inset: 56px 0 0;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    max-width: none;
+    height: calc(100dvh - 56px);
+    max-height: calc(100dvh - 56px);
+    box-sizing: border-box;
+    border: 0;
+    border-top: 1px solid #ececec;
+    background: #fff;
+    color: #222;
+    overflow-y: auto;
+    overscroll-behavior: contain
+}
+
+.shop-menu-panel::backdrop {
+    background: rgba(0, 0, 0, .12)
+}
+
+.shop-menu-body {
+    min-height: 100%;
+    box-sizing: border-box;
+    padding: 24px 40px 60px
+}
+
+.shop-menu-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 20px;
+    margin-bottom: 20px
+}
+
+.shop-menu-heading h2 {
+    font-size: 14px;
+    letter-spacing: .06em;
+    margin: 0;
+    font-weight: 600
+}
+
+.shop-menu-panel button {
+    border: 0;
+    background: transparent;
+    padding: 10px;
+    color: inherit;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer
+}
+
+.shop-menu-categories {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    padding: 0 0 25px
+}
+
+.shop-menu-panel a {
+    color: #222;
+    text-decoration: none;
+    font-size: 13px;
+    line-height: 1.6
+}
+
+.shop-menu-panel a:hover {
+    text-decoration: underline;
+    text-underline-offset: 5px
+}
+
+.shop-menu-categories a {
+    padding: 10px 0
+}
+
+.shop-menu-all {
+    font-weight: 700
+}
+
+.shop-menu-panel .is-sale {
+    color: #ed1c24
+}
+
+.shop-menu-brand-title {
+    border-block: 1px solid #ddd;
+    padding: 18px 0;
+    margin: 0 0 14px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: .06em
+}
+
+.shop-menu-brands {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0 35px
+}
+
+.shop-menu-brands a {
+    display: flex;
+    align-items: center;
+    min-height: 50px;
+    overflow-wrap: anywhere
+}
+
+.shop-menu-message {
+    font-size: 13px;
+    color: #777;
+    padding: 20px 0;
+    line-height: 1.7
+}
+
+.shop-menu-panel :focus-visible {
+    outline: 2px solid #222;
+    outline-offset: 3px
+}
+
+@media(max-width:768px) {
+    .shop-menu-panel {
+        top: 50px;
+        height: calc(100dvh - 50px);
+        max-height: calc(100dvh - 50px)
+    }
+
+    .shop-menu-body {
+        padding: 16px 20px 40px
+    }
+
+    .shop-menu-categories {
+        flex-direction: column;
+        gap: 0
+    }
+
+    .shop-menu-categories a {
+        min-height: 40px;
+        box-sizing: border-box
+    }
+
+    .shop-menu-brands {
+        grid-template-columns: 1fr
+    }
+
+    .shop-menu-brands a {
+        min-height: 50px
+    }
+}
+
+/* 전체 화면 대신 왼쪽 세로 패널 */
+.shop-menu-panel {
+    inset: 56px auto auto 0;
+    width: min(320px, calc(100vw - 16px));
+    height: auto;
+    max-height: calc(100dvh - 72px);
+    border: 1px solid #e5e5e5;
+    border-top: 0;
+    box-shadow: 4px 10px 20px rgba(0, 0, 0, .06);
+}
+
+/* 배경 어둡게 처리하지 않음 */
+.shop-menu-panel::backdrop {
+    background: transparent;
+}
+
+.shop-menu-body {
+    min-height: 0;
+    padding: 20px 24px 28px;
+}
+
+/* 카테고리와 브랜드를 한 줄에 하나씩 표시 */
+.shop-menu-categories {
+    flex-direction: column;
+    gap: 0;
+}
+
+.shop-menu-brands {
+    grid-template-columns: 1fr;
+    gap: 0;
+}
+
+.shop-menu-brands a {
+    min-height: 42px;
+}
+
+@media (max-width: 768px) {
+    .shop-menu-panel {
+        top: 50px;
+        height: auto;
+        max-height: calc(100dvh - 66px);
+    }
+}

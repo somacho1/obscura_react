@@ -177,3 +177,11 @@ export async function updateMdPick(
     }
     return response.json();
 }
+
+
+// 판매중지 상품도 포함한 관리자 전체 목록. 사용자용 /active와 구분합니다.
+export async function getAdminProducts(signal?: AbortSignal): Promise<ProductResponse[]> {
+    const response = await apiFetch(PRODUCT_API_URL, { signal });
+    if (!response.ok) throw new Error((await response.text()) || '관리자 상품 조회 실패');
+    return response.json();
+}

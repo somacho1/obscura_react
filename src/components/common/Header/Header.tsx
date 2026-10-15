@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { SyntheticEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getCartItems } from '../../../api/cartApi';
 import { getProductPage } from '../../../api/productApi';
 import { useAuth } from '../../../context/AuthContext';
@@ -12,6 +12,7 @@ import likeIcon from '../../../assets/images/obscura/ico_qk_like_black.svg';
 import myPageIcon from '../../../assets/images/obscura/ico_my_black.svg';
 import bagIcon from '../../../assets/images/obscura/ico_bag_black.svg';
 import './Header.css';
+import ShopMenu from './ShopMenu';
 
 // 데스크톱·모바일에서 같은 메뉴 데이터를 사용합니다.
 const PRODUCT_MENUS = [
@@ -34,6 +35,8 @@ function scrollToTop() {
 
 export default function Header() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [shopOpen, setShopOpen] = useState(false);
   const { member, logoutMember } = useAuth();
   const isAdmin = member?.role === 'ADMIN' || member?.role === 'SUPER_ADMIN';
   const [menuOpen, setMenuOpen] = useState(false);
@@ -46,29 +49,25 @@ export default function Header() {
   const searchRef = useRef<HTMLDivElement>(null);
 
   // 페이지 이동 시 메뉴와 검색창을 닫습니다.
-  const closePanels = () => { setMenuOpen(false); setSearchOpen(false); };
+  const closePanels = () => { setMenuOpen(false); setSearchOpen(false); setShopOpen(false); };
   const handlePageLink = () => { closePanels(); scrollToTop(); };
 
-  // 일반회원만 장바구니 개수를 조회합니다.
-  // 비로그인·관리자·최고관리자는 조회 요청과 이벤트 등록을 생략합니다.
+  // 뒤로가기·외부 경로 이동에서도 열린 패널을 닫습니다.
+  useEffect(() => { setMenuOpen(false); setSearchOpen(false); setShopOpen(false); }, [location.key]);
+  const openShop = () => { setMenuOpen(false); setSearchOpen(false); setShopOpen(true); };
+
+  // 일반회원만 장바구니 개수를 조회합니다. 관리자와 비로그인은 조회하지 않습니다.
   useEffect(() => {
     setCartCount(0);
     if (!member || isAdmin) return;
-
     let active = true;
     let requestNo = 0;
     const memberNo = member.no;
-
     const refreshCartCount = async () => {
       const currentRequest = ++requestNo;
-
       try {
         const items = await getCartItems(memberNo);
-
-        // 계정 변경·화면 이동 후 도착한 이전 응답은 반영하지 않습니다.
-        if (active && currentRequest === requestNo) {
-          setCartCount(items.length);
-        }
+        if (active && currentRequest === requestNo) setCartCount(items.length);
       } catch (error) {
         if (active && currentRequest === requestNo) {
           setCartCount(0);
@@ -76,10 +75,8 @@ export default function Header() {
         }
       }
     };
-
     void refreshCartCount();
     window.addEventListener('cart-updated', refreshCartCount);
-
     return () => {
       active = false;
       window.removeEventListener('cart-updated', refreshCartCount);
@@ -120,7 +117,7 @@ export default function Header() {
       if (searchOpen && searchRef.current && !searchRef.current.contains(event.target as Node)) setSearchOpen(false);
     };
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') { setSearchOpen(false); setMenuOpen(false); }
+      if (event.key === 'Escape') { setSearchOpen(false); setMenuOpen(false); setShopOpen(false); }
     };
     document.addEventListener('mousedown', handleOutside);
     document.addEventListener('keydown', handleEscape);
@@ -187,7 +184,9 @@ export default function Header() {
           {/* 데스크톱 상품 메뉴 */}
           <nav className="header-desktop-nav" aria-label="주요 메뉴">
             {PRODUCT_MENUS.map(menu => (
-              <Link key={menu.label} to={menu.to} className={menu.className} onClick={handlePageLink}>{menu.label}</Link>
+              menu.label === 'SHOP'
+                ? <button key={menu.label} type="button" className="shop-link header-shop-trigger" aria-haspopup="dialog" aria-expanded={shopOpen} aria-controls="shop-menu-panel" onClick={openShop}>SHOP</button>
+                : <Link key={menu.label} to={menu.to} className={menu.className} onClick={handlePageLink}>{menu.label}</Link>
             ))}
           </nav>
         </div>
@@ -212,17 +211,12 @@ export default function Header() {
             <Link to="/login" className="header-account" onClick={handlePageLink}>LOGIN</Link>
           )}
 
-          {/* 관리자·최고관리자에게는 장바구니 아이콘을 표시하지 않습니다. */}
+          {/* 장바구니와 상품 종류 수 */}
           {!isAdmin && (
-            <Link
-              to="/cart"
-              className="header-icon-link header-cart"
-              aria-label={`장바구니 ${cartCount}개`}
-              onClick={handlePageLink}
-            >
-              <img src={bagIcon} alt="" />
-              {cartCount > 0 && <span className="header-cart-count">{cartCount}</span>}
-            </Link>
+          <Link to="/cart" className="header-icon-link header-cart" aria-label={`장바구니 ${cartCount}개`} onClick={handlePageLink}>
+            <img src={bagIcon} alt="" />
+            {cartCount > 0 && <span className="header-cart-count">{cartCount}</span>}
+          </Link>
           )}
 
           {/* 검색 입력과 실제 상품 검색 제안 */}
@@ -274,7 +268,9 @@ export default function Header() {
         <ul>
           {PRODUCT_MENUS.map(menu => (
             <li key={menu.label}>
-              <Link to={menu.to} className={menu.className} onClick={handlePageLink}>{menu.label} <span>↗</span></Link>
+              {menu.label === 'SHOP'
+                ? <button type="button" className="mobile-shop-trigger" aria-haspopup="dialog" aria-expanded={shopOpen} aria-controls="shop-menu-panel" onClick={openShop}>SHOP <span>＋</span></button>
+                : <Link to={menu.to} className={menu.className} onClick={handlePageLink}>{menu.label} <span>↗</span></Link>}
             </li>
           ))}
         </ul>
@@ -285,10 +281,11 @@ export default function Header() {
           <button type="button" onClick={() => openMemberPage('찜 목록')}>WISHLIST</button>
           <button type="button" onClick={() => openMemberPage('마이페이지')}>MY PAGE</button>
           {member ? <button type="button" onClick={handleLogout}>LOGOUT</button> : <Link to="/login" onClick={handlePageLink}>LOGIN</Link>}
-          {/* 모바일에서도 관리자 장바구니 메뉴를 숨깁니다. */}
-          {!isAdmin && (  <Link to="/cart" onClick={handlePageLink}>CART ({cartCount})</Link>  )}
+          {!isAdmin && <Link to="/cart" onClick={handlePageLink}>CART ({cartCount})</Link>}
         </div>
       </nav>
+      <ShopMenu open={shopOpen} onClose={() => setShopOpen(false)} onNavigate={handlePageLink} />
     </header>
   );
 }
+

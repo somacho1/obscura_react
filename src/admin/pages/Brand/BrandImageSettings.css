@@ -73,3 +73,16 @@
         grid-template-columns: 1fr;
     }
 }
+
+.brand-image-actions .brand-image-save {
+    background: #25282c;
+    border-color: #25282c;
+    color: #fff;
+}
+
+.brand-image-selected {
+    color: #66717e;
+    font-size: 12px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}

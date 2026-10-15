@@ -4,7 +4,8 @@ import { useAuth } from '../context/AuthContext';
 // 새로고침 중에는 서버의 로그인 확인이 끝날 때까지 기다립니다.
 export default function RequireAdmin({ superOnly = false }: { superOnly?: boolean }) {
   const { member, authLoading, authError, refreshMember } = useAuth();
-  if (authLoading) return <p role="status">로그인 정보를 확인하는 중입니다.</p>;
+  // 처음 인증할 때만 대기하고, 로그인 재확인 중에는 기존 입력 화면을 유지합니다.
+  if (authLoading && !member) return <p role="status">로그인 정보를 확인하는 중입니다.</p>;
   if (authError) {
     return (
       <div role="alert">

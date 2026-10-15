@@ -105,7 +105,11 @@ export default function RefundPanel({ order, method, admin = false, disabled = f
         if (completed) onUpdated();
     }
 
-    return <section className="refund-panel">
+    function formatRefundDate(value: string) {
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? '-' : date.toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false });
+    }
+    return <section className={`refund-panel${admin ? ' refund-panel--admin' : ''}`}>
         <header className="refund-panel__heading">
             <h2>상품 취소·환불</h2>
             <button className="refund-panel__refresh" type="button" disabled={busy || disabled || loading}
@@ -121,17 +125,17 @@ export default function RefundPanel({ order, method, admin = false, disabled = f
             {legacy && <BankRefundPanel orderNo={order.no} memberNo={order.mno} admin={admin}
                 disabled={disabled || busy} onUpdated={onUpdated} onBusyChange={onBusyChange} />}
             {pending && <div className="refund-panel__pending">
-                <p>{pending.method === 'BANK' ? '환불 접수 / 관리자 송금 대기' : '환불 결과 확인 필요'} · 출고 보류</p>
-                <p>이번 환불 금액: {pending.amount.toLocaleString('ko-KR')}원</p>
-                <p>{pending.reason}</p>
-                {pending.items.map(selection => <p key={selection.itemNo}>
-                    {order.items.find(item => item.no === selection.itemNo)?.productName || `상품 #${selection.itemNo}`} · {selection.qty}개
-                </p>)}
-                {pending.method === 'BANK' && <p>{pending.bank} / {pending.account} / {pending.holder}</p>}
-                {((admin && pending.method === 'BANK') || (!admin && pending.method === 'TOSS')) &&
-                    <button className="refund-panel__submit" type="button" disabled={busy || disabled} onClick={() => void run(pending)}>
-                        {busy ? '처리 중…' : admin ? '송금 확인 후 환불 완료' : '같은 환불 요청 재시도'}
-                    </button>}
+                <div className="refund-panel__pending-heading"><div><span className="refund-panel__eyebrow">환불 요청 #{pending.no}</span><h3>{pending.method === 'BANK' ? '송금 확인이 필요한 환불입니다.' : '카드 취소 결과를 확인해주세요.'}</h3></div><span className="refund-panel__badge">출고 보류</span></div>
+                <dl className="refund-panel__request-info">
+                    <div><dt>환불 금액</dt><dd className="refund-panel__request-amount">{pending.amount.toLocaleString('ko-KR')}원</dd></div>
+                    <div><dt>접수일시</dt><dd>{formatRefundDate(pending.cdate)}</dd></div>
+                    <div className="refund-panel__wide"><dt>대상 상품</dt><dd>{pending.items.map(selection => <span key={selection.itemNo}>{order.items.find(item => item.no === selection.itemNo)?.productName || `상품 #${selection.itemNo}`} · {selection.qty}개</span>)}</dd></div>
+                    <div className="refund-panel__wide"><dt>환불 사유</dt><dd>{pending.reason}</dd></div>
+                    {pending.method === 'BANK' && <><div><dt>환불 은행</dt><dd>{pending.bank}</dd></div><div><dt>예금주</dt><dd>{pending.holder}</dd></div><div className="refund-panel__wide"><dt>환불 계좌</dt><dd>{pending.account}</dd></div></>}
+                </dl>
+                <div className="refund-panel__pending-footer"><p>{pending.method === 'BANK' ? admin ? '실제 송금이 완료된 경우에만 완료 처리해주세요.' : '관리자가 확인 후 환불을 진행합니다.' : '같은 요청으로 취소 결과를 다시 확인합니다.'}</p>
+                    {((admin && pending.method === 'BANK') || (!admin && pending.method === 'TOSS')) && <button className="refund-panel__submit" type="button" disabled={busy || disabled} onClick={() => void run(pending)}>{busy ? '처리 중…' : admin ? '송금 완료 확인' : '환불 결과 다시 확인'}</button>}
+                </div>
             </div>}
             {canRequest && <form onSubmit={event => { event.preventDefault(); void run(); }}>
                 <div className="refund-panel__notice">
@@ -168,15 +172,15 @@ export default function RefundPanel({ order, method, admin = false, disabled = f
                     </button>
                 </div>
             </form>}
-            {state.history.length > 0 && <div className="refund-panel__history">
-                <h3>환불 이력</h3>
+            {state.history.length > 0 && <details className="refund-panel__history">
+                <summary>환불 이력 <span>{state.history.length}건</span></summary>
                 {state.history.map(info => <article key={info.no}>
                     <strong>{info.statusNo === 1 ? '완료' : '대기'} · {info.amount.toLocaleString('ko-KR')}원</strong>
                     <p>{info.reason}</p>
                     <p>{info.items.map(item => `${order.items.find(row => row.no === item.itemNo)?.productName || item.itemNo} ${item.qty}개`).join(', ')}</p>
-                    <small>{info.completeDate || info.cdate}</small>
+                    <small>{formatRefundDate(info.completeDate || info.cdate)}</small>
                 </article>)}
-            </div>}
+            </details>}
         </>}
     </section>;
 }
