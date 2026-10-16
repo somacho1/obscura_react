@@ -94,3 +94,9 @@ export async function createBrand(data: { name: string; detail: string }): Promi
     if (!response.ok) throw new Error((await response.text()) || `브랜드 등록 실패: ${response.status}`);
     return response.json();
 }
+
+// 상품이 없는 브랜드만 영구삭제합니다. 상품/주문은 자동 삭제하지 않습니다.
+export async function deleteEmptyBrand(no: number): Promise<void> {
+    const response = await apiFetch(`${BRAND_API_URL}/${no}/permanent`, { method: 'DELETE' });
+    if (!response.ok) throw new Error((await response.text()) || '브랜드 삭제에 실패했습니다.');
+}

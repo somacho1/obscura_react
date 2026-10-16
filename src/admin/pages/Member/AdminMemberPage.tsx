@@ -3,6 +3,8 @@ import { getAdminMembers, changeMemberRole } from '../../../api/adminMemberApi';
 import type { MemberResponse } from '../../../ts/member';
 import './AdminMemberPage.css';
 const ROLE_NAME = { USER: '일반회원', ADMIN: '관리자', SUPER_ADMIN: '최상위 관리자' };
+// 실제 저장된 권한을 기준으로 정렬합니다. 선택만 바꾸었을 때는 이동하지 않습니다.
+const ROLE_ORDER = { SUPER_ADMIN: 0, ADMIN: 1, USER: 2 };
 const STATUS = ['탈퇴', '정상', '정지', '휴면'];
 export default function AdminMemberPage() {
     const [members, setMembers] = useState<MemberResponse[]>([]);
@@ -43,7 +45,11 @@ export default function AdminMemberPage() {
         finally { lock.current = false; if (active.current) setSavingNo(null); }
     };
     const search = keyword.trim().toLowerCase();
-    const visible = members.filter(member => [member.id, member.name, member.email].some(value => value.toLowerCase().includes(search)));
+    // filter가 만든 새 배열을 정렬하므로 원본 state를 변경하지 않습니다.
+    // 권한 저장 성공 직후 자동 재정렬되며, 같은 권한은 회원번호 내림차순입니다.
+    const visible = members
+        .filter(member => [member.id, member.name, member.email].some(value => value.toLowerCase().includes(search)))
+        .sort((a, b) => ROLE_ORDER[a.role] - ROLE_ORDER[b.role] || b.no - a.no);
     return <section className="admin-members" aria-busy={loading}>
         <header className="admin-members-heading"><div><p>MEMBER ACCESS</p><h1>회원 권한 관리</h1></div><button type="button" disabled={loading || savingNo !== null} onClick={() => setReloadKey(v => v + 1)}>새로고침</button></header>
         <p className="admin-members-help">권한을 선택한 뒤 적용 버튼을 눌러주세요. 최상위 관리자와 비정상 상태 회원은 변경할 수 없습니다.</p>

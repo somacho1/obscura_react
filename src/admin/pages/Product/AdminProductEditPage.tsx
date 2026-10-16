@@ -1,3 +1,4 @@
+import FashionAiPanel from '../../components/FashionAiPanel';
 import { apiFetch } from '../../../api/apiFetch';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ChangeEvent, DragEvent, FormEvent } from 'react';
@@ -531,6 +532,8 @@ function AdminProductEditPage() {
                                 </div>
                             </section>
 
+                            <FashionAiPanel key={no} productNo={no} imageFile={mainImage?.file} imageUrl={mainImage?.url} disabled={saving || deleting || mdSaving} />
+
                             <AdminMdPickPanel
                                 key={no}
                                 productNo={no}
@@ -554,4 +557,5 @@ function AdminProductEditPage() {
 }
 
 export default AdminProductEditPage;
+
 

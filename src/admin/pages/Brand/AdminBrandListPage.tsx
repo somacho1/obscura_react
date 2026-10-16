@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getBrands } from '../../../api/brandApi';
+import { getBrands, deleteEmptyBrand } from '../../../api/brandApi';
 import type { BrandResponse } from '../../../ts/brand';
 import './AdminBrandListPage.css';
 
@@ -11,6 +11,21 @@ function AdminBrandListPage() {
     const [status, setStatus] = useState('ALL');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [deletingNo, setDeletingNo] = useState<number | null>(null);
+    const deleteLock = useRef(false);
+
+    // 확인한 빈 브랜드만 삭제하고 성공한 뒤 목록에서 제거합니다.
+    const handleDeleteBrand = async (brand: BrandResponse) => {
+        if (deleteLock.current) return;
+        if (brand.productCount > 0) { alert('상품이 있는 브랜드는 삭제할 수 없습니다. 수정 화면에서 비활성으로 변경해 주세요.'); return; }
+        if (!window.confirm(`${brand.name} 브랜드를 영구삭제하시겠습니까?\n삭제한 브랜드는 복구할 수 없습니다.`)) return;
+        deleteLock.current = true; setDeletingNo(brand.no);
+        try {
+            await deleteEmptyBrand(brand.no);
+            setBrands(previous => previous.filter(item => item.no !== brand.no));
+        } catch (err) { alert(err instanceof Error ? err.message : '브랜드 삭제에 실패했습니다.'); }
+        finally { deleteLock.current = false; setDeletingNo(null); }
+    };
 
     useEffect(() => {
         const loadBrands = async () => {
@@ -93,6 +108,7 @@ function AdminBrandListPage() {
                 </div>
             </div>
 
+            <p className="brand-delete-help">상품이 없는 브랜드만 삭제할 수 있습니다. 상품이 있는 브랜드는 수정에서 비활성으로 변경하세요.</p>
             <div className="brand-table">
                 <div className="brand-table-head">
                     <span>BRAND</span>
@@ -130,6 +146,7 @@ function AdminBrandListPage() {
                         <div className="brand-actions">
                             <button type="button" onClick={() => navigate(`/admin/brands/${brand.no}`)}>PRODUCTS →</button>
                             <button type="button" onClick={() => navigate(`/admin/brands/${brand.no}/edit`)}>EDIT</button>
+                            <button type="button" className="brand-delete-button" disabled={deletingNo !== null || brand.productCount > 0} title={brand.productCount > 0 ? '상품이 있는 브랜드는 수정에서 비활성 처리하세요.' : '상품 없는 브랜드 영구삭제'} onClick={() => void handleDeleteBrand(brand)}>{deletingNo === brand.no ? '삭제 중…' : '삭제'}</button>
                         </div>
                     </div>
                 ))}

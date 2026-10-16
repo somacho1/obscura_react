@@ -1,4 +1,5 @@
 import './Footer.css';
+import ChatWidget from '../ChatWidget/ChatWidget';
 
 // 공식 SNS 주소
 const INSTAGRAM_URL = 'https://www.instagram.com/obscura_store.kr/';
@@ -51,8 +52,7 @@ export default function Footer() {
         </div>
       </footer>
 
-      {/* 추후 AI 챗봇을 구현하면 이 버튼의 동작을 변경하면 됩니다. */}
-      <a className="footer-qa" href="mailto:cs@obscura-store.com?subject=OBSCURA%20Q%26A" aria-label="Q&A 이메일 문의">Q &amp; A</a>
+      <ChatWidget />
     </>
   );
 }

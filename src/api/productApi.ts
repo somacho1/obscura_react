@@ -152,8 +152,10 @@ export async function disableProduct(productNo: number): Promise<void> {
 }
 
 // 메인 MD 추천 상품 조회
-export async function getMdPicks(size = 5): Promise<ProductResponse[]> {
-    const response = await apiFetch(`${PRODUCT_API_URL}/md-picks?size=${size}`);
+export async function getMdPicks(size = 5, tag = '', signal?: AbortSignal): Promise<ProductResponse[]> {
+    const query = new URLSearchParams({ size: String(size) });
+    if (tag) query.set('tag', tag);
+    const response = await apiFetch(`${PRODUCT_API_URL}/md-picks?${query}`, { signal });
     if (!response.ok) {
         throw new Error((await response.text()) || 'MD 추천 상품 조회에 실패했습니다.');
     }
@@ -183,5 +185,13 @@ export async function updateMdPick(
 export async function getAdminProducts(signal?: AbortSignal): Promise<ProductResponse[]> {
     const response = await apiFetch(PRODUCT_API_URL, { signal });
     if (!response.ok) throw new Error((await response.text()) || '관리자 상품 조회 실패');
+    return response.json();
+}
+
+export interface MdPickTag { tag: string; productCount: number; }
+// Python 호출 없이 DB에 저장된 태그를 조회합니다.
+export async function getMdPickTags(signal?: AbortSignal): Promise<MdPickTag[]> {
+    const response = await apiFetch(`${PRODUCT_API_URL}/md-picks/tags`, { signal });
+    if (!response.ok) throw new Error('스타일 태그를 불러오지 못했습니다.');
     return response.json();
 }

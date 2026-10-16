@@ -4,18 +4,19 @@
 .md-picks { width:100%; max-width:1800px; margin:0 auto; padding:40px 70px 130px; }
 
 /* 제목 */
-.md-picks-title { margin-bottom:50px; text-align:center; }
+.md-picks-title { margin-bottom:24px; text-align:center; }
 .md-picks-title h2 { color:#222; font-size:40px; font-weight:700; }
 
-/* 상단 태그 */
-.md-picks-tags { display:flex; justify-content:center; gap:12px; margin-bottom:55px; }
+/* 박스 없이 타이포그래피와 밑줄로 선택 상태를 구분합니다. */
+.md-picks-tags { display:flex; justify-content:center; flex-wrap:wrap; gap:8px 28px; margin-bottom:40px; }
 .md-picks-tags button {
-  min-width:130px; padding:12px 25px;
-  border:1px solid #ddd; background:#fff;
-  color:#3d3d3d; font-size:14px; font-weight:700;
-  transition:background .2s ease, color .2s ease;
+  min-height:44px; padding:10px 2px; border:0; border-bottom:1px solid transparent;
+  border-radius:0; background:transparent; color:#999; font-family:inherit;
+  font-size:12px; font-weight:500; letter-spacing:1px; line-height:1.5;
+  cursor:pointer; transition:color .2s ease, border-color .2s ease;
 }
-.md-picks-tags button:hover { background:#111; color:#fff; }
+.md-picks-tags button:hover { color:#222; }
+.md-picks-tags button[aria-pressed="true"] { color:#111; border-bottom-color:#111; font-weight:700; }
 
 /* 상품 5개 배치 */
 .md-picks-products { display:grid; grid-template-columns:repeat(5,1fr); gap:20px; }
@@ -34,8 +35,8 @@
   .md-picks-title h2 { font-size:30px; }
 
   /* 모바일에서 태그가 화면 밖으로 나가지 않도록 줄바꿈 */
-  .md-picks-tags { flex-wrap:wrap; gap:8px; margin-bottom:35px; }
-  .md-picks-tags button { min-width:auto; padding:9px 15px; font-size:12px; }
+  .md-picks-tags { flex-wrap:wrap; gap:4px 20px; margin-bottom:28px; }
+  .md-picks-tags button { min-width:auto; padding:10px 2px; font-size:11px; letter-spacing:.7px; }
 
   /* 모바일 상품 2개씩 */
   .md-picks-products { grid-template-columns:repeat(2,1fr); gap:15px; }
@@ -44,3 +45,7 @@
 @media (max-width:480px) {
   .md-picks { padding-left:10px; padding-right:10px; }
 }
+/* 키보드 선택 표시와 오류 재조회 */
+.md-picks-tags button:focus-visible { outline:2px solid #111; outline-offset:3px; }
+.md-picks-message { text-align:center; margin-bottom:20px; }
+.md-picks-message button { margin-top:8px; padding:8px 16px; border:1px solid #ddd; background:white; }

@@ -374,3 +374,9 @@
         margin-top: 22px;
     }
 }
+/* 삭제는 상품 없는 브랜드에만 허용합니다. */
+.brand-actions{flex-wrap:wrap;}
+.brand-actions .brand-delete-button{color:#a34a43;border-color:#e3d1cf;}
+.brand-actions .brand-delete-button:disabled{opacity:.4;cursor:default;}
+
+.brand-delete-help{margin:0 0 14px;color:#888;font-size:11px;line-height:1.7;}

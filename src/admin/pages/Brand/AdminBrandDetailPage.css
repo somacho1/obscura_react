@@ -462,3 +462,6 @@
         flex-wrap: wrap;
     }
 }
+.brand-detail-heading-actions{flex-wrap:wrap;}
+.brand-detail-heading-actions .brand-detail-delete{color:#a34a43;border-color:#e3d1cf;}
+.brand-detail-heading-actions .brand-detail-delete:disabled{opacity:.4;cursor:default;}

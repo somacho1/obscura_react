@@ -1,3 +1,6 @@
+import FashionAiPanel from '../../components/FashionAiPanel';
+import { saveFashionTags } from '../../../api/fashionAiApi';
+import type { FashionTag } from '../../../api/fashionAiApi';
 import { useEffect, useMemo, useState } from 'react';
 import type { ChangeEvent, DragEvent, FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -61,6 +64,8 @@ function AdminProductCreatePage() {
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [fashionTags, setFashionTags] = useState<FashionTag[]>([]);
+    const [aiBlocked, setAiBlocked] = useState(false);
     const [error, setError] = useState('');
 
     const salePrice = useMemo(() => {
@@ -327,6 +332,8 @@ function AdminProductCreatePage() {
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        if (saving) return;
+        if (aiBlocked) { alert('AI 분석 완료 후 선택 태그를 확인해주세요.'); return; }
 
         if (!brandNo) {
             alert('브랜드를 선택해주세요.');
@@ -404,6 +411,15 @@ function AdminProductCreatePage() {
                 });
             }
 
+            // 상품이 생성된 후 태그만 실패한 경우 새 상품 등록을 반복하지 않도록 수정 화면으로 이동합니다.
+            if (fashionTags.length) {
+                try { await saveFashionTags(createdProduct.no, fashionTags); }
+                catch (tagError) {
+                    alert(`상품은 등록되었지만 AI 태그 저장에 실패했습니다. 수정 화면에서 다시 저장해주세요.\n${tagError instanceof Error ? tagError.message : ''}`);
+                    navigate(`/admin/products/${createdProduct.no}/edit`);
+                    return;
+                }
+            }
             alert('상품이 등록되었습니다.');
             navigate(`/admin/brands/${brandNo}`);
         } catch (err) {
@@ -605,6 +621,8 @@ function AdminProductCreatePage() {
                         </div>
                     </div>
                 </section>
+
+                <FashionAiPanel imageFile={mainImage} disabled={saving} autoAnalyze onChange={setFashionTags} onBlockedChange={setAiBlocked} />
 
                 {/* 04 PRODUCT OPTIONS */}
                 <section className="admin-product-create__section">
@@ -850,7 +868,7 @@ function AdminProductCreatePage() {
 
                 <div className="admin-product-create__actions">
                     <button type="button" className="admin-product-create__cancel" onClick={() => navigate(-1)} disabled={saving}>CANCEL</button>
-                    <button type="submit" className="admin-product-create__submit" disabled={saving}>{saving ? 'SAVING...' : 'CREATE PRODUCT'}</button>
+                    <button type="submit" className="admin-product-create__submit" disabled={saving || aiBlocked}>{saving ? 'SAVING...' : 'CREATE PRODUCT'}</button>
                 </div>
             </form>
         </div>
@@ -858,3 +876,4 @@ function AdminProductCreatePage() {
 }
 
 export default AdminProductCreatePage;
+
